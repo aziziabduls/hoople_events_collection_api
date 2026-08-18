@@ -1,11 +1,11 @@
 info:
-  name: Sign In
+  name: Station
   type: http
   seq: 1
 
 http:
-  method: POST
-  url: ""
+  method: GET
+  url: https://api.commute.shiorilabs.id/stations
   auth: inherit
 
 settings:
