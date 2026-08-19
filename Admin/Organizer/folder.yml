@@ -1,0 +1,8 @@
+info:
+  name: Organizer
+<<<<<<< HEAD:Organizer/folder.yml
+  type: folder
+  seq: 8
+=======
+  seq: 1
+>>>>>>> refs/remotes/origin/main:Admin/Organizer/folder.yml

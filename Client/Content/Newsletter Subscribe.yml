@@ -1,0 +1,123 @@
+info:
+  name: Newsletter Subscribe
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/newsletter/subscribe"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "adriani.ajeng@gmail.com",
+        "source": "footer"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Terima kasih! Anda berhasil berlangganan.",
+            "data": {
+              "email": "adriani.ajeng@gmail.com",
+              "status": "subscribed",
+              "subscribedAt": "2026-03-14T09:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |-
+  # Newsletter Subscribe
+
+  Langganan newsletter footer.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/newsletter/subscribe` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/participant/content/newsletter-subscribe.request.json`<br>`dto/participant/content/newsletter-subscribe.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | email |
+  | `source` | string | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | tidak | email |
+  | `status` | string | tidak | enum `subscriptionStatus`: `subscribed`, `unsubscribed`, `pending` |
+  | `subscribedAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
