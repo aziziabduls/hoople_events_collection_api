@@ -79,17 +79,82 @@ examples:
           }
 
 docs: |-
-  ## Payment Charge
+  # Payment Charge
 
   Terbitkan instruksi bayar (nomor VA, QR, deeplink).
 
-  **POST** `/payments/charge`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/payments/charge` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/payments/payment-charge.request.json`<br>`dto/payments/payment-charge.response.json` |
 
-  - Request: `dto/payments/payment-charge.request.json`
-  - Response: `dto/payments/payment-charge.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `bookingId` | string | ya | UUID v4 |
+  | `paymentMethodId` | string | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `paymentId` | string | tidak |  |
+  | `bookingId` | string | tidak | UUID v4 |
+  | `status` | string | tidak | enum `bookingStatus`: `pending`, `confirmed`, `completed`, `cancelled`, `refunded` |
+  | `methodId` | string | tidak |  |
+  | `methodName` | string | tidak |  |
+  | `amount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `virtualAccountNumber` | string | tidak |  |
+  | `qrString` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
+  | `deeplinkUrl` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
+  | `expiresAt` | string | tidak | ISO 8601 `+07:00` |
+  | `instructions` | object[] | tidak |  |
+  | `instructions[].channel` | string | tidak |  |
+  | `instructions[].steps` | string[] | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

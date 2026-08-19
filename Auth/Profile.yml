@@ -64,16 +64,78 @@ examples:
           }
 
 docs: |-
-  ## Profile
+  # Profile
 
   Profil + statistik ringkas.
 
-  **GET** `/auth/me`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/auth/me` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/auth/profile.response.json` |
 
-  - Response: `dto/auth/profile.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `fullName` | string | tidak |  |
+  | `email` | string | tidak | email |
+  | `phone` | string | tidak |  |
+  | `avatarUrl` | string | ya | boleh `null` |
+  | `roles` | string[] | tidak | enum `role`: `participant`, `organizer`, `teams_admin` |
+  | `emailVerifiedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `interests` | string[] | tidak |  |
+  | `city` | string | tidak |  |
+  | `stats` | object | tidak |  |
+  | `stats.bookingsTotal` | integer | tidak |  |
+  | `stats.bookingsUpcoming` | integer | tidak |  |
+  | `stats.savedTotal` | integer | tidak |  |
+  | `stats.communitiesJoined` | integer | tidak |  |
+  | `notificationPreferences` | object | tidak |  |
+  | `notificationPreferences.email` | boolean | tidak |  |
+  | `notificationPreferences.whatsapp` | boolean | tidak |  |
+  | `notificationPreferences.push` | boolean | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

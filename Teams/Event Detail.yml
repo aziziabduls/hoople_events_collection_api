@@ -172,16 +172,118 @@ examples:
           }
 
 docs: |-
-  ## Event Detail
+  # Event Detail
 
   Detail + agenda + funnel + settlement.
 
-  **GET** `/teams/events/{id}`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/events/{id}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/event-detail.response.json` |
 
-  - Response: `dto/teams/event-detail.response.json`
+  ## Path parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Catatan |
+  | --- | --- |
+  | `{id}` | UUID entitas. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak |  |
+  | `title` | string | tidak |  |
+  | `summary` | string | tidak |  |
+  | `status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+  | `format` | string | tidak | enum `eventFormat`: `onsite`, `online`, `hybrid` |
+  | `costModel` | string | tidak | enum `costModel`: `company_paid`, `cost_shared`, `free` |
+  | `audience` | string[] | tidak |  |
+  | `code` | string | tidak |  |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `timezone` | string | tidak |  |
+  | `venue` | string | tidak |  |
+  | `room` | string | tidak |  |
+  | `onlineUrl` | string | ya | boleh `null` |
+  | `capacity` | integer | tidak |  |
+  | `registeredCount` | integer | tidak |  |
+  | `checkedInCount` | integer | tidak |  |
+  | `onsiteScanCount` | integer | tidak |  |
+  | `coverImageUrl` | string | tidak | URL |
+  | `organiser` | string | tidak |  |
+  | `recurring` | string | ya | boleh `null` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `publishedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `passes` | object[] | tidak |  |
+  | `passes[].id` | string | tidak |  |
+  | `passes[].name` | string | tidak |  |
+  | `passes[].note` | string | tidak |  |
+  | `passes[].price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `passes[].sold` | integer | tidak |  |
+  | `passes[].quota` | integer | tidak |  |
+  | `passes[].onsite` | boolean | tidak |  |
+  | `description` | string | tidak |  |
+  | `agenda` | object[] | tidak |  |
+  | `agenda[].time` | string | tidak | `HH:mm` |
+  | `agenda[].label` | string | tidak |  |
+  | `memberLink` | string | tidak | URL |
+  | `requiresCompanySignIn` | boolean | tidak |  |
+  | `settlement` | object | tidak |  |
+  | `settlement.collected` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.gatewayFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.platformFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.net` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.gatewayRate` | number | tidak |  |
+  | `settlement.gatewayFlat` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.platformRate` | integer | tidak |  |
+  | `funnel` | object[] | tidak |  |
+  | `funnel[].key` | string | tidak |  |
+  | `funnel[].label` | string | tidak |  |
+  | `funnel[].note` | string | tidak |  |
+  | `funnel[].count` | integer | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

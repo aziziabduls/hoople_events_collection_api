@@ -53,16 +53,77 @@ runtime:
       value: "true"
 
 docs: |-
-  ## Settings Update
+  # Settings Update
 
   Simpan pengaturan.
 
-  **PATCH** `/organizer/settings`
+  | | |
+  | --- | --- |
+  | **Method** | `PATCH` |
+  | **Path** | `/organizer/settings` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/settings-update.request.json` |
 
-  - Request: `dto/organizer/settings-update.request.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `workspace` | object | ya |  |
+  | `workspace.name` | string | ya |  |
+  | `workspace.category` | string | ya |  |
+  | `workspace.description` | string | ya |  |
+  | `workspace.contactEmail` | string | ya | email |
+  | `workspace.contactPhone` | string | ya |  |
+  | `workspace.socials` | object | ya |  |
+  | `workspace.socials.website` | string | ya | URL |
+  | `workspace.socials.instagram` | string | ya |  |
+  | `workspace.socials.youtube` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `payout` | object | ya |  |
+  | `payout.bankName` | string | ya |  |
+  | `payout.accountNumber` | string | ya |  |
+  | `payout.accountHolder` | string | ya |  |
+  | `payout.schedule` | string | ya | enum `disbursement`: `after_event`, `weekly`, `manual` |
+  | `fees` | object | ya |  |
+  | `fees.absorbedByOrganizer` | boolean | ya |  |
+  | `notifications` | object | ya |  |
+  | `notifications.newRegistration` | boolean | ya |  |
+  | `notifications.paymentReceived` | boolean | ya |  |
+  | `notifications.payoutSettled` | boolean | ya |  |
+  | `notifications.weeklyDigest` | boolean | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

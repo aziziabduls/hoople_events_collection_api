@@ -305,16 +305,122 @@ examples:
           }
 
 docs: |-
-  ## Dashboard
+  # Dashboard
 
   Organisasi, event aktif, statistik, aktivitas terbaru.
 
-  **GET** `/teams/dashboard`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/dashboard` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/dashboard.response.json` |
 
-  - Response: `dto/teams/dashboard.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `organization` | object | tidak |  |
+  | `organization.id` | string | tidak | UUID v4 |
+  | `organization.name` | string | tidak |  |
+  | `organization.legalName` | string | tidak |  |
+  | `organization.initials` | string | tidak |  |
+  | `organization.handle` | string | tidak |  |
+  | `organization.domain` | string | tidak |  |
+  | `organization.plan` | string | tidak |  |
+  | `organization.memberCount` | integer | tidak |  |
+  | `organization.city` | string | tidak |  |
+  | `admin` | object | tidak |  |
+  | `admin.id` | string | tidak | UUID v4 |
+  | `admin.name` | string | tidak |  |
+  | `admin.role` | string | tidak |  |
+  | `admin.email` | string | tidak | email |
+  | `admin.phone` | string | tidak |  |
+  | `activeEvent` | object | tidak |  |
+  | `activeEvent.id` | string | tidak | UUID v4 |
+  | `activeEvent.slug` | string | tidak |  |
+  | `activeEvent.title` | string | tidak |  |
+  | `activeEvent.summary` | string | tidak |  |
+  | `activeEvent.status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+  | `activeEvent.format` | string | tidak | enum `eventFormat`: `onsite`, `online`, `hybrid` |
+  | `activeEvent.costModel` | string | tidak | enum `costModel`: `company_paid`, `cost_shared`, `free` |
+  | `activeEvent.audience` | string[] | tidak |  |
+  | `activeEvent.code` | string | tidak |  |
+  | `activeEvent.startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `activeEvent.endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `activeEvent.timezone` | string | tidak |  |
+  | `activeEvent.venue` | string | tidak |  |
+  | `activeEvent.room` | string | tidak |  |
+  | `activeEvent.onlineUrl` | string | ya | boleh `null` |
+  | `activeEvent.capacity` | integer | tidak |  |
+  | `activeEvent.registeredCount` | integer | tidak |  |
+  | `activeEvent.checkedInCount` | integer | tidak |  |
+  | `activeEvent.onsiteScanCount` | integer | tidak |  |
+  | `activeEvent.coverImageUrl` | string | tidak | URL |
+  | `activeEvent.organiser` | string | tidak |  |
+  | `activeEvent.recurring` | string | ya | boleh `null` |
+  | `activeEvent.createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `activeEvent.publishedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `activeEvent.passes` | object[] | tidak |  |
+  | `activeEvent.passes[].id` | string | tidak |  |
+  | `activeEvent.passes[].name` | string | tidak |  |
+  | `activeEvent.passes[].note` | string | tidak |  |
+  | `activeEvent.passes[].price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `activeEvent.passes[].sold` | integer | tidak |  |
+  | `activeEvent.passes[].quota` | integer | tidak |  |
+  | `activeEvent.passes[].onsite` | boolean | tidak |  |
+  | `stats` | object[] | tidak |  |
+  | `stats[].key` | string | tidak |  |
+  | `stats[].label` | string | tidak |  |
+  | `stats[].value` | integer | tidak |  |
+  | `stats[].unit` | string | tidak | enum `statUnit`: `count`, `idr`, `rate` |
+  | `stats[].deltaRate` | number | ya | boleh `null` |
+  | `stats[].deltaLabel` | string | tidak |  |
+  | `upcomingEvents` | object[] | tidak |  |
+  | `upcomingEvents[].id` | string | tidak | UUID v4 |
+  | `upcomingEvents[].slug` | string | tidak |  |
+  | `upcomingEvents[].title` | string | tidak |  |
+
+  _+34 field lagi — lihat contoh JSON di bawah._
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

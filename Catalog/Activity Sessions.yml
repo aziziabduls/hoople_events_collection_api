@@ -11,9 +11,11 @@ http:
     - name: from
       value: "2026-03-16"
       type: query
+      description: Tanggal awal rentang, YYYY-MM-DD.
     - name: to
       value: "2026-03-31"
       type: query
+      description: Tanggal akhir rentang, YYYY-MM-DD.
 
 runtime:
   assertions:
@@ -106,16 +108,98 @@ examples:
           }
 
 docs: |-
-  ## Activity Sessions
+  # Activity Sessions
 
   Sesi bookable pada rentang tanggal.
 
-  **GET** `/activities/{slug}/sessions?from=&to=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/activities/{slug}/sessions` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/catalog/activity-sessions.response.json` |
 
-  - Response: `dto/catalog/activity-sessions.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `from` | `2026-03-16` | Tanggal awal rentang, `YYYY-MM-DD`. |
+  | `to` | `2026-03-31` | Tanggal akhir rentang, `YYYY-MM-DD`. |
+
+  ## Path parameter
+
+  | Nama | Catatan |
+  | --- | --- |
+  | `{slug}` | Slug publik, mis. `morning-yoga-flow`. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` adalah **array**. Field per elemen:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `date` | string | tidak | `YYYY-MM-DD` |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `name` | string | tidak |  |
+  | `coach` | string | tidak |  |
+  | `room` | string | tidak |  |
+  | `level` | string | tidak |  |
+  | `durationMinutes` | integer | tidak |  |
+  | `capacity` | integer | tidak |  |
+  | `slotsLeft` | integer | tidak |  |
+  | `price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `isPopular` | boolean | tidak |  |
+  | `availability` | string | tidak | enum `sessionAvailability`: `open`, `sold_out` |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

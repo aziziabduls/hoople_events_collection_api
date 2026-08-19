@@ -107,16 +107,83 @@ examples:
           }
 
 docs: |-
-  ## Session List
+  # Session List
 
   Semua sesi lintas experience.
 
-  **GET** `/organizer/sessions`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/sessions` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/session-list.response.json` |
 
-  - Response: `dto/organizer/session-list.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` adalah **array**. Field per elemen:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak |  |
+  | `experienceId` | string | tidak | UUID v4 |
+  | `experienceTitle` | string | tidak |  |
+  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `coach` | string | tidak |  |
+  | `room` | string | tidak |  |
+  | `bookedCount` | integer | tidak |  |
+  | `capacity` | integer | tidak |  |
+  | `status` | string | tidak | enum `payoutStatus`: `scheduled`, `paid`, `on_hold`, `failed` |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

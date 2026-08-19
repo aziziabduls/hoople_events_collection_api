@@ -389,16 +389,129 @@ examples:
           }
 
 docs: |-
-  ## Booking List
+  # Booking List
 
   "Pesanan Saya" — variasi confirmed/completed/cancelled.
 
-  **GET** `/bookings`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/bookings` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/bookings/booking-list.response.json` |
 
-  - Response: `dto/bookings/booking-list.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` adalah **array**. Field per elemen:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `orderId` | string | tidak |  |
+  | `ticketId` | string | tidak |  |
+  | `status` | string | tidak | enum `bookingStatus`: `pending`, `confirmed`, `completed`, `cancelled`, `refunded` |
+  | `paymentStatus` | string | tidak | enum `bookingTimelineStatus`: `created`, `paid`, `confirmed`, `cancelled`, `refunded` |
+  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `experience` | object | tidak |  |
+  | `experience.id` | string | tidak | UUID v4 |
+  | `experience.slug` | string | tidak |  |
+  | `experience.title` | string | tidak |  |
+  | `experience.host` | string | tidak |  |
+  | `experience.coverImageUrl` | string | tidak | URL |
+  | `session` | object | tidak |  |
+  | `session.id` | string | tidak | UUID v4 |
+  | `session.name` | string | tidak |  |
+  | `session.startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.coach` | string | tidak |  |
+  | `session.room` | string | tidak |  |
+  | `ticketType` | object | ya | boleh `null` |
+  | `venue` | object | tidak |  |
+  | `venue.name` | string | tidak |  |
+  | `venue.area` | string | tidak |  |
+  | `venue.city` | string | tidak |  |
+  | `venue.address` | string | tidak |  |
+  | `venue.latitude` | number | tidak |  |
+  | `venue.longitude` | number | tidak |  |
+  | `quantity` | integer | tidak |  |
+  | `participants` | object[] | tidak |  |
+  | `participants[].fullName` | string | tidak |  |
+  | `participants[].email` | string | tidak | email |
+  | `participants[].phone` | string | tidak |  |
+  | `participants[].checkedInAt` | string | ya | boleh `null` |
+  | `buyer` | object | tidak |  |
+  | `buyer.fullName` | string | tidak |  |
+  | `buyer.email` | string | tidak | email |
+  | `buyer.phone` | string | tidak |  |
+  | `price` | object | tidak |  |
+  | `price.unitPrice` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.quantity` | integer | tidak |  |
+  | `price.subtotal` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.discount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.platformFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.gatewayFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.total` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.currency` | string | tidak |  |
+  | `payment` | object | tidak |  |
+  | `payment.methodId` | string | tidak |  |
+  | `payment.methodName` | string | tidak |  |
+  | `payment.virtualAccountNumber` | string | tidak |  |
+  | `payment.paidAt` | string | tidak | ISO 8601 `+07:00` |
+  | `payment.expiresAt` | string | ya | boleh `null` |
+  | `payment.reference` | string | tidak |  |
+  | `qrCodeUrl` | string | tidak | URL |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `cancelledAt` | string | ya | boleh `null` |
+  | `cancellationReason` | string | ya | boleh `null` |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `409` | `bookings/booking-slot-unavailable.response.json` | Slot habis saat pemesanan diselesaikan. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

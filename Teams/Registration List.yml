@@ -11,6 +11,7 @@ http:
     - name: eventId
       value: f00d1e00-1111-4222-8333-000000000601
       type: query
+      description: UUID event internal.
 
 runtime:
   assertions:
@@ -181,16 +182,99 @@ examples:
           }
 
 docs: |-
-  ## Registration List
+  # Registration List
 
   Peserta + data kepegawaian.
 
-  **GET** `/teams/registrations?eventId=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/registrations` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/registration-list.response.json` |
 
-  - Response: `dto/teams/registration-list.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `eventId` | `f00d1e00-1111-4222-8333-000000000601` | UUID event internal. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` adalah **array**. Field per elemen:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak |  |
+  | `eventId` | string | tidak | UUID v4 |
+  | `orderId` | string | tidak |  |
+  | `member` | object | tidak |  |
+  | `member.name` | string | tidak |  |
+  | `member.email` | string | tidak | email |
+  | `member.phone` | string | tidak |  |
+  | `member.employeeId` | string | tidak |  |
+  | `member.department` | string | tidak |  |
+  | `member.title` | string | tidak |  |
+  | `passId` | string | tidak |  |
+  | `passName` | string | tidak |  |
+  | `quantity` | integer | tidak |  |
+  | `amount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `payment` | string | tidak | enum `bookingTimelineStatus`: `created`, `paid`, `confirmed`, `cancelled`, `refunded` |
+  | `attendance` | string | tidak | enum `attendanceStatus`: `not_checked_in`, `checked_in`, `no_show` |
+  | `method` | string | tidak |  |
+  | `source` | string | tidak |  |
+  | `registeredAt` | string | tidak | ISO 8601 `+07:00` |
+  | `paidAt` | string | tidak | ISO 8601 `+07:00` |
+  | `checkedInAt` | string | tidak | ISO 8601 `+07:00` |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

@@ -66,16 +66,82 @@ examples:
           }
 
 docs: |-
-  ## Profile
+  # Profile
 
   Profil anggota + riwayat kehadiran.
 
-  **GET** `/teams/profile`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/profile` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/profile.response.json` |
 
-  - Response: `dto/teams/profile.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `name` | string | tidak |  |
+  | `email` | string | tidak | email |
+  | `phone` | string | tidak |  |
+  | `employeeId` | string | tidak |  |
+  | `department` | string | tidak |  |
+  | `title` | string | tidak |  |
+  | `roles` | string[] | tidak | enum `role`: `participant`, `organizer`, `teams_admin` |
+  | `avatarUrl` | string | ya | boleh `null` |
+  | `joinedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `stats` | object | tidak |  |
+  | `stats.eventsRegistered` | integer | tidak |  |
+  | `stats.eventsAttended` | integer | tidak |  |
+  | `stats.attendanceRate` | number | tidak |  |
+  | `upcomingRegistrations` | object[] | tidak |  |
+  | `upcomingRegistrations[].registrationId` | string | tidak |  |
+  | `upcomingRegistrations[].eventId` | string | tidak | UUID v4 |
+  | `upcomingRegistrations[].eventTitle` | string | tidak |  |
+  | `upcomingRegistrations[].startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `upcomingRegistrations[].venue` | string | tidak |  |
+  | `upcomingRegistrations[].passName` | string | tidak |  |
+  | `upcomingRegistrations[].attendance` | string | tidak | enum `attendanceStatus`: `not_checked_in`, `checked_in`, `no_show` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

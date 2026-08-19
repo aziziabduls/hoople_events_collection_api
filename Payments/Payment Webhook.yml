@@ -38,16 +38,65 @@ runtime:
       value: "true"
 
 docs: |-
-  ## Payment Webhook
+  # Payment Webhook
 
   Callback dari payment gateway ke backend.
 
-  **POST** `/webhooks/payment`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/webhooks/payment` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/payments/payment-webhook.request.json` |
 
-  - Request: `dto/payments/payment-webhook.request.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `eventType` | string | ya |  |
+  | `deliveryId` | string | ya |  |
+  | `occurredAt` | string | ya | ISO 8601 `+07:00` |
+  | `data` | object | ya |  |
+  | `data.paymentId` | string | ya |  |
+  | `data.bookingId` | string | ya | UUID v4 |
+  | `data.status` | string | ya | enum `bookingTimelineStatus`: `created`, `paid`, `confirmed`, `cancelled`, `refunded` |
+  | `data.amount` | integer | ya |  |
+  | `data.currency` | string | ya |  |
+  | `data.reference` | string | ya |  |
+  | `signature` | string | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

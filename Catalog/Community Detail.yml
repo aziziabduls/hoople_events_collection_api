@@ -137,16 +137,115 @@ examples:
           }
 
 docs: |-
-  ## Community Detail
+  # Community Detail
 
   Profil komunitas + experience mendatang.
 
-  **GET** `/communities/{slug}`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/communities/{slug}` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/catalog/community-detail.response.json` |
 
-  - Response: `dto/catalog/community-detail.response.json`
+  ## Path parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Catatan |
+  | --- | --- |
+  | `{slug}` | Slug publik, mis. `morning-yoga-flow`. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak |  |
+  | `slug` | string | tidak |  |
+  | `name` | string | tidak |  |
+  | `focus` | string | tidak |  |
+  | `about` | string | tidak |  |
+  | `memberCount` | integer | tidak |  |
+  | `area` | string | tidak |  |
+  | `city` | string | tidak |  |
+  | `coverImageUrl` | string | tidak | URL |
+  | `avatarUrl` | string | tidak | URL |
+  | `verified` | boolean | tidak |  |
+  | `isJoined` | boolean | tidak |  |
+  | `joinedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `socials` | object | tidak |  |
+  | `socials.website` | string | tidak | URL |
+  | `socials.instagram` | string | tidak |  |
+  | `socials.youtube` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
+  | `stats` | object | tidak |  |
+  | `stats.experienceCount` | integer | tidak |  |
+  | `stats.upcomingCount` | integer | tidak |  |
+  | `stats.rating` | number | tidak |  |
+  | `stats.reviewCount` | integer | tidak |  |
+  | `upcomingExperiences` | object[] | tidak |  |
+  | `upcomingExperiences[].id` | string | tidak | UUID v4 |
+  | `upcomingExperiences[].slug` | string | tidak |  |
+  | `upcomingExperiences[].title` | string | tidak |  |
+  | `upcomingExperiences[].kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `upcomingExperiences[].host` | string | tidak |  |
+  | `upcomingExperiences[].category` | string | tidak |  |
+  | `upcomingExperiences[].badge` | string | tidak |  |
+  | `upcomingExperiences[].status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+  | `upcomingExperiences[].summary` | string | tidak |  |
+  | `upcomingExperiences[].coverImageUrl` | string | tidak | URL |
+  | `upcomingExperiences[].startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `upcomingExperiences[].endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `upcomingExperiences[].price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `upcomingExperiences[].isFree` | boolean | tidak |  |
+  | `upcomingExperiences[].soldOut` | boolean | tidak |  |
+  | `upcomingExperiences[].capacity` | integer | tidak |  |
+  | `upcomingExperiences[].registeredCount` | integer | tidak |  |
+  | `upcomingExperiences[].venue` | object | tidak |  |
+  | `upcomingExperiences[].venue.name` | string | tidak |  |
+  | `upcomingExperiences[].venue.area` | string | tidak |  |
+  | `upcomingExperiences[].venue.city` | string | tidak |  |
+  | `upcomingExperiences[].isSaved` | boolean | tidak |  |
+  | `organizers` | object[] | tidak |  |
+  | `organizers[].id` | string | tidak | UUID v4 |
+  | `organizers[].name` | string | tidak |  |
+  | `organizers[].role` | string | tidak |  |
+  | `organizers[].avatarUrl` | string | ya | boleh `null` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

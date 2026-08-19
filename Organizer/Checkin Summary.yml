@@ -11,6 +11,7 @@ http:
     - name: sessionId
       value: ses-0001-4aaa-8bbb-000000000001
       type: query
+      description: UUID sesi.
 
 runtime:
   assertions:
@@ -61,16 +62,78 @@ examples:
           }
 
 docs: |-
-  ## Checkin Summary
+  # Checkin Summary
 
   Progres check-in sesi berjalan.
 
-  **GET** `/organizer/check-in/summary?sessionId=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/check-in/summary` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checkin-summary.response.json` |
 
-  - Response: `dto/organizer/checkin-summary.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `sessionId` | `ses-0001-4aaa-8bbb-000000000001` | UUID sesi. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `sessionId` | string | tidak |  |
+  | `experienceTitle` | string | tidak |  |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `booked` | integer | tidak |  |
+  | `checkedIn` | integer | tidak |  |
+  | `noShow` | integer | tidak |  |
+  | `pending` | integer | tidak |  |
+  | `checkInRate` | number | tidak |  |
+  | `recentScans` | object[] | tidak |  |
+  | `recentScans[].ticketCode` | string | tidak |  |
+  | `recentScans[].name` | string | tidak |  |
+  | `recentScans[].checkedInAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true
