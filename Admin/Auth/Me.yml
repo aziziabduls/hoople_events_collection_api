@@ -1,11 +1,11 @@
 info:
-  name: Experience Delete
+  name: Me
   type: http
-  seq: 8
+  seq: 4
 
 http:
-  method: DELETE
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
+  method: GET
+  url: "{{baseUrl}}/auth/me"
   auth: inherit
 
 runtime:
@@ -29,26 +29,17 @@ runtime:
         });
 
 docs: |-
-  # Experience Delete
+  # Me
 
-  Hapus (soft delete).
+  Profil + statistik ringkas milik akun yang sedang masuk. Berguna untuk memastikan token yang tersimpan benar-benar dipakai.
 
   | | |
   | --- | --- |
-  | **Method** | `DELETE` |
-  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Method** | `GET` |
+  | **Path** | `/auth/me` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-delete.response.json` |
-
-  ## Variabel yang dipakai
-
-  | Variabel | Untuk |
-  | --- | --- |
-  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
-
-  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
-  pindah environment tidak berarti menyunting request.
+  | **Sumber** | `dto/shared/auth/profile.response.json` |
 
   ## Error yang mungkin
 
@@ -56,8 +47,6 @@ docs: |-
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
-  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
@@ -98,10 +87,36 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Experience berhasil dihapus",
+            "message": "Profil berhasil diambil",
             "data": {
-              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-              "deletedAt": "2026-03-14T09:30:00+07:00"
+              "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+              "fullName": "Adriani Ajeng",
+              "email": "adriani.ajeng@gmail.com",
+              "phone": "+62 812 3456 7890",
+              "avatarUrl": null,
+              "roles": [
+                "participant",
+                "organizer",
+                "teams_admin"
+              ],
+              "emailVerifiedAt": "2026-03-14T09:41:00+07:00",
+              "createdAt": "2026-03-14T09:30:00+07:00",
+              "interests": [
+                "sports_fitness",
+                "art_design"
+              ],
+              "city": "Jakarta Selatan",
+              "stats": {
+                "bookingsTotal": 12,
+                "bookingsUpcoming": 2,
+                "savedTotal": 7,
+                "communitiesJoined": 3
+              },
+              "notificationPreferences": {
+                "email": true,
+                "whatsapp": true,
+                "push": false
+              }
             },
             "meta": null
           }

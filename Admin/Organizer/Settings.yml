@@ -16,9 +16,66 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Settings
+
+  Workspace, rekening, fee, paket, notifikasi.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/settings` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/settings.response.json` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -33,7 +90,7 @@ examples:
             "message": "Pengaturan berhasil diambil",
             "data": {
               "workspace": {
-                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000401",
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
                 "name": "Waktu Luang",
                 "category": "Community & Lifestyle",
                 "handle": "waktu-luang",
@@ -58,7 +115,7 @@ examples:
                 "bankName": "BCA",
                 "accountNumber": "****7890",
                 "accountHolder": "Adriani Ajeng",
-                "schedule": "weekly",
+                "payoutSchedule": "weekly",
                 "nextPayoutAt": "2026-03-20T00:00:00+07:00",
                 "isVerified": true
               },
@@ -85,108 +142,3 @@ examples:
             },
             "meta": null
           }
-
-docs: |-
-  # Settings
-
-  Workspace, rekening, fee, paket, notifikasi.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/settings` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/settings.response.json` |
-
-  ## Request body
-
-  Tidak ada.
-
-  ## Response `200`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": null }
-  ```
-
-  Isi `data`:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `workspace` | object | tidak |  |
-  | `workspace.id` | string | tidak | UUID v4 |
-  | `workspace.name` | string | tidak |  |
-  | `workspace.category` | string | tidak |  |
-  | `workspace.handle` | string | tidak |  |
-  | `workspace.logoUrl` | string | ya | boleh `null` |
-  | `workspace.description` | string | tidak |  |
-  | `workspace.city` | string | tidak |  |
-  | `workspace.contactEmail` | string | tidak | email |
-  | `workspace.contactPhone` | string | tidak |  |
-  | `workspace.socials` | object | tidak |  |
-  | `workspace.socials.website` | string | tidak | URL |
-  | `workspace.socials.instagram` | string | tidak |  |
-  | `workspace.socials.youtube` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
-  | `owner` | object | tidak |  |
-  | `owner.id` | string | tidak | UUID v4 |
-  | `owner.name` | string | tidak |  |
-  | `owner.role` | string | tidak | enum `workspaceRole`: `owner`, `admin`, `staff` |
-  | `owner.email` | string | tidak | email |
-  | `payout` | object | tidak |  |
-  | `payout.bankName` | string | tidak |  |
-  | `payout.accountNumber` | string | tidak |  |
-  | `payout.accountHolder` | string | tidak |  |
-  | `payout.schedule` | string | tidak | enum `disbursement`: `after_event`, `weekly`, `manual` |
-  | `payout.nextPayoutAt` | string | tidak | ISO 8601 `+07:00` |
-  | `payout.isVerified` | boolean | tidak |  |
-  | `fees` | object | tidak |  |
-  | `fees.platformFeeRate` | number | tidak |  |
-  | `fees.gatewayFeeRate` | number | tidak |  |
-  | `fees.absorbedByOrganizer` | boolean | tidak |  |
-  | `plan` | object | tidak |  |
-  | `plan.id` | string | tidak |  |
-  | `plan.name` | string | tidak |  |
-  | `plan.renewsAt` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
-  | `plan.activeExperienceLimit` | integer | tidak |  |
-  | `plan.activeExperienceUsed` | integer | tidak |  |
-  | `plan.teamSeatLimit` | integer | tidak |  |
-  | `plan.teamSeatUsed` | integer | tidak |  |
-  | `notifications` | object | tidak |  |
-  | `notifications.newRegistration` | boolean | tidak |  |
-  | `notifications.paymentReceived` | boolean | tidak |  |
-  | `notifications.payoutSettled` | boolean | tidak |  |
-  | `notifications.weeklyDigest` | boolean | tidak |  |
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

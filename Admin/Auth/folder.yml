@@ -1,0 +1,8 @@
+info:
+  name: Auth
+  seq: 1
+
+docs: |-
+  # Auth
+
+  Autentikasi bersama (`dto/shared/auth/`). Jalankan **Login** lebih dulu: token-nya tersimpan ke environment dan dipakai seluruh folder Admin.

@@ -145,9 +145,155 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Activity Create
+
+  Submit builder aktivitas (5 langkah).
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/organizer/experiences/activities` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/organizer/activity-create.request.json`<br>`dto/organizer/activity-create.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
+  | `identity` | object | ya |  |
+  | `identity.title` | string | ya |  |
+  | `identity.category` | string | ya |  |
+  | `identity.summary` | string | ya |  |
+  | `identity.coverImageUrl` | string | ya | URL |
+  | `details` | object | ya |  |
+  | `details.difficulty` | string | ya | enum `difficulty`: `beginner`, `intermediate`, `advanced` |
+  | `details.language` | string | ya |  |
+  | `details.visibility` | string | ya | enum `visibility`: `public`, `unlisted`, `private` |
+  | `participantInfo` | object | ya |  |
+  | `participantInfo.whatToBring` | array | ya |  |
+  | `participantInfo.requirements` | array | ya |  |
+  | `venue` | object | ya |  |
+  | `venue.name` | string | ya |  |
+  | `venue.area` | string | ya |  |
+  | `venue.city` | string | ya |  |
+  | `venue.address` | string | ya |  |
+  | `venue.latitude` | number | ya |  |
+  | `venue.longitude` | number | ya |  |
+  | `venue.notes` | array | ya |  |
+  | `schedule` | object | ya |  |
+  | `schedule.startDate` | string | ya | tanggal `YYYY-MM-DD` |
+  | `schedule.endDate` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `schedule.noEndDate` | boolean | ya |  |
+  | `schedule.repeatWeekly` | boolean | ya |  |
+  | `schedule.operatingDays` | array | ya |  |
+  | `schedule.skippedDates` | array | ya |  |
+  | `schedule.pickedDates` | array | ya |  |
+  | `schedule.timezone` | string | ya |  |
+  | `sessions` | array | ya |  |
+  | `sessions[].name` | string | ya |  |
+  | `sessions[].startTime` | string | ya | jam `HH:mm` |
+  | `sessions[].endTime` | string | ya | jam `HH:mm` |
+  | `sessions[].weekdays` | array | ya |  |
+  | `sessions[].capacity` | integer | ya |  |
+  | `sessions[].price` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `sessions[].instructor` | string | ya |  |
+  | `sessions[].isActive` | boolean | ya |  |
+  | `pricing` | object | ya |  |
+  | `pricing.basePrice` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `pricing.currency` | string | ya |  |
+  | `pricing.defaultCapacity` | integer | ya |  |
+  | `pricing.minParticipants` | integer | ya |  |
+  | `booking` | object | ya |  |
+  | `booking.opensBefore` | string | ya |  |
+  | `booking.closesBefore` | string | ya |  |
+  | `booking.confirmation` | string | ya | enum `bookingConfirmation`: `instant`, `manual` |
+  | `booking.cancellationPolicy` | string | ya |  |
+  | `booking.allowWaitlist` | boolean | ya |  |
+  | `instructors` | array | ya |  |
+  | `instructors[].name` | string | ya |  |
+  | `instructors[].role` | string | ya |  |
+  | `instructors[].bio` | string | ya |  |
+  | `instructors[].expertise` | array | ya |  |
+  | `instructors[].avatarUrl` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `gallery` | array | ya |  |
+  | `facilities` | array | ya |  |
+  | `equipment` | array | ya |  |
+  | `houseRules` | array | ya |  |
+  | `publish` | object | ya |  |
+  | `publish.mode` | string | ya | enum `publishMode`: `now`, `scheduled`, `draft` |
+  | `publish.scheduledAt` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `publish.showOnDiscovery` | boolean | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Alur gambar
+
+  Gambar diunggah lebih dulu lewat **Media → Upload**, yang mengembalikan `url`.
+  `url` itulah yang dikirim sebagai `coverImageUrl` dan `gallery[]` di sini, jadi
+  submit builder tetap JSON murni — tidak ada multipart di endpoint ini.
+
+  ## Nama yang mudah tertukar
+
+  - `pricing` = langkah harga di builder (`basePrice`, `defaultCapacity`).
+  - `price` = integer polos di request; objek uang `{ amount, currency }` hanya di response.
+  - `schedule` = konfigurasi jadwal builder (`operatingDays`, `repeatWeekly`, …),
+    bukan baris tampilan katalog (itu `scheduleSummary`) dan bukan susunan acara
+    (itu `rundown`, milik event).
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 201
       statusText: Created
@@ -191,158 +337,3 @@ examples:
             },
             "meta": null
           }
-
-docs: |-
-  # Activity Create
-
-  Submit builder aktivitas (5 langkah).
-
-  | | |
-  | --- | --- |
-  | **Method** | `POST` |
-  | **Path** | `/organizer/experiences/activities` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `201 Created` |
-  | **Sumber** | `dto/organizer/activity-create.request.json`<br>`dto/organizer/activity-create.response.json` |
-
-  ## Request body
-
-  `application/json`
-
-  | Field | Tipe | Wajib | Catatan |
-  | --- | --- | --- | --- |
-  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
-  | `identity` | object | ya |  |
-  | `identity.title` | string | ya |  |
-  | `identity.category` | string | ya |  |
-  | `identity.summary` | string | ya |  |
-  | `identity.coverImageUrl` | string | ya | URL |
-  | `details` | object | ya |  |
-  | `details.difficulty` | string | ya | enum `difficulty`: `beginner`, `intermediate`, `advanced` |
-  | `details.language` | string | ya |  |
-  | `details.visibility` | string | ya | enum `visibility`: `public`, `unlisted`, `private` |
-  | `participantInfo` | object | ya |  |
-  | `participantInfo.whatToBring` | string[] | ya |  |
-  | `participantInfo.requirements` | string[] | ya |  |
-  | `venue` | object | ya |  |
-  | `venue.name` | string | ya |  |
-  | `venue.area` | string | ya |  |
-  | `venue.city` | string | ya |  |
-  | `venue.address` | string | ya |  |
-  | `venue.latitude` | number | ya |  |
-  | `venue.longitude` | number | ya |  |
-  | `venue.notes` | string[] | ya |  |
-  | `schedule` | object | ya |  |
-  | `schedule.startDate` | string | ya | `YYYY-MM-DD` |
-  | `schedule.endDate` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
-  | `schedule.noEndDate` | boolean | ya |  |
-  | `schedule.repeatWeekly` | boolean | ya |  |
-  | `schedule.operatingDays` | string[] | ya |  |
-  | `schedule.skippedDates` | string[] | ya |  |
-  | `schedule.pickedDates` | array | ya | boleh kosong |
-  | `schedule.timezone` | string | ya |  |
-  | `sessions` | object[] | ya |  |
-  | `sessions[].name` | string | ya |  |
-  | `sessions[].startTime` | string | ya | `HH:mm` |
-  | `sessions[].endTime` | string | ya | `HH:mm` |
-  | `sessions[].weekdays` | string[] | ya |  |
-  | `sessions[].capacity` | integer | ya |  |
-  | `sessions[].price` | integer | ya |  |
-  | `sessions[].instructor` | string | ya |  |
-  | `sessions[].isActive` | boolean | ya |  |
-  | `pricing` | object | ya |  |
-  | `pricing.basePrice` | integer | ya |  |
-  | `pricing.currency` | string | ya |  |
-  | `pricing.defaultCapacity` | integer | ya |  |
-  | `pricing.minParticipants` | integer | ya |  |
-  | `booking` | object | ya |  |
-  | `booking.opensBefore` | string | ya |  |
-  | `booking.closesBefore` | string | ya |  |
-  | `booking.confirmation` | string | ya | enum `bookingConfirmation`: `instant`, `manual` |
-  | `booking.cancellationPolicy` | string | ya |  |
-  | `booking.allowWaitlist` | boolean | ya |  |
-  | `instructors` | object[] | ya |  |
-  | `instructors[].name` | string | ya |  |
-  | `instructors[].role` | string | ya |  |
-  | `instructors[].bio` | string | ya |  |
-  | `instructors[].expertise` | string[] | ya |  |
-  | `instructors[].avatarUrl` | string | tidak | boleh `null` |
-  | `gallery` | string[] | ya |  |
-  | `facilities` | string[] | ya |  |
-  | `equipment` | string[] | ya |  |
-  | `houseRules` | string[] | ya |  |
-
-  _+4 field lagi — lihat contoh JSON di bawah._
-
-
-  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
-  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
-
-  ## Response `201`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": null }
-  ```
-
-  Isi `data`:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `id` | string | tidak | UUID v4 |
-  | `slug` | string | tidak |  |
-  | `title` | string | tidak |  |
-  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
-  | `status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
-  | `visibility` | string | tidak | enum `visibility`: `public`, `unlisted`, `private` |
-  | `category` | string | tidak |  |
-  | `coverImageUrl` | string | tidak | URL |
-  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
-  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
-  | `note` | string | tidak |  |
-  | `venue` | object | tidak |  |
-  | `venue.name` | string | tidak |  |
-  | `venue.area` | string | tidak |  |
-  | `venue.city` | string | tidak |  |
-  | `registeredCount` | integer | tidak |  |
-  | `capacity` | integer | tidak |  |
-  | `occupancyRate` | number | tidak |  |
-  | `revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `sessionCount` | integer | tidak |  |
-  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
-  | `publishedAt` | string | tidak | ISO 8601 `+07:00` |
-  | `publicUrl` | string | tidak | URL |
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

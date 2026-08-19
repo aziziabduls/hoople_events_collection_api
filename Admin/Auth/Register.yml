@@ -1,0 +1,145 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Nadia Puspita",
+        "email": "nadia.puspita@gmail.com",
+        "phone": "+62 812 3456 7890",
+        "password": "RahasiaKu123",
+        "passwordConfirmation": "RahasiaKu123",
+        "interests": [
+          "sports_fitness",
+          "art_design"
+        ],
+        "acceptedTermsAt": "2026-03-14T09:30:00+07:00"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Register
+
+  Daftar akun baru + minat awal.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/register` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/shared/auth/register.request.json`<br>`dto/shared/auth/register.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `fullName` | string | ya |  |
+  | `email` | string | ya | email |
+  | `phone` | string | ya |  |
+  | `password` | string | ya |  |
+  | `passwordConfirmation` | string | ya |  |
+  | `interests` | array | ya |  |
+  | `acceptedTermsAt` | string | ya | ISO 8601 `+07:00` |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Pendaftaran berhasil",
+            "data": {
+              "user": {
+                "id": "8b3c5d17-4e29-4a61-9f70-22d3e4f5a601",
+                "fullName": "Nadia Puspita",
+                "email": "nadia.puspita@gmail.com",
+                "phone": "+62 812 3456 7890",
+                "avatarUrl": null,
+                "roles": [
+                  "participant"
+                ],
+                "emailVerifiedAt": null,
+                "createdAt": "2026-03-14T09:30:00+07:00"
+              },
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
+            },
+            "meta": null
+          }

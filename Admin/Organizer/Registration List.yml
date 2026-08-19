@@ -7,6 +7,15 @@ http:
   method: GET
   url: "{{baseUrl}}/organizer/registrations"
   auth: inherit
+  params:
+    - name: page
+      value: "1"
+      type: query
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+    - name: perPage
+      value: "10"
+      type: query
+      description: "Baris per halaman. Contoh dto memakai 10."
 
 runtime:
   assertions:
@@ -16,9 +25,91 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("meta paginasi konsisten", function () {
+          const meta = res.getBody().meta;
+          expect(meta).to.have.property("page");
+          expect(meta).to.have.property("perPage");
+          expect(meta).to.have.property("total");
+          expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
+        });
+
+docs: |-
+  # Registration List
+
+  Registrasi + status bayar + kehadiran.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/registrations` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/registration-list.response.json` |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
+  | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
+
+  ## Filter
+
+  Konsol menyaring per status bayar dan per experience, tapi `dto/` belum
+  menetapkan nama parameternya, jadi tidak ada yang ditebak di sini. Yang perlu
+  diputuskan tim backend: `status`, `experienceId`, dan `q` (pencarian nama atau
+  email) sebagai query param.
+
+  `dto/README.md` §7 juga mencatat paginasi berbasis cursor sebagai kandidat
+  untuk daftar ini — 1.248 baris di contoh, dan bisa jauh lebih besar.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -150,93 +241,3 @@ examples:
               "totalPages": 125
             }
           }
-
-docs: |-
-  # Registration List
-
-  Registrasi + status bayar + kehadiran.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/registrations` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/registration-list.response.json` |
-
-  ## Request body
-
-  Tidak ada.
-
-  ## Response `200`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": { … } }
-  ```
-
-  `data` adalah **array**. Field per elemen:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `id` | string | tidak |  |
-  | `orderId` | string | tidak |  |
-  | `participant` | object | tidak |  |
-  | `participant.name` | string | tidak |  |
-  | `participant.email` | string | tidak | email |
-  | `participant.phone` | string | tidak |  |
-  | `experienceId` | string | tidak | UUID v4 |
-  | `experienceTitle` | string | tidak |  |
-  | `sessionId` | string | tidak |  |
-  | `quantity` | integer | tidak |  |
-  | `amount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `status` | string | tidak | enum `bookingStatus`: `pending`, `confirmed`, `completed`, `cancelled`, `refunded` |
-  | `paymentStatus` | string | tidak | enum `bookingTimelineStatus`: `created`, `paid`, `confirmed`, `cancelled`, `refunded` |
-  | `attendance` | string | tidak | enum `attendanceStatus`: `not_checked_in`, `checked_in`, `no_show` |
-  | `checkedInAt` | string | ya | boleh `null` |
-  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
-
-
-  ### Pagination
-
-  | Field | Tipe | Catatan |
-  | --- | --- | --- |
-  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
-  | `meta.perPage` | integer | Jumlah baris per halaman. |
-  | `meta.total` | integer | Total baris di seluruh halaman. |
-  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
-
-  Query `?page=` dan `?perPage=` diharapkan didukung.
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

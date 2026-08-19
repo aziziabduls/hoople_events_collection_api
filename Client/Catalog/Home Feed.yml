@@ -40,8 +40,8 @@ examples:
               },
               "sections": [
                 {
-                  "key": "trending",
-                  "title": "Sedang ramai minggu ini",
+                  "key": "recommended_for_you",
+                  "title": "Recommended for you",
                   "items": [
                     {
                       "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
@@ -150,8 +150,8 @@ examples:
                   ]
                 },
                 {
-                  "key": "this_weekend",
-                  "title": "Akhir pekan ini",
+                  "key": "trending_this_week",
+                  "title": "Trending this week",
                   "items": [
                     {
                       "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
@@ -224,8 +224,8 @@ examples:
                   ]
                 },
                 {
-                  "key": "free",
-                  "title": "Gratis untuk dicoba",
+                  "key": "popular_right_now",
+                  "title": "Popular right now",
                   "items": [
                     {
                       "id": "a1b2c3d4-4444-4a2b-8c3d-000000000104",

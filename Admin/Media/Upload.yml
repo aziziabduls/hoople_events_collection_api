@@ -1,12 +1,24 @@
 info:
-  name: Experience Delete
+  name: Upload
   type: http
-  seq: 8
+  seq: 1
 
 http:
-  method: DELETE
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
+  method: POST
+  url: "{{baseUrl}}/media/upload"
   auth: inherit
+  headers:
+    - name: Content-Type
+      value: multipart/form-data
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value: []
+      - name: purpose
+        type: text
+        value: cover
 
 runtime:
   assertions:
@@ -29,26 +41,31 @@ runtime:
         });
 
 docs: |-
-  # Experience Delete
+  # Upload
 
-  Hapus (soft delete).
+  Unggah gambar (cover, galeri, logo, avatar). Mengembalikan `url` yang dipakai payload builder.
 
   | | |
   | --- | --- |
-  | **Method** | `DELETE` |
-  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Method** | `POST` |
+  | **Path** | `/media/upload` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-delete.response.json` |
+  | **Sumber** | `dto/shared/media/upload.response.json` |
 
-  ## Variabel yang dipakai
+  ## Ini satu-satunya endpoint non-JSON
 
-  | Variabel | Untuk |
-  | --- | --- |
-  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+  Body-nya `multipart/form-data`. Field berkasnya bernama `file`, dengan
+  `purpose` opsional (`cover`, `gallery`, `logo`, `avatar`) supaya backend bisa
+  menentukan batas ukuran dan rasio. Karena itu `dto/` tidak punya
+  `upload.request.json` — request-nya tidak bisa diwakili JSON, hanya
+  response-nya.
 
-  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
-  pindah environment tidak berarti menyunting request.
+  **Pilih berkas dulu** di tab Body sebelum mengirim; `value` di YAML sengaja
+  dibiarkan kosong karena path berkas itu urusan masing-masing mesin.
+
+  Alurnya: unggah → dapat `url` → kirim `url` sebagai `coverImageUrl` /
+  `gallery[]` saat submit builder.
 
   ## Error yang mungkin
 
@@ -56,8 +73,7 @@ docs: |-
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
-  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
@@ -98,10 +114,9 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Experience berhasil dihapus",
+            "message": "Gambar berhasil diunggah",
             "data": {
-              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-              "deletedAt": "2026-03-14T09:30:00+07:00"
+              "url": "https://cdn.hoople.id/uploads/2026/03/cover-8f2a1c9d4b.jpg"
             },
             "meta": null
           }

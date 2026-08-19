@@ -1,0 +1,15 @@
+info:
+  name: Teams
+  seq: 3
+
+docs: |-
+  # Teams
+
+  Konsol event internal perusahaan — situs ketiga Hoople, bukan bagian dari
+  konsol Admin. Dipindahkan keluar dari `Admin/` supaya `Admin/` berisi satu
+  konsol saja.
+
+  Kontrak DTO untuk bagian ini sudah tidak berada di repositori frontend
+  `hoople-event-admin-dashboard` (ikut pindah bersama kodenya), jadi berkas di
+  folder ini belum diregenerasi dan **belum diverifikasi** terhadap sumber mana
+  pun. Perlakukan sebagai arsip sampai repositori Teams-nya jelas.

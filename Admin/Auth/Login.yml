@@ -1,0 +1,178 @@
+info:
+  name: Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "adriani.ajeng@gmail.com",
+        "password": "RahasiaKu123",
+        "rememberMe": true
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        if (body && body.success && body.data && body.data.accessToken) {
+          bru.setEnvVar("accessToken", body.data.accessToken);
+          if (body.data.refreshToken) bru.setEnvVar("refreshToken", body.data.refreshToken);
+          console.log("accessToken disimpan ke environment aktif");
+        }
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Login
+
+  Masuk, mengembalikan token. **Jalankan ini lebih dulu** — script after-response menyimpan `accessToken` ke environment aktif, dan seluruh folder Admin membacanya.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/login` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/login.request.json`<br>`dto/shared/auth/login.response.json`<br>`dto/shared/auth/login-invalid.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | email |
+  | `password` | string | ya |  |
+  | `rememberMe` | boolean | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Yang dilakukan script
+
+  Setelah response sukses, `accessToken` dan `refreshToken` ditulis ke environment
+  yang sedang aktif lewat `bru.setEnvVar`. Semua request lain di folder **Admin**
+  memakai `auth: inherit`, yang mengambil bearer token dari `Admin/folder.yml`
+  — jadi tidak ada yang perlu menempel token manual.
+
+  Akun contoh punya `roles: ["participant", "organizer", "teams_admin"]`. Guard
+  harus memakai `roles.includes("organizer")`, bukan `roles === "organizer"`.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/auth/login-invalid.response.json` | Email atau password salah — lihat contoh kedua. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Berhasil masuk",
+            "data": {
+              "user": {
+                "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+                "fullName": "Adriani Ajeng",
+                "email": "adriani.ajeng@gmail.com",
+                "phone": "+62 812 3456 7890",
+                "avatarUrl": null,
+                "roles": [
+                  "participant",
+                  "organizer",
+                  "teams_admin"
+                ],
+                "emailVerifiedAt": "2026-03-14T09:41:00+07:00",
+                "createdAt": "2026-03-14T09:30:00+07:00"
+              },
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
+            },
+            "meta": null
+          }
+  - name: "Kredensial salah"
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Email atau password salah",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "INVALID_CREDENTIALS",
+              "errors": {
+                "email": [
+                  "Kredensial tidak cocok"
+                ]
+              }
+            }
+          }

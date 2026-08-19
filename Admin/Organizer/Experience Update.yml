@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/organizer/experiences/{id}"
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
   auth: inherit
   headers:
     - name: Content-Type
@@ -36,25 +36,39 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
 
 docs: |-
   # Experience Update
 
-  Update parsial.
+  Update parsial. Kirim hanya field yang berubah.
 
   | | |
   | --- | --- |
   | **Method** | `PATCH` |
-  | **Path** | `/organizer/experiences/{id}` |
+  | **Path** | `/organizer/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/experience-update.request.json` |
 
-  ## Path parameter
+  ## Variabel yang dipakai
 
-  | Nama | Catatan |
+  | Variabel | Untuk |
   | --- | --- |
-  | `{id}` | UUID entitas. |
+  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
 
   ## Request body
 
@@ -68,24 +82,31 @@ docs: |-
   | `identity.summary` | string | ya |  |
   | `identity.coverImageUrl` | string | ya | URL |
   | `pricing` | object | ya |  |
-  | `pricing.basePrice` | integer | ya |  |
+  | `pricing.basePrice` | integer | ya | integer polos di request (objek uang hanya di response) |
   | `pricing.currency` | string | ya |  |
   | `pricing.defaultCapacity` | integer | ya |  |
   | `pricing.minParticipants` | integer | ya |  |
 
-
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response
+
+  `dto/` **tidak** mendefinisikan response untuk endpoint ini, jadi tidak ada
+  contoh yang ditempel di sini — mengarang satu hanya akan jadi kontrak palsu.
+  Yang paling konsisten dengan endpoint lain: kembalikan resource yang sudah
+  diperbarui, bentuknya sama dengan **Experience Detail**. Mohon dikonfirmasi tim
+  backend, lalu tambahkan `dto/organizer/experience-update.response.json`.
 
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
-  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 
@@ -102,6 +123,7 @@ docs: |-
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
 

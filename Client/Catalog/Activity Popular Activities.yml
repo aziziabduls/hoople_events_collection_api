@@ -1,0 +1,36 @@
+info:
+  name: Activity Popular Activities
+  type: http
+  seq: 20
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/popular-activities"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Activity Popular Activities
+
+  Endpoint untuk rail "Popular Activities".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/activities/popular-activities` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sumber** | `dto/participant/catalog/activity-popular-activities.response.json` |
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
