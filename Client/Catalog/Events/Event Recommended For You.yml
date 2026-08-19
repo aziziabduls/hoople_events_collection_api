@@ -1,0 +1,73 @@
+info:
+  name: Event Recommended For You
+  type: http
+  seq: 17
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events/recommended-for-you"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Event Recommended For You
+
+  Rail event "Recommended for you".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/events/recommended-for-you` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/participant/catalog/event-recommended-for-you.response.json` |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` berisi array card event rekomendasi.
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak | slug publik |
+  | `title` | string | tidak | judul event |
+  | `status` | string | tidak | enum `experienceStatus` |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `price` | object | tidak | `{ amount, currency }` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount, currency }`.
+  - **Instant** ISO 8601 `+07:00`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
