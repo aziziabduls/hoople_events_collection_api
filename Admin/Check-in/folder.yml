@@ -1,0 +1,8 @@
+info:
+  name: Check-in
+  seq: 6
+
+docs: |
+  # Check-in
+
+  Pintu masuk acara: memindai QR dan memantau progres satu sesi.

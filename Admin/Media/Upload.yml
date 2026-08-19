@@ -40,7 +40,33 @@ runtime:
           expect(body).to.have.property("meta");
         });
 
-docs: |-
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Gambar berhasil diunggah",
+            "data": {
+              "url": "https://cdn.hoople.id/uploads/2026/03/cover-8f2a1c9d4b.jpg"
+            },
+            "meta": null
+          }
+
+docs: |
   # Upload
 
   Unggah gambar (cover, galeri, logo, avatar). Mengembalikan `url` yang dipakai payload builder.
@@ -94,29 +120,3 @@ docs: |-
   - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-
-examples:
-  - name: "Sukses"
-    response:
-      status: 200
-      statusText: OK
-      headers:
-        - name: Content-Type
-          value: application/json
-      body:
-        type: json
-        data: |-
-          {
-            "success": true,
-            "message": "Gambar berhasil diunggah",
-            "data": {
-              "url": "https://cdn.hoople.id/uploads/2026/03/cover-8f2a1c9d4b.jpg"
-            },
-            "meta": null
-          }

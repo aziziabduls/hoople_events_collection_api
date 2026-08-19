@@ -2,7 +2,16 @@ info:
   name: Auth
   seq: 1
 
-docs: |-
+docs: |
   # Auth
 
-  Autentikasi bersama (`dto/shared/auth/`). Jalankan **Login** lebih dulu: token-nya tersimpan ke environment dan dipakai seluruh folder Admin.
+  Masuk dan kelola akun host.
+
+  **Jalankan `Login` lebih dulu.** Script `after-response`-nya menyimpan
+  `accessToken` ke environment aktif, dan seluruh folder Admin mewarisi token itu
+  dari `Admin/folder.yml`.
+
+  `Register Host` khusus konsol ini: yang didaftarkan adalah **akun host**, bukan
+  akun peserta. Tidak ada minat, tidak ada langkah profil — nama komunitas,
+  nomor WhatsApp, sandi, selesai. Sisanya (`Login`, `Refresh`, `Me`, `Logout`,
+  reset sandi) adalah kontrak `dto/shared/auth/` yang sama dengan situs peserta.

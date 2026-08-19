@@ -1,0 +1,339 @@
+info:
+  name: Activity Create
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizer/experiences/activities"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "kind": "activity",
+        "identity": {
+          "title": "Kelas Keramik untuk Pemula",
+          "category": "Classes",
+          "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+          "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-8f2a.jpg"
+        },
+        "details": {
+          "difficulty": "beginner",
+          "language": "Bahasa Indonesia",
+          "visibility": "public"
+        },
+        "participantInfo": {
+          "whatToBring": [
+            "Pakaian yang boleh kotor"
+          ],
+          "requirements": [
+            "Usia 12 tahun ke atas"
+          ]
+        },
+        "venue": {
+          "name": "Waktu Luang Studio",
+          "area": "Kemang",
+          "city": "Jakarta Selatan",
+          "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+          "latitude": -6.2607,
+          "longitude": 106.8138,
+          "notes": [
+            "5 menit dari Halte TransJakarta Kemang"
+          ]
+        },
+        "schedule": {
+          "startDate": "2026-03-01",
+          "endDate": null,
+          "noEndDate": true,
+          "repeatWeekly": true,
+          "operatingDays": [
+            "mon",
+            "wed",
+            "fri",
+            "sat"
+          ],
+          "skippedDates": [
+            "2026-04-02"
+          ],
+          "pickedDates": [],
+          "timezone": "Asia/Jakarta"
+        },
+        "sessions": [
+          {
+            "name": "Sesi Sabtu Siang",
+            "startTime": "14:00",
+            "endTime": "16:00",
+            "weekdays": [
+              "sat"
+            ],
+            "capacity": 12,
+            "price": 250000,
+            "instructor": "Rani Putri",
+            "isActive": true
+          },
+          {
+            "name": "Sesi Rabu Malam",
+            "startTime": "18:30",
+            "endTime": "20:30",
+            "weekdays": [
+              "wed"
+            ],
+            "capacity": 10,
+            "price": 275000,
+            "instructor": "Kevin Ardiansyah",
+            "isActive": true
+          }
+        ],
+        "pricing": {
+          "basePrice": 250000,
+          "currency": "IDR",
+          "defaultCapacity": 12,
+          "minParticipants": 3
+        },
+        "booking": {
+          "opensBefore": "30d",
+          "closesBefore": "2h",
+          "confirmation": "instant",
+          "cancellationPolicy": "flexible",
+          "allowWaitlist": true
+        },
+        "instructors": [
+          {
+            "name": "Rani Putri",
+            "role": "Pottery Instructor",
+            "bio": "Delapan tahun mengajar keramik.",
+            "expertise": [
+              "Wheel throwing",
+              "Glazing"
+            ],
+            "avatarUrl": null
+          }
+        ],
+        "gallery": [
+          "https://cdn.hoople.id/uploads/tmp/g1.jpg",
+          "https://cdn.hoople.id/uploads/tmp/g2.jpg"
+        ],
+        "facilities": [
+          "Ruang ber-AC",
+          "Loker",
+          "Wi-Fi"
+        ],
+        "equipment": [
+          "Tanah liat",
+          "Alat putar",
+          "Apron"
+        ],
+        "houseRules": [
+          "Datang 10 menit lebih awal"
+        ],
+        "publish": {
+          "mode": "now",
+          "scheduledAt": null,
+          "showOnDiscovery": true
+        }
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Aktivitas berhasil dibuat",
+            "data": {
+              "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+              "slug": "kelas-keramik-untuk-pemula",
+              "title": "Kelas Keramik untuk Pemula",
+              "kind": "activity",
+              "status": "published",
+              "visibility": "public",
+              "category": "Classes",
+              "coverImageUrl": "https://cdn.hoople.id/covers/kelas-keramik-untuk-pemula.jpg",
+              "startsAt": "2026-03-21T14:00:00+07:00",
+              "endsAt": "2026-03-21T16:00:00+07:00",
+              "note": "Sesi berikutnya Sabtu",
+              "venue": {
+                "name": "Waktu Luang Studio",
+                "area": "Kemang",
+                "city": "Jakarta Selatan"
+              },
+              "registeredCount": 9,
+              "capacity": 12,
+              "occupancyRate": 0.75,
+              "revenue": {
+                "amount": 2250000,
+                "currency": "IDR"
+              },
+              "sessionCount": 24,
+              "createdAt": "2026-01-12T10:00:00+07:00",
+              "publishedAt": "2026-03-14T09:30:00+07:00",
+              "publicUrl": "https://hoople.id/activities/kelas-keramik-untuk-pemula"
+            },
+            "meta": null
+          }
+
+docs: |
+  # Activity Create
+
+  Submit builder aktivitas (5 langkah).
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/organizer/experiences/activities` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/organizer/activity-create.request.json`<br>`dto/organizer/activity-create.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
+  | `identity` | object | ya |  |
+  | `identity.title` | string | ya |  |
+  | `identity.category` | string | ya |  |
+  | `identity.summary` | string | ya |  |
+  | `identity.coverImageUrl` | string | ya | URL |
+  | `details` | object | ya |  |
+  | `details.difficulty` | string | ya | enum `difficulty`: `beginner`, `intermediate`, `advanced` |
+  | `details.language` | string | ya |  |
+  | `details.visibility` | string | ya | enum `visibility`: `public`, `unlisted`, `private` |
+  | `participantInfo` | object | ya |  |
+  | `participantInfo.whatToBring` | array | ya |  |
+  | `participantInfo.requirements` | array | ya |  |
+  | `venue` | object | ya |  |
+  | `venue.name` | string | ya |  |
+  | `venue.area` | string | ya |  |
+  | `venue.city` | string | ya |  |
+  | `venue.address` | string | ya |  |
+  | `venue.latitude` | number | ya |  |
+  | `venue.longitude` | number | ya |  |
+  | `venue.notes` | array | ya |  |
+  | `schedule` | object | ya |  |
+  | `schedule.startDate` | string | ya | tanggal `YYYY-MM-DD` |
+  | `schedule.endDate` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `schedule.noEndDate` | boolean | ya |  |
+  | `schedule.repeatWeekly` | boolean | ya |  |
+  | `schedule.operatingDays` | array | ya |  |
+  | `schedule.skippedDates` | array | ya |  |
+  | `schedule.pickedDates` | array | ya |  |
+  | `schedule.timezone` | string | ya |  |
+  | `sessions` | array | ya |  |
+  | `sessions[].name` | string | ya |  |
+  | `sessions[].startTime` | string | ya | jam `HH:mm` |
+  | `sessions[].endTime` | string | ya | jam `HH:mm` |
+  | `sessions[].weekdays` | array | ya |  |
+  | `sessions[].capacity` | integer | ya |  |
+  | `sessions[].price` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `sessions[].instructor` | string | ya |  |
+  | `sessions[].isActive` | boolean | ya |  |
+  | `pricing` | object | ya |  |
+  | `pricing.basePrice` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `pricing.currency` | string | ya |  |
+  | `pricing.defaultCapacity` | integer | ya |  |
+  | `pricing.minParticipants` | integer | ya |  |
+  | `booking` | object | ya |  |
+  | `booking.opensBefore` | string | ya |  |
+  | `booking.closesBefore` | string | ya |  |
+  | `booking.confirmation` | string | ya | enum `bookingConfirmation`: `instant`, `manual` |
+  | `booking.cancellationPolicy` | string | ya |  |
+  | `booking.allowWaitlist` | boolean | ya |  |
+  | `instructors` | array | ya |  |
+  | `instructors[].name` | string | ya |  |
+  | `instructors[].role` | string | ya |  |
+  | `instructors[].bio` | string | ya |  |
+  | `instructors[].expertise` | array | ya |  |
+  | `instructors[].avatarUrl` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `gallery` | array | ya |  |
+  | `facilities` | array | ya |  |
+  | `equipment` | array | ya |  |
+  | `houseRules` | array | ya |  |
+  | `publish` | object | ya |  |
+  | `publish.mode` | string | ya | enum `publishMode`: `now`, `scheduled`, `draft` |
+  | `publish.scheduledAt` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `publish.showOnDiscovery` | boolean | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Alur gambar
+
+  Gambar diunggah lebih dulu lewat **Media → Upload**, yang mengembalikan `url`.
+  `url` itulah yang dikirim sebagai `coverImageUrl` dan `gallery[]` di sini, jadi
+  submit builder tetap JSON murni — tidak ada multipart di endpoint ini.
+
+  ## Nama yang mudah tertukar
+
+  - `pricing` = langkah harga di builder (`basePrice`, `defaultCapacity`).
+  - `price` = integer polos di request; objek uang `{ amount, currency }` hanya di response.
+  - `schedule` = konfigurasi jadwal builder (`operatingDays`, `repeatWeekly`, …),
+    bukan baris tampilan katalog (itu `scheduleSummary`) dan bukan susunan acara
+    (itu `rundown`, milik event).
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

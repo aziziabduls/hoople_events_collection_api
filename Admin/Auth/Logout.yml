@@ -28,7 +28,31 @@ runtime:
           expect(body).to.have.property("meta");
         });
 
-docs: |-
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Berhasil keluar",
+            "data": null,
+            "meta": null
+          }
+
+docs: |
   # Logout
 
   Cabut refresh token.
@@ -67,27 +91,3 @@ docs: |-
   - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-
-examples:
-  - name: "Sukses"
-    response:
-      status: 200
-      statusText: OK
-      headers:
-        - name: Content-Type
-          value: application/json
-      body:
-        type: json
-        data: |-
-          {
-            "success": true,
-            "message": "Berhasil keluar",
-            "data": null,
-            "meta": null
-          }

@@ -1,0 +1,243 @@
+info:
+  name: Experience Detail
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail experience berhasil diambil",
+            "data": {
+              "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+              "slug": "kelas-keramik-untuk-pemula",
+              "title": "Kelas Keramik untuk Pemula",
+              "kind": "activity",
+              "status": "published",
+              "visibility": "public",
+              "category": "Classes",
+              "coverImageUrl": "https://cdn.hoople.id/covers/kelas-keramik-untuk-pemula.jpg",
+              "startsAt": "2026-03-21T14:00:00+07:00",
+              "endsAt": "2026-03-21T16:00:00+07:00",
+              "note": "Sesi berikutnya Sabtu",
+              "venue": {
+                "name": "Waktu Luang Studio",
+                "area": "Kemang",
+                "city": "Jakarta Selatan",
+                "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+                "latitude": -6.2607,
+                "longitude": 106.8138
+              },
+              "registeredCount": 9,
+              "capacity": 12,
+              "occupancyRate": 0.75,
+              "revenue": {
+                "amount": 2250000,
+                "currency": "IDR"
+              },
+              "sessionCount": 24,
+              "createdAt": "2026-01-12T10:00:00+07:00",
+              "publishedAt": "2026-01-14T09:00:00+07:00",
+              "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+              "description": "Kelas keramik dua jam untuk pemula. Semua bahan dan alat disediakan, hasil karya dibakar dan bisa diambil dua minggu kemudian.",
+              "difficulty": "beginner",
+              "language": "Bahasa Indonesia",
+              "basePrice": {
+                "amount": 250000,
+                "currency": "IDR"
+              },
+              "defaultCapacity": 12,
+              "minParticipants": 3,
+              "effectivePeriod": {
+                "startDate": "2026-03-01",
+                "endDate": null,
+                "noEndDate": true
+              },
+              "schedule": {
+                "repeatWeekly": true,
+                "operatingDays": [
+                  "mon",
+                  "wed",
+                  "fri",
+                  "sat"
+                ],
+                "skippedDates": [
+                  "2026-04-02"
+                ],
+                "pickedDates": [],
+                "timezone": "Asia/Jakarta"
+              },
+              "sessions": [
+                {
+                  "id": "ses-0011-4aaa-8bbb-000000000011",
+                  "name": "Sesi Sabtu Siang",
+                  "startTime": "14:00",
+                  "endTime": "16:00",
+                  "weekdays": [
+                    "sat"
+                  ],
+                  "capacity": 12,
+                  "price": {
+                    "amount": 250000,
+                    "currency": "IDR"
+                  },
+                  "instructor": "Rani Putri",
+                  "isActive": true
+                },
+                {
+                  "id": "ses-0012-4aaa-8bbb-000000000012",
+                  "name": "Sesi Rabu Malam",
+                  "startTime": "18:30",
+                  "endTime": "20:30",
+                  "weekdays": [
+                    "wed"
+                  ],
+                  "capacity": 10,
+                  "price": {
+                    "amount": 275000,
+                    "currency": "IDR"
+                  },
+                  "instructor": "Kevin Ardiansyah",
+                  "isActive": true
+                }
+              ],
+              "instructors": [
+                {
+                  "id": "ins-0001",
+                  "name": "Rani Putri",
+                  "role": "Pottery Instructor",
+                  "bio": "Delapan tahun mengajar keramik, alumni ISI Yogyakarta.",
+                  "avatarUrl": null,
+                  "expertise": [
+                    "Wheel throwing",
+                    "Glazing"
+                  ]
+                }
+              ],
+              "gallery": [
+                "https://cdn.hoople.id/gallery/pottery-1.jpg",
+                "https://cdn.hoople.id/gallery/pottery-2.jpg"
+              ],
+              "facilities": [
+                "Ruang ber-AC",
+                "Loker",
+                "Wi-Fi"
+              ],
+              "equipment": [
+                "Tanah liat",
+                "Alat putar",
+                "Apron"
+              ],
+              "houseRules": [
+                "Datang 10 menit lebih awal",
+                "Gunakan pakaian yang boleh kotor"
+              ],
+              "booking": {
+                "opensBefore": "30d",
+                "closesBefore": "2h",
+                "confirmation": "instant",
+                "cancellationPolicy": "flexible",
+                "allowWaitlist": true
+              },
+              "stats": {
+                "totalRegistrations": 214,
+                "totalRevenue": {
+                  "amount": 53500000,
+                  "currency": "IDR"
+                },
+                "averageRating": 4.8,
+                "reviewCount": 96
+              }
+            },
+            "meta": null
+          }
+
+docs: |
+  # Experience Detail
+
+  Detail penuh untuk mode edit builder.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/experience-detail.response.json` |
+
+  ## Variabel yang dipakai
+
+  | Variabel | Untuk |
+  | --- | --- |
+  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

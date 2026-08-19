@@ -1,11 +1,11 @@
 info:
-  name: Profile Update
+  name: Checkin Scan
   type: http
-  seq: 5
+  seq: 1
 
 http:
-  method: PATCH
-  url: "{{baseUrl}}/auth/me"
+  method: POST
+  url: "{{baseUrl}}/organizer/check-in/scan"
   auth: inherit
   headers:
     - name: Content-Type
@@ -14,20 +14,9 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Adriani Ajeng",
-        "phone": "+62 812 3456 7890",
-        "city": "Jakarta Selatan",
-        "avatarUrl": null,
-        "interests": [
-          "sports_fitness",
-          "art_design",
-          "food_drink"
-        ],
-        "notificationPreferences": {
-          "email": true,
-          "whatsapp": true,
-          "push": false
-        }
+        "ticketCode": "HPL-8K2M-4QX7-1",
+        "sessionId": "ses-0001-4aaa-8bbb-000000000001",
+        "scannedAt": "2026-03-16T06:52:00+07:00"
       }
 
 runtime:
@@ -69,37 +58,63 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Profil berhasil diperbarui",
+            "message": "Check-in berhasil",
             "data": {
-              "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
-              "fullName": "Adriani Ajeng",
-              "email": "adriani.ajeng@gmail.com",
-              "phone": "+62 812 3456 7890",
-              "avatarUrl": null,
-              "roles": [
-                "participant",
-                "organizer",
-                "teams_admin"
-              ],
-              "emailVerifiedAt": null,
-              "createdAt": "2026-03-14T09:30:00+07:00",
-              "city": "Jakarta Selatan"
+              "result": "accepted",
+              "ticketCode": "HPL-8K2M-4QX7-1",
+              "registrationId": "reg-0001-4aaa-8bbb-000000000001",
+              "participant": {
+                "name": "Adriani Ajeng",
+                "email": "adriani.ajeng@gmail.com"
+              },
+              "experienceTitle": "Morning Yoga Flow",
+              "sessionStartsAt": "2026-03-16T07:00:00+07:00",
+              "checkedInAt": "2026-03-16T06:52:00+07:00",
+              "sessionProgress": {
+                "checkedIn": 18,
+                "booked": 24,
+                "capacity": 30
+              }
             },
             "meta": null
           }
+  - name: "Tiket sudah dipakai"
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Tiket ini sudah dipakai check-in",
+            "data": {
+              "result": "already_used",
+              "ticketCode": "HPL-8K2M-4QX7-1",
+              "checkedInAt": "2026-03-16T06:52:00+07:00"
+            },
+            "meta": null,
+            "error": {
+              "code": "TICKET_ALREADY_USED",
+              "errors": null
+            }
+          }
 
 docs: |
-  # Profile Update
+  # Checkin Scan
 
-  Ubah profil & preferensi notifikasi.
+  Scan QR di pintu.
 
   | | |
   | --- | --- |
-  | **Method** | `PATCH` |
-  | **Path** | `/auth/me` |
+  | **Method** | `POST` |
+  | **Path** | `/organizer/check-in/scan` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/shared/auth/profile-update.request.json`<br>`dto/shared/auth/profile-update.response.json` |
+  | **Sumber** | `dto/organizer/checkin-scan.request.json`<br>`dto/organizer/checkin-scan.response.json`<br>`dto/organizer/checkin-scan-rejected.response.json` |
 
   ## Request body
 
@@ -107,18 +122,19 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `fullName` | string | ya |  |
-  | `phone` | string | ya |  |
-  | `city` | string | ya |  |
-  | `avatarUrl` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
-  | `interests` | array | ya |  |
-  | `notificationPreferences` | object | ya |  |
-  | `notificationPreferences.email` | boolean | ya |  |
-  | `notificationPreferences.whatsapp` | boolean | ya |  |
-  | `notificationPreferences.push` | boolean | ya |  |
+  | `ticketCode` | string | ya |  |
+  | `sessionId` | string | ya |  |
+  | `scannedAt` | string | ya | ISO 8601 `+07:00` |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Penolakan bukan kegagalan
+
+  `scanResult` boleh bernilai `accepted`, `already_used`, `invalid`, `expired`
+  atau `wrong_event`. Tiket yang sudah dipakai dijawab `409` dengan envelope error
+  penuh — lihat contoh kedua — karena petugas pintu perlu tahu bedanya antara
+  "gagal" dan "sudah masuk tadi".
 
   ## Error yang mungkin
 
@@ -126,6 +142,7 @@ docs: |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `409` | `organizer/checkin-scan-rejected.response.json` | Tiket sudah dipakai — lihat contoh kedua. |
   | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 

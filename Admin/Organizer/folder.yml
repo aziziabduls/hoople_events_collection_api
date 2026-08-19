@@ -1,8 +1,0 @@
-info:
-  name: Organizer
-  seq: 2
-
-docs: |-
-  # Organizer
-
-  Konsol penyelenggara (`dto/organizer/`). Semua endpoint berawalan `/organizer/` dan menuntut token dengan peran `organizer`.

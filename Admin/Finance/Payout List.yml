@@ -1,0 +1,259 @@
+info:
+  name: Payout List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizer/payouts"
+  auth: inherit
+  params:
+    - name: page
+      value: "1"
+      type: query
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+    - name: perPage
+      value: "10"
+      type: query
+      description: "Baris per halaman. Contoh dto memakai 10."
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("meta paginasi konsisten", function () {
+          const meta = res.getBody().meta;
+          expect(meta).to.have.property("page");
+          expect(meta).to.have.property("perPage");
+          expect(meta).to.have.property("total");
+          expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar pencairan berhasil diambil",
+            "data": [
+              {
+                "id": "po-0001-4aaa-8bbb-000000000001",
+                "reference": "PO-260719-01",
+                "experienceTitle": "Sunset Rooftop Jazz",
+                "status": "scheduled",
+                "settledOn": "2026-03-20",
+                "gross": {
+                  "amount": 23400000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 702000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 421200,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 22276800,
+                  "currency": "IDR"
+                },
+                "bankAccount": "BCA ****7890",
+                "paidAt": null,
+                "holdReason": null
+              },
+              {
+                "id": "po-0002-4aaa-8bbb-000000000002",
+                "reference": "PO-260718-02",
+                "experienceTitle": "Kelas Keramik untuk Pemula",
+                "status": "scheduled",
+                "settledOn": "2026-03-21",
+                "gross": {
+                  "amount": 3000000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 90000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 54000,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 2856000,
+                  "currency": "IDR"
+                },
+                "bankAccount": "BCA ****7890",
+                "paidAt": null,
+                "holdReason": null
+              },
+              {
+                "id": "po-0003-4aaa-8bbb-000000000003",
+                "reference": "PO-260706-03",
+                "experienceTitle": "Healthy Cooking Class",
+                "status": "paid",
+                "settledOn": "2026-03-06",
+                "gross": {
+                  "amount": 2400000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 72000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 43200,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 2284800,
+                  "currency": "IDR"
+                },
+                "bankAccount": "BCA ****7890",
+                "paidAt": "2026-03-06T14:02:00+07:00",
+                "holdReason": null
+              },
+              {
+                "id": "po-0004-4aaa-8bbb-000000000004",
+                "reference": "PO-260628-04",
+                "experienceTitle": "Jakarta Coffee Week 2026",
+                "status": "paid",
+                "settledOn": "2026-02-28",
+                "gross": {
+                  "amount": 28500000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 855000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 513000,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 27132000,
+                  "currency": "IDR"
+                },
+                "bankAccount": "BCA ****7890",
+                "paidAt": "2026-02-28T10:31:00+07:00",
+                "holdReason": null
+              },
+              {
+                "id": "po-0005-4aaa-8bbb-000000000005",
+                "reference": "PO-260601-06",
+                "experienceTitle": "Latte Art Workshop",
+                "status": "on_hold",
+                "settledOn": null,
+                "gross": {
+                  "amount": 9450000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 283500,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 170100,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 8996400,
+                  "currency": "IDR"
+                },
+                "bankAccount": "BCA ****7890",
+                "paidAt": null,
+                "holdReason": "Menunggu verifikasi rekening"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 18,
+              "totalPages": 2
+            }
+          }
+
+docs: |
+  # Payout List
+
+  Pencairan + rincian potongan.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/payouts` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/payout-list.response.json` |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
+  | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
+
+  ## Fee
+
+  3% platform + 1,8% gateway, dihitung terhadap `gross`. Satu baris contoh
+  berstatus `on_hold` lengkap dengan `holdReason`, supaya UI tidak berasumsi
+  pencairan selalu mulus.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

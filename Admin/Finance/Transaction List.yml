@@ -1,0 +1,234 @@
+info:
+  name: Transaction List
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizer/transactions"
+  auth: inherit
+  params:
+    - name: page
+      value: "1"
+      type: query
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+    - name: perPage
+      value: "20"
+      type: query
+      description: "Baris per halaman. Contoh dto memakai 20."
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("meta paginasi konsisten", function () {
+          const meta = res.getBody().meta;
+          expect(meta).to.have.property("page");
+          expect(meta).to.have.property("perPage");
+          expect(meta).to.have.property("total");
+          expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar transaksi berhasil diambil",
+            "data": [
+              {
+                "id": "trx-0001-4aaa-8bbb-000000000001",
+                "reference": "TRX-BCA-260314-77120",
+                "orderId": "ORD-20260314-0001",
+                "type": "sale",
+                "experienceTitle": "Sunset Rooftop Jazz",
+                "participantName": "Dewi Lestari",
+                "method": "BCA Virtual Account",
+                "gross": {
+                  "amount": 550000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 16500,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 9900,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 523600,
+                  "currency": "IDR"
+                },
+                "status": "paid",
+                "occurredAt": "2026-03-14T08:16:00+07:00"
+              },
+              {
+                "id": "trx-0002-4aaa-8bbb-000000000002",
+                "reference": null,
+                "orderId": "ORD-20260313-0198",
+                "type": "sale",
+                "experienceTitle": "Kelas Keramik untuk Pemula",
+                "participantName": "Raka Mahendra",
+                "method": "GoPay",
+                "gross": {
+                  "amount": 250000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 7500,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 5000,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 237500,
+                  "currency": "IDR"
+                },
+                "status": "pending",
+                "occurredAt": "2026-03-13T19:42:00+07:00"
+              },
+              {
+                "id": "trx-0003-4aaa-8bbb-000000000003",
+                "reference": "TRX-QRIS-260308-51002",
+                "orderId": "ORD-20260308-0088",
+                "type": "refund",
+                "experienceTitle": "Latte Art Workshop",
+                "participantName": "Putri Handayani",
+                "method": "QRIS",
+                "gross": {
+                  "amount": -185000,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": -185000,
+                  "currency": "IDR"
+                },
+                "status": "refunded",
+                "occurredAt": "2026-03-09T10:14:00+07:00"
+              },
+              {
+                "id": "trx-0004-4aaa-8bbb-000000000004",
+                "reference": "TRX-PAYOUT-260306-11",
+                "orderId": null,
+                "type": "payout",
+                "experienceTitle": null,
+                "participantName": null,
+                "method": "Bank transfer",
+                "gross": {
+                  "amount": -2284800,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": -2284800,
+                  "currency": "IDR"
+                },
+                "status": "paid",
+                "occurredAt": "2026-03-06T14:02:00+07:00"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 20,
+              "total": 486,
+              "totalPages": 25
+            }
+          }
+
+docs: |
+  # Transaction List
+
+  Buku transaksi: `sale`, `refund`, `payout`, `adjustment`.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/transactions` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/transaction-list.response.json` |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
+  | `perPage` | `20` | Baris per halaman. Contoh dto memakai 20. |
+
+  > Nilai **negatif** memang ada — refund dan payout — jadi jangan pasang
+  > `min: 0` pada kolom jumlah.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

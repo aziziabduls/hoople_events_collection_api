@@ -1,11 +1,11 @@
 info:
-  name: Me
+  name: Settings
   type: http
-  seq: 4
+  seq: 1
 
 http:
   method: GET
-  url: "{{baseUrl}}/auth/me"
+  url: "{{baseUrl}}/organizer/settings"
   auth: inherit
 
 runtime:
@@ -47,52 +47,74 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Profil berhasil diambil",
+            "message": "Pengaturan berhasil diambil",
             "data": {
-              "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
-              "fullName": "Adriani Ajeng",
-              "email": "adriani.ajeng@gmail.com",
-              "phone": "+62 812 3456 7890",
-              "avatarUrl": null,
-              "roles": [
-                "participant",
-                "organizer",
-                "teams_admin"
-              ],
-              "emailVerifiedAt": "2026-03-14T09:41:00+07:00",
-              "createdAt": "2026-03-14T09:30:00+07:00",
-              "interests": [
-                "sports_fitness",
-                "art_design"
-              ],
-              "city": "Jakarta Selatan",
-              "stats": {
-                "bookingsTotal": 12,
-                "bookingsUpcoming": 2,
-                "savedTotal": 7,
-                "communitiesJoined": 3
+              "workspace": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                "name": "Waktu Luang",
+                "category": "Community & Lifestyle",
+                "handle": "waktu-luang",
+                "logoUrl": null,
+                "description": "Kelas kreatif akhir pekan di Jakarta Selatan.",
+                "city": "Jakarta Selatan",
+                "contactEmail": "halo@waktuluang.id",
+                "contactPhone": "+62 812 3456 7890",
+                "socials": {
+                  "website": "https://waktuluang.id",
+                  "instagram": "@waktuluang",
+                  "youtube": null
+                }
               },
-              "notificationPreferences": {
-                "email": true,
-                "whatsapp": true,
-                "push": false
+              "owner": {
+                "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+                "name": "Adriani Ajeng",
+                "role": "owner",
+                "email": "adriani.ajeng@gmail.com"
+              },
+              "payout": {
+                "bankName": "BCA",
+                "accountNumber": "****7890",
+                "accountHolder": "Adriani Ajeng",
+                "payoutSchedule": "weekly",
+                "nextPayoutAt": "2026-03-20T00:00:00+07:00",
+                "isVerified": true
+              },
+              "fees": {
+                "platformFeeRate": 0.03,
+                "gatewayFeeRate": 0.018,
+                "absorbedByOrganizer": false
+              },
+              "plan": {
+                "id": "plan-starter",
+                "name": "Starter",
+                "renewsAt": null,
+                "activeExperienceLimit": 3,
+                "activeExperienceUsed": 3,
+                "teamSeatLimit": 1,
+                "teamSeatUsed": 1
+              },
+              "notifications": {
+                "newRegistration": true,
+                "paymentReceived": true,
+                "payoutSettled": true,
+                "weeklyDigest": false
               }
             },
             "meta": null
           }
 
 docs: |
-  # Me
+  # Settings
 
-  Profil + statistik ringkas milik akun yang sedang masuk. Berguna untuk memastikan token yang tersimpan benar-benar dipakai.
+  Workspace, rekening, fee, paket, notifikasi.
 
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/auth/me` |
+  | **Path** | `/organizer/settings` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/shared/auth/profile.response.json` |
+  | **Sumber** | `dto/organizer/settings.response.json` |
 
   ## Error yang mungkin
 
