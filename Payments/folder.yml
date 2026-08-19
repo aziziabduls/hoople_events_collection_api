@@ -1,3 +1,4 @@
 info:
   name: Payments
-  seq: 5
+  type: folder
+  seq: 7
