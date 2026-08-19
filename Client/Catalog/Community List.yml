@@ -1,0 +1,166 @@
+info:
+  name: Community List
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{baseUrl}}/communities"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar komunitas berhasil diambil",
+            "data": [
+              {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000401",
+                "slug": "kopi-karya",
+                "name": "Kopi Karya",
+                "focus": "Kopi & roastery",
+                "memberCount": 1840,
+                "area": "Jakarta Selatan",
+                "coverImageUrl": "https://cdn.hoople.id/communities/kopi-karya.jpg",
+                "experienceCount": 12,
+                "isJoined": true
+              },
+              {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                "slug": "waktu-luang",
+                "name": "Waktu Luang",
+                "focus": "Kelas kreatif akhir pekan",
+                "memberCount": 3210,
+                "area": "Jakarta Selatan",
+                "coverImageUrl": "https://cdn.hoople.id/communities/waktu-luang.jpg",
+                "experienceCount": 24,
+                "isJoined": false
+              },
+              {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000404",
+                "slug": "strive-gym-scbd",
+                "name": "Strive Gym SCBD",
+                "focus": "Padel & functional training",
+                "memberCount": 960,
+                "area": "Jakarta Selatan",
+                "coverImageUrl": "https://cdn.hoople.id/communities/strive.jpg",
+                "experienceCount": 8,
+                "isJoined": false
+              },
+              {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000405",
+                "slug": "lingua-space-menteng",
+                "name": "Lingua Space Menteng",
+                "focus": "Kelas bahasa & conversation club",
+                "memberCount": 720,
+                "area": "Jakarta Pusat",
+                "coverImageUrl": "https://cdn.hoople.id/communities/lingua.jpg",
+                "experienceCount": 6,
+                "isJoined": false
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 12,
+              "total": 4,
+              "totalPages": 1
+            }
+          }
+docs: |-
+  # Community List
+
+  Daftar komunitas.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/communities` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/participant/catalog/community-list.response.json` |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` adalah **array**. Field per elemen:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak |  |
+  | `name` | string | tidak |  |
+  | `focus` | string | tidak |  |
+  | `memberCount` | integer | tidak |  |
+  | `area` | string | tidak |  |
+  | `coverImageUrl` | string | tidak | URL |
+  | `experienceCount` | integer | tidak |  |
+  | `isJoined` | boolean | tidak |  |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
