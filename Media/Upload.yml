@@ -50,16 +50,68 @@ examples:
           }
 
 docs: |-
-  ## Upload
+  # Upload
 
   Unggah gambar (cover, galeri, logo, avatar). Mengembalikan `url` yang dipakai payload builder.
 
-  **POST** `/media/upload`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/media/upload` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/media/upload.response.json` |
 
-  - Response: `dto/media/upload.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `multipart/form-data` — **bukan JSON**.
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `file` | file | ya | Berkas gambar. JPG/PNG/WebP. |
+  | `purpose` | string | tidak | `cover` \| `gallery` \| `logo` \| `avatar` — menentukan batas ukuran dan rasio. |
+
+  Response mengembalikan `data.url`; URL itulah yang dikirim sebagai
+  `coverImageUrl` / `gallery[]` saat submit builder, sehingga submit tetap JSON murni.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `url` | string | tidak | URL |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

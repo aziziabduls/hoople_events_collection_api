@@ -52,17 +52,74 @@ examples:
           }
 
 docs: |-
-  ## Saved Toggle
+  # Saved Toggle
 
   Simpan/lepas. Idempoten, mengembalikan `isSaved` terbaru.
 
-  **POST** `/saved/toggle`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/saved/toggle` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/saved/saved-toggle.request.json`<br>`dto/saved/saved-toggle.response.json` |
 
-  - Request: `dto/saved/saved-toggle.request.json`
-  - Response: `dto/saved/saved-toggle.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
+  | `experienceId` | string | ya | UUID v4 |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `experienceId` | string | tidak | UUID v4 |
+  | `isSaved` | boolean | tidak |  |
+  | `savedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `savedTotal` | integer | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

@@ -98,16 +98,93 @@ examples:
           }
 
 docs: |-
-  ## Settings
+  # Settings
 
   Organisasi, aturan keanggotaan, rekening, admin.
 
-  **GET** `/teams/settings`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/settings` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/settings.response.json` |
 
-  - Response: `dto/teams/settings.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `organization` | object | tidak |  |
+  | `organization.id` | string | tidak | UUID v4 |
+  | `organization.name` | string | tidak |  |
+  | `organization.legalName` | string | tidak |  |
+  | `organization.initials` | string | tidak |  |
+  | `organization.handle` | string | tidak |  |
+  | `organization.domain` | string | tidak |  |
+  | `organization.plan` | string | tidak |  |
+  | `organization.memberCount` | integer | tidak |  |
+  | `organization.city` | string | tidak |  |
+  | `membership` | object | tidak |  |
+  | `membership.rule` | string | tidak | enum `membershipRule`: `email_domain`, `invite_only`, `manual` |
+  | `membership.allowedDomains` | string[] | tidak |  |
+  | `membership.requireCompanySignIn` | boolean | tidak |  |
+  | `membership.autoApprove` | boolean | tidak |  |
+  | `departments` | object[] | tidak |  |
+  | `departments[].id` | string | tidak |  |
+  | `departments[].name` | string | tidak |  |
+  | `departments[].headcount` | integer | tidak |  |
+  | `collections` | object | tidak |  |
+  | `collections.bankName` | string | tidak |  |
+  | `collections.accountNumber` | string | tidak |  |
+  | `collections.accountHolder` | string | tidak |  |
+  | `collections.disbursement` | string | tidak | enum `disbursement`: `after_event`, `weekly`, `manual` |
+  | `collections.platformFeeRate` | integer | tidak |  |
+  | `collections.payoutSchedule` | string | tidak | enum `disbursement`: `after_event`, `weekly`, `manual` |
+  | `collections.isVerified` | boolean | tidak |  |
+  | `admins` | object[] | tidak |  |
+  | `admins[].id` | string | tidak | UUID v4 |
+  | `admins[].name` | string | tidak |  |
+  | `admins[].email` | string | tidak | email |
+  | `admins[].role` | string | tidak | enum `workspaceRole`: `owner`, `admin`, `staff` |
+  | `admins[].addedAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

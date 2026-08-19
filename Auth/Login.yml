@@ -66,17 +66,84 @@ examples:
           }
 
 docs: |-
-  ## Login
+  # Login
 
   Masuk, mengembalikan token.
 
-  **POST** `/auth/login`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/login` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/auth/login.request.json`<br>`dto/auth/login.response.json` |
 
-  - Request: `dto/auth/login.request.json`
-  - Response: `dto/auth/login.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | email |
+  | `password` | string | ya |  |
+  | `rememberMe` | boolean | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `user` | object | tidak |  |
+  | `user.id` | string | tidak | UUID v4 |
+  | `user.fullName` | string | tidak |  |
+  | `user.email` | string | tidak | email |
+  | `user.phone` | string | tidak |  |
+  | `user.avatarUrl` | string | ya | boleh `null` |
+  | `user.roles` | string[] | tidak | enum `role`: `participant`, `organizer`, `teams_admin` |
+  | `user.emailVerifiedAt` | string | tidak | ISO 8601 `+07:00` |
+  | `user.createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `tokenType` | string | tidak |  |
+  | `accessToken` | string | tidak |  |
+  | `refreshToken` | string | tidak |  |
+  | `expiresIn` | integer | tidak |  |
+  | `expiresAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `401` | `auth/login-invalid.response.json` | Email atau password salah. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

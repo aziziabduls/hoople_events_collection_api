@@ -38,16 +38,72 @@ runtime:
       value: "true"
 
 docs: |-
-  ## Experience Update
+  # Experience Update
 
   Update parsial.
 
-  **PATCH** `/organizer/experiences/{id}`
+  | | |
+  | --- | --- |
+  | **Method** | `PATCH` |
+  | **Path** | `/organizer/experiences/{id}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/experience-update.request.json` |
 
-  - Request: `dto/organizer/experience-update.request.json`
+  ## Path parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Catatan |
+  | --- | --- |
+  | `{id}` | UUID entitas. |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `identity` | object | ya |  |
+  | `identity.title` | string | ya |  |
+  | `identity.category` | string | ya |  |
+  | `identity.summary` | string | ya |  |
+  | `identity.coverImageUrl` | string | ya | URL |
+  | `pricing` | object | ya |  |
+  | `pricing.basePrice` | integer | ya |  |
+  | `pricing.currency` | string | ya |  |
+  | `pricing.defaultCapacity` | integer | ya |  |
+  | `pricing.minParticipants` | integer | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

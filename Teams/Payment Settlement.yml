@@ -11,6 +11,7 @@ http:
     - name: eventId
       value: f00d1e00-1111-4222-8333-000000000601
       type: query
+      description: UUID event internal.
 
 runtime:
   assertions:
@@ -113,16 +114,91 @@ examples:
           }
 
 docs: |-
-  ## Payment Settlement
+  # Payment Settlement
 
   Dana terkumpul, potongan, tahapan pencairan.
 
-  **GET** `/teams/payments?eventId=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/payments` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/payment-settlement.response.json` |
 
-  - Response: `dto/teams/payment-settlement.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `eventId` | `f00d1e00-1111-4222-8333-000000000601` | UUID event internal. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `eventId` | string | tidak | UUID v4 |
+  | `eventTitle` | string | tidak |  |
+  | `costModel` | string | tidak | enum `costModel`: `company_paid`, `cost_shared`, `free` |
+  | `settlement` | object | tidak |  |
+  | `settlement.collected` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.gatewayFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.platformFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.net` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.gatewayRate` | number | tidak |  |
+  | `settlement.gatewayFlat` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `settlement.platformRate` | integer | tidak |  |
+  | `paidOrders` | integer | tidak |  |
+  | `pendingOrders` | integer | tidak |  |
+  | `refundedOrders` | integer | tidak |  |
+  | `payoutAccount` | object | tidak |  |
+  | `payoutAccount.bankName` | string | tidak |  |
+  | `payoutAccount.accountNumber` | string | tidak |  |
+  | `payoutAccount.accountHolder` | string | tidak |  |
+  | `payoutAccount.isVerified` | boolean | tidak |  |
+  | `payoutSteps` | object[] | tidak |  |
+  | `payoutSteps[].key` | string | tidak |  |
+  | `payoutSteps[].label` | string | tidak |  |
+  | `payoutSteps[].status` | string | tidak | enum `payoutStepStatus`: `done`, `pending`, `failed` |
+  | `payoutSteps[].occurredAt` | string | tidak | ISO 8601 `+07:00` |
+  | `payoutSteps[].amount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

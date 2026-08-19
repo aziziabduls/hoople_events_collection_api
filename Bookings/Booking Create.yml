@@ -165,17 +165,145 @@ examples:
           }
 
 docs: |-
-  ## Booking Create
+  # Booking Create
 
   Buat pesanan dari checkout. Response awal berstatus `pending`.
 
-  **POST** `/bookings`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/bookings` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/bookings/booking-create.request.json`<br>`dto/bookings/booking-create.response.json` |
 
-  - Request: `dto/bookings/booking-create.request.json`
-  - Response: `dto/bookings/booking-create.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `experienceId` | string | ya | UUID v4 |
+  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
+  | `sessionId` | string | ya | UUID v4 |
+  | `ticketTypeId` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `quantity` | integer | ya |  |
+  | `buyer` | object | ya |  |
+  | `buyer.fullName` | string | ya |  |
+  | `buyer.email` | string | ya | email |
+  | `buyer.phone` | string | ya |  |
+  | `buyerIsParticipant` | boolean | ya |  |
+  | `participants` | object[] | ya |  |
+  | `participants[].fullName` | string | ya |  |
+  | `participants[].email` | string | ya | email |
+  | `participants[].phone` | string | ya |  |
+  | `paymentMethodId` | string | ya |  |
+  | `promoCode` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `consent` | object | ya |  |
+  | `consent.media` | boolean | ya |  |
+  | `consent.terms` | boolean | ya |  |
+  | `notes` | string[] | tidak | boleh `null` |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `orderId` | string | tidak |  |
+  | `ticketId` | string | tidak |  |
+  | `status` | string | tidak | enum `bookingStatus`: `pending`, `confirmed`, `completed`, `cancelled`, `refunded` |
+  | `paymentStatus` | string | tidak | enum `bookingStatus`: `pending`, `confirmed`, `completed`, `cancelled`, `refunded` |
+  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `experience` | object | tidak |  |
+  | `experience.id` | string | tidak | UUID v4 |
+  | `experience.slug` | string | tidak |  |
+  | `experience.title` | string | tidak |  |
+  | `experience.host` | string | tidak |  |
+  | `experience.coverImageUrl` | string | tidak | URL |
+  | `session` | object | tidak |  |
+  | `session.id` | string | tidak | UUID v4 |
+  | `session.name` | string | tidak |  |
+  | `session.startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.coach` | string | tidak |  |
+  | `session.room` | string | tidak |  |
+  | `ticketType` | object | ya | boleh `null` |
+  | `venue` | object | tidak |  |
+  | `venue.name` | string | tidak |  |
+  | `venue.area` | string | tidak |  |
+  | `venue.city` | string | tidak |  |
+  | `venue.address` | string | tidak |  |
+  | `venue.latitude` | number | tidak |  |
+  | `venue.longitude` | number | tidak |  |
+  | `quantity` | integer | tidak |  |
+  | `participants` | object[] | tidak |  |
+  | `participants[].fullName` | string | tidak |  |
+  | `participants[].email` | string | tidak | email |
+  | `participants[].phone` | string | tidak |  |
+  | `participants[].checkedInAt` | string | ya | boleh `null` |
+  | `buyer` | object | tidak |  |
+  | `buyer.fullName` | string | tidak |  |
+  | `buyer.email` | string | tidak | email |
+  | `buyer.phone` | string | tidak |  |
+  | `price` | object | tidak |  |
+  | `price.unitPrice` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.quantity` | integer | tidak |  |
+  | `price.subtotal` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.discount` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.platformFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.gatewayFee` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.total` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `price.currency` | string | tidak |  |
+  | `payment` | object | tidak |  |
+  | `payment.methodId` | string | tidak |  |
+  | `payment.methodName` | string | tidak |  |
+  | `payment.virtualAccountNumber` | string | tidak |  |
+  | `payment.paidAt` | string | ya | boleh `null` |
+  | `payment.expiresAt` | string | tidak | ISO 8601 `+07:00` |
+  | `payment.reference` | string | ya | boleh `null` |
+  | `qrCodeUrl` | string | ya | boleh `null` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `cancelledAt` | string | ya | boleh `null` |
+  | `cancellationReason` | string | ya | boleh `null` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `409` | `bookings/booking-slot-unavailable.response.json` | Slot habis saat pemesanan diselesaikan. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

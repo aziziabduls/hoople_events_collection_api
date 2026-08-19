@@ -140,17 +140,124 @@ examples:
           }
 
 docs: |-
-  ## Event Create
+  # Event Create
 
   Buat event internal.
 
-  **POST** `/teams/events`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/teams/events` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/teams/event-create.request.json`<br>`dto/teams/event-create.response.json` |
 
-  - Request: `dto/teams/event-create.request.json`
-  - Response: `dto/teams/event-create.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `title` | string | ya |  |
+  | `summary` | string | ya |  |
+  | `description` | string | ya |  |
+  | `format` | string | ya | enum `eventFormat`: `onsite`, `online`, `hybrid` |
+  | `costModel` | string | ya | enum `costModel`: `company_paid`, `cost_shared`, `free` |
+  | `audience` | string[] | ya |  |
+  | `startsAt` | string | ya | ISO 8601 `+07:00` |
+  | `endsAt` | string | ya | ISO 8601 `+07:00` |
+  | `timezone` | string | ya |  |
+  | `venue` | string | ya |  |
+  | `room` | string | ya |  |
+  | `onlineUrl` | string | tidak | boleh `null` |
+  | `capacity` | integer | ya |  |
+  | `organiser` | string | ya |  |
+  | `passes` | object[] | ya |  |
+  | `passes[].name` | string | ya |  |
+  | `passes[].note` | string | ya |  |
+  | `passes[].price` | integer | ya |  |
+  | `passes[].quota` | integer | ya |  |
+  | `passes[].onsite` | boolean | ya |  |
+  | `agenda` | object[] | ya |  |
+  | `agenda[].time` | string | ya | `HH:mm` |
+  | `agenda[].label` | string | ya |  |
+  | `publishMode` | string | ya | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak |  |
+  | `title` | string | tidak |  |
+  | `summary` | string | tidak |  |
+  | `status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+  | `format` | string | tidak | enum `eventFormat`: `onsite`, `online`, `hybrid` |
+  | `costModel` | string | tidak | enum `costModel`: `company_paid`, `cost_shared`, `free` |
+  | `audience` | string[] | tidak |  |
+  | `code` | string | tidak |  |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `timezone` | string | tidak |  |
+  | `venue` | string | tidak |  |
+  | `room` | string | tidak |  |
+  | `onlineUrl` | string | ya | boleh `null` |
+  | `capacity` | integer | tidak |  |
+  | `registeredCount` | integer | tidak |  |
+  | `checkedInCount` | integer | tidak |  |
+  | `onsiteScanCount` | integer | tidak |  |
+  | `coverImageUrl` | string | tidak | URL |
+  | `organiser` | string | tidak |  |
+  | `recurring` | string | ya | boleh `null` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `publishedAt` | string | ya | boleh `null` |
+  | `passes` | object[] | tidak |  |
+  | `passes[].id` | string | tidak |  |
+  | `passes[].name` | string | tidak |  |
+  | `passes[].note` | string | tidak |  |
+  | `passes[].price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `passes[].sold` | integer | tidak |  |
+  | `passes[].quota` | integer | tidak |  |
+  | `passes[].onsite` | boolean | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

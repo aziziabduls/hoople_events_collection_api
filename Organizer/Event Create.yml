@@ -150,17 +150,135 @@ examples:
           }
 
 docs: |-
-  ## Event Create
+  # Event Create
 
   Submit builder event (4 langkah).
 
-  **POST** `/organizer/experiences/events`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/organizer/experiences/events` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/organizer/event-create.request.json`<br>`dto/organizer/event-create.response.json` |
 
-  - Request: `dto/organizer/event-create.request.json`
-  - Response: `dto/organizer/event-create.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
+  | `identity` | object | ya |  |
+  | `identity.title` | string | ya |  |
+  | `identity.category` | string | ya |  |
+  | `identity.summary` | string | ya |  |
+  | `identity.coverImageUrl` | string | ya | URL |
+  | `brand` | object | ya |  |
+  | `brand.hostName` | string | ya |  |
+  | `brand.hostType` | string | ya |  |
+  | `brand.hostBio` | string | ya |  |
+  | `brand.logoUrl` | string | tidak | boleh `null` |
+  | `brand.contactEmail` | string | ya | email |
+  | `brand.contactPhone` | string | ya |  |
+  | `benefits` | string[] | ya |  |
+  | `format` | string | ya | enum `eventFormat`: `onsite`, `online`, `hybrid` |
+  | `venue` | object | ya |  |
+  | `venue.name` | string | ya |  |
+  | `venue.area` | string | ya |  |
+  | `venue.city` | string | ya |  |
+  | `venue.address` | string | ya |  |
+  | `venue.latitude` | number | ya |  |
+  | `venue.longitude` | number | ya |  |
+  | `venue.notes` | array | ya | boleh kosong |
+  | `onlineUrl` | string | tidak | boleh `null` |
+  | `startsAt` | string | ya | ISO 8601 `+07:00` |
+  | `endsAt` | string | ya | ISO 8601 `+07:00` |
+  | `timezone` | string | ya |  |
+  | `schedule` | object[] | ya |  |
+  | `schedule[].time` | string | ya | `HH:mm` |
+  | `schedule[].label` | string | ya |  |
+  | `ticketTypes` | object[] | ya |  |
+  | `ticketTypes[].name` | string | ya |  |
+  | `ticketTypes[].description` | string | ya |  |
+  | `ticketTypes[].price` | integer | ya |  |
+  | `ticketTypes[].quota` | integer | ya |  |
+  | `ticketTypes[].salesStartAt` | string | ya | ISO 8601 `+07:00` |
+  | `ticketTypes[].salesEndAt` | string | ya | ISO 8601 `+07:00` |
+  | `publishSettings` | object | ya |  |
+  | `publishSettings.visibility` | string | ya | enum `visibility`: `public`, `unlisted`, `private` |
+  | `publishSettings.showOnDiscovery` | boolean | ya |  |
+  | `publishSettings.allowWaitlist` | boolean | ya |  |
+  | `publishSettings.publishMode` | string | ya | enum `payoutStatus`: `scheduled`, `paid`, `on_hold`, `failed` |
+  | `publishSettings.scheduledAt` | string | ya | ISO 8601 `+07:00` |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak |  |
+  | `title` | string | tidak |  |
+  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
+  | `visibility` | string | tidak | enum `visibility`: `public`, `unlisted`, `private` |
+  | `category` | string | tidak |  |
+  | `coverImageUrl` | string | tidak | URL |
+  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `note` | string | tidak |  |
+  | `venue` | object | tidak |  |
+  | `venue.name` | string | tidak |  |
+  | `venue.area` | string | tidak |  |
+  | `venue.city` | string | tidak |  |
+  | `registeredCount` | integer | tidak |  |
+  | `capacity` | integer | tidak |  |
+  | `occupancyRate` | integer | tidak |  |
+  | `revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `sessionCount` | integer | ya | boleh `null` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `publishedAt` | string | ya | boleh `null` |
+  | `publicUrl` | string | ya | boleh `null` |
+  | `scheduledPublishAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

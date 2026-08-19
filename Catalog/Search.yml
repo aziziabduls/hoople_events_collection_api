@@ -11,12 +11,15 @@ http:
     - name: q
       value: yoga
       type: query
+      description: Kata kunci pencarian.
     - name: category
       value: wellness
       type: query
+      description: Slug kategori, lihat GET /categories.
     - name: city
       value: Jakarta Selatan
       type: query
+      description: Nama kota, cocok persis.
 
 runtime:
   assertions:
@@ -120,16 +123,122 @@ examples:
           }
 
 docs: |-
-  ## Search
+  # Search
 
   Hasil pencarian + facet filter.
 
-  **GET** `/search?q=&category=&city=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/search` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/catalog/search.response.json` |
 
-  - Response: `dto/catalog/search.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `q` | `yoga` | Kata kunci pencarian. |
+  | `category` | `wellness` | Slug kategori, lihat `GET /categories`. |
+  | `city` | `Jakarta Selatan` | Nama kota, cocok persis. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `query` | string | tidak |  |
+  | `appliedFilters` | object | tidak |  |
+  | `appliedFilters.category` | string | tidak |  |
+  | `appliedFilters.city` | string | tidak |  |
+  | `appliedFilters.priceMax` | integer | tidak |  |
+  | `appliedFilters.date` | string | ya | boleh `null` |
+  | `appliedFilters.kind` | string | ya | boleh `null` |
+  | `results` | object[] | tidak |  |
+  | `results[].id` | string | tidak | UUID v4 |
+  | `results[].slug` | string | tidak |  |
+  | `results[].title` | string | tidak |  |
+  | `results[].kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `results[].host` | string | tidak |  |
+  | `results[].category` | string | tidak |  |
+  | `results[].categoryLabel` | string | tidak |  |
+  | `results[].badge` | string | tidak |  |
+  | `results[].summary` | string | tidak |  |
+  | `results[].coverImageUrl` | string | tidak | URL |
+  | `results[].rating` | number | tidak |  |
+  | `results[].reviewCount` | integer | tidak |  |
+  | `results[].priceFrom` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `results[].isFree` | boolean | tidak |  |
+  | `results[].recurrence` | string | tidak |  |
+  | `results[].recurrenceTime` | string | tidak |  |
+  | `results[].durationMinutes` | integer | tidak |  |
+  | `results[].level` | string | tidak |  |
+  | `results[].joinedCount` | integer | tidak |  |
+  | `results[].venue` | object | tidak |  |
+  | `results[].venue.name` | string | tidak |  |
+  | `results[].venue.area` | string | tidak |  |
+  | `results[].venue.city` | string | tidak |  |
+  | `results[].isSaved` | boolean | tidak |  |
+  | `results[].soldOut` | boolean | tidak |  |
+  | `results[].nextSessionAt` | string | tidak | ISO 8601 `+07:00` |
+  | `facets` | object | tidak |  |
+  | `facets.kind` | object[] | tidak |  |
+  | `facets.kind[].value` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `facets.kind[].count` | integer | tidak |  |
+  | `facets.city` | object[] | tidak |  |
+  | `facets.city[].value` | string | tidak |  |
+  | `facets.city[].count` | integer | tidak |  |
+  | `facets.priceRange` | object | tidak |  |
+  | `facets.priceRange.min` | integer | tidak |  |
+  | `facets.priceRange.max` | integer | tidak |  |
+
+
+  ### Pagination
+
+  | Field | Tipe | Catatan |
+  | --- | --- | --- |
+  | `meta.page` | integer | Halaman saat ini, mulai dari 1. |
+  | `meta.perPage` | integer | Jumlah baris per halaman. |
+  | `meta.total` | integer | Total baris di seluruh halaman. |
+  | `meta.totalPages` | integer | `ceil(total / perPage)`. |
+
+  Query `?page=` dan `?perPage=` diharapkan didukung.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

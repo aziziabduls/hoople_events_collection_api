@@ -54,17 +54,75 @@ examples:
           }
 
 docs: |-
-  ## Support Contact
+  # Support Contact
 
   Form hubungi kami.
 
-  **POST** `/support/tickets`
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/support/tickets` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/content/support-contact.request.json`<br>`dto/content/support-contact.response.json` |
 
-  - Request: `dto/content/support-contact.request.json`
-  - Response: `dto/content/support-contact.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `fullName` | string | ya |  |
+  | `email` | string | ya | email |
+  | `topic` | string | ya |  |
+  | `orderId` | string | ya |  |
+  | `message` | string | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `201`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `ticketId` | string | tidak |  |
+  | `status` | string | tidak | enum `sessionAvailability`: `open`, `sold_out` |
+  | `estimatedResponseAt` | string | tidak | ISO 8601 `+07:00` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

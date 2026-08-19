@@ -297,16 +297,101 @@ examples:
           }
 
 docs: |-
-  ## Home Feed
+  # Home Feed
 
   Hero + section beranda + kategori.
 
-  **GET** `/home`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/home` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/catalog/home-feed.response.json` |
 
-  - Response: `dto/catalog/home-feed.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `hero` | object | tidak |  |
+  | `hero.headline` | string | tidak |  |
+  | `hero.subheadline` | string | tidak |  |
+  | `hero.searchPlaceholder` | string | tidak |  |
+  | `hero.backgroundImageUrl` | string | tidak | URL |
+  | `sections` | object[] | tidak |  |
+  | `sections[].key` | string | tidak |  |
+  | `sections[].title` | string | tidak |  |
+  | `sections[].items` | object[] | tidak |  |
+  | `sections[].items[].id` | string | tidak | UUID v4 |
+  | `sections[].items[].slug` | string | tidak |  |
+  | `sections[].items[].title` | string | tidak |  |
+  | `sections[].items[].kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
+  | `sections[].items[].host` | string | tidak |  |
+  | `sections[].items[].category` | string | tidak |  |
+  | `sections[].items[].categoryLabel` | string | tidak |  |
+  | `sections[].items[].badge` | string | tidak |  |
+  | `sections[].items[].summary` | string | tidak |  |
+  | `sections[].items[].coverImageUrl` | string | tidak | URL |
+  | `sections[].items[].rating` | number | tidak |  |
+  | `sections[].items[].reviewCount` | integer | tidak |  |
+  | `sections[].items[].priceFrom` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `sections[].items[].isFree` | boolean | tidak |  |
+  | `sections[].items[].recurrence` | string | tidak |  |
+  | `sections[].items[].recurrenceTime` | string | tidak |  |
+  | `sections[].items[].durationMinutes` | integer | tidak |  |
+  | `sections[].items[].level` | string | tidak |  |
+  | `sections[].items[].joinedCount` | integer | tidak |  |
+  | `sections[].items[].venue` | object | tidak |  |
+  | `sections[].items[].venue.name` | string | tidak |  |
+  | `sections[].items[].venue.area` | string | tidak |  |
+  | `sections[].items[].venue.city` | string | tidak |  |
+  | `sections[].items[].isSaved` | boolean | tidak |  |
+  | `sections[].items[].soldOut` | boolean | tidak |  |
+  | `sections[].items[].nextSessionAt` | string | tidak | ISO 8601 `+07:00` |
+  | `categories` | object[] | tidak |  |
+  | `categories[].slug` | string | tidak |  |
+  | `categories[].name` | string | tidak |  |
+  | `categories[].experienceCount` | integer | tidak |  |
+  | `stats` | object | tidak |  |
+  | `stats.experienceCount` | integer | tidak |  |
+  | `stats.communityCount` | integer | tidak |  |
+  | `stats.cityCount` | integer | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

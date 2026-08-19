@@ -11,6 +11,7 @@ http:
     - name: eventId
       value: f00d1e00-1111-4222-8333-000000000601
       type: query
+      description: UUID event internal.
 
 runtime:
   assertions:
@@ -202,16 +203,98 @@ examples:
           }
 
 docs: |-
-  ## Analytics
+  # Analytics
 
   Funnel, respons per departemen, tren, kurva check-in.
 
-  **GET** `/teams/analytics?eventId=`
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/teams/analytics` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/teams/analytics.response.json` |
 
-  - Response: `dto/teams/analytics.response.json`
+  ## Query parameter
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  | Nama | Contoh | Catatan |
+  | --- | --- | --- |
+  | `eventId` | `f00d1e00-1111-4222-8333-000000000601` | UUID event internal. |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `eventId` | string | tidak | UUID v4 |
+  | `eventTitle` | string | tidak |  |
+  | `summary` | object | tidak |  |
+  | `summary.invited` | integer | tidak |  |
+  | `summary.registered` | integer | tidak |  |
+  | `summary.checkedIn` | integer | tidak |  |
+  | `summary.registrationRate` | number | tidak |  |
+  | `summary.attendanceRate` | number | ya | boleh `null` |
+  | `summary.collected` | money | tidak | `{ amount: integer, currency: "IDR" }` |
+  | `funnel` | object[] | tidak |  |
+  | `funnel[].key` | string | tidak |  |
+  | `funnel[].label` | string | tidak |  |
+  | `funnel[].note` | string | tidak |  |
+  | `funnel[].count` | integer | tidak |  |
+  | `departmentResponse` | object[] | tidak |  |
+  | `departmentResponse[].name` | string | tidak |  |
+  | `departmentResponse[].headcount` | integer | tidak |  |
+  | `departmentResponse[].registered` | integer | tidak |  |
+  | `departmentResponse[].share` | number | tidak |  |
+  | `registrationSources` | object[] | tidak |  |
+  | `registrationSources[].source` | string | tidak |  |
+  | `registrationSources[].count` | integer | tidak |  |
+  | `registrationSources[].share` | number | tidak |  |
+  | `deviceSplit` | object[] | tidak |  |
+  | `deviceSplit[].device` | string | tidak | enum `device`: `mobile`, `desktop`, `tablet` |
+  | `deviceSplit[].share` | number | tidak |  |
+  | `registrationTrend` | object[] | tidak |  |
+  | `registrationTrend[].date` | string | tidak | `YYYY-MM-DD` |
+  | `registrationTrend[].count` | integer | tidak |  |
+  | `checkInCurve` | object[] | tidak |  |
+  | `checkInCurve[].time` | string | tidak | `HH:mm` |
+  | `checkInCurve[].count` | integer | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true

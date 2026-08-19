@@ -71,17 +71,85 @@ examples:
           }
 
 docs: |-
-  ## Profile Update
+  # Profile Update
 
   Ubah profil & preferensi notifikasi.
 
-  **PATCH** `/auth/me`
+  | | |
+  | --- | --- |
+  | **Method** | `PATCH` |
+  | **Path** | `/auth/me` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/auth/profile-update.request.json`<br>`dto/auth/profile-update.response.json` |
 
-  - Request: `dto/auth/profile-update.request.json`
-  - Response: `dto/auth/profile-update.response.json`
+  ## Request body
 
-  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
-  `{ amount, currency }`; di request integer polos. Enum lowercase.
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `fullName` | string | ya |  |
+  | `phone` | string | ya |  |
+  | `city` | string | ya |  |
+  | `avatarUrl` | string | tidak | boleh `null` |
+  | `interests` | string[] | ya |  |
+  | `notificationPreferences` | object | ya |  |
+  | `notificationPreferences.email` | boolean | ya |  |
+  | `notificationPreferences.whatsapp` | boolean | ya |  |
+  | `notificationPreferences.push` | boolean | ya |  |
+
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": null }
+  ```
+
+  Isi `data`:
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `fullName` | string | tidak |  |
+  | `email` | string | tidak | email |
+  | `phone` | string | tidak |  |
+  | `avatarUrl` | string | ya | boleh `null` |
+  | `roles` | string[] | tidak | enum `role`: `participant`, `organizer`, `teams_admin` |
+  | `emailVerifiedAt` | string | ya | boleh `null` |
+  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
+  | `city` | string | tidak |  |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+
+  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true
