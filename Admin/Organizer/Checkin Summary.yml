@@ -5,13 +5,13 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/check-in/summary?sessionId=ses-0001-4aaa-8bbb-000000000001"
+  url: "{{baseUrl}}/organizer/check-in/summary"
   auth: inherit
   params:
     - name: sessionId
-      value: ses-0001-4aaa-8bbb-000000000001
+      value: "{{sessionId}}"
       type: query
-      description: UUID sesi.
+      description: "Sesi yang sedang berjalan."
 
 runtime:
   assertions:
@@ -21,9 +21,82 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Checkin Summary
+
+  Progres check-in sesi berjalan.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/check-in/summary` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checkin-summary.response.json` |
+
+  ## Variabel yang dipakai
+
+  | Variabel | Untuk |
+  | --- | --- |
+  | `{{sessionId}}` | UUID sesi — ambil dari **Session List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `sessionId` | `{{sessionId}}` | Sesi yang sedang berjalan. |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -60,83 +133,3 @@ examples:
             },
             "meta": null
           }
-
-docs: |-
-  # Checkin Summary
-
-  Progres check-in sesi berjalan.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/check-in/summary` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/checkin-summary.response.json` |
-
-  ## Query parameter
-
-  | Nama | Contoh | Catatan |
-  | --- | --- | --- |
-  | `sessionId` | `ses-0001-4aaa-8bbb-000000000001` | UUID sesi. |
-
-  ## Request body
-
-  Tidak ada.
-
-  ## Response `200`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": null }
-  ```
-
-  Isi `data`:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `sessionId` | string | tidak |  |
-  | `experienceTitle` | string | tidak |  |
-  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
-  | `booked` | integer | tidak |  |
-  | `checkedIn` | integer | tidak |  |
-  | `noShow` | integer | tidak |  |
-  | `pending` | integer | tidak |  |
-  | `checkInRate` | number | tidak |  |
-  | `recentScans` | object[] | tidak |  |
-  | `recentScans[].ticketCode` | string | tidak |  |
-  | `recentScans[].name` | string | tidak |  |
-  | `recentScans[].checkedInAt` | string | tidak | ISO 8601 `+07:00` |
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

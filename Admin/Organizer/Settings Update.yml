@@ -30,7 +30,7 @@ http:
           "bankName": "BCA",
           "accountNumber": "1234567890",
           "accountHolder": "Adriani Ajeng",
-          "schedule": "weekly"
+          "payoutSchedule": "weekly"
         },
         "fees": {
           "absorbedByOrganizer": false
@@ -51,6 +51,17 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
 
 docs: |-
   # Settings Update
@@ -85,7 +96,7 @@ docs: |-
   | `payout.bankName` | string | ya |  |
   | `payout.accountNumber` | string | ya |  |
   | `payout.accountHolder` | string | ya |  |
-  | `payout.schedule` | string | ya | enum `disbursement`: `after_event`, `weekly`, `manual` |
+  | `payout.payoutSchedule` | string | ya | enum `payoutSchedule`: `daily`, `weekly`, `monthly` |
   | `fees` | object | ya |  |
   | `fees.absorbedByOrganizer` | boolean | ya |  |
   | `notifications` | object | ya |  |
@@ -94,18 +105,27 @@ docs: |-
   | `notifications.payoutSettled` | boolean | ya |  |
   | `notifications.weeklyDigest` | boolean | ya |  |
 
-
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  > **`payout.payoutSchedule`, bukan `payout.schedule`.** `schedule` sudah
+  > berarti konfigurasi jadwal di builder, jadi irama pencairan diberi nama
+  > sendiri. Versi lama koleksi ini masih memakai `schedule` — itu salah.
+
+  ## Response
+
+  Sama seperti Experience Update, `dto/` belum mendefinisikan response-nya.
+  Kembalikan objek settings yang sudah diperbarui (bentuk **Settings**) dan
+  tambahkan `dto/organizer/settings-update.response.json`.
 
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `422` | `common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 
@@ -122,6 +142,7 @@ docs: |-
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
 

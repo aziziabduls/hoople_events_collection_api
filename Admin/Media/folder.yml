@@ -1,0 +1,8 @@
+info:
+  name: Media
+  seq: 3
+
+docs: |-
+  # Media
+
+  Unggah berkas bersama (`dto/shared/media/`). Satu-satunya endpoint `multipart/form-data`.

@@ -5,17 +5,17 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/analytics?from=2025-10-01&to=2026-03-14"
+  url: "{{baseUrl}}/organizer/analytics"
   auth: inherit
   params:
     - name: from
-      value: "2025-10-01"
+      value: "2026-01-01"
       type: query
-      description: Tanggal awal rentang, YYYY-MM-DD.
+      description: "Awal periode, `YYYY-MM-DD`."
     - name: to
       value: "2026-03-14"
       type: query
-      description: Tanggal akhir rentang, YYYY-MM-DD.
+      description: "Akhir periode, `YYYY-MM-DD`."
 
 runtime:
   assertions:
@@ -25,9 +25,77 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Analytics
+
+  Ringkasan, tren bulanan, top experience, sumber trafik.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/analytics` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/analytics.response.json` |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `from` | `2026-01-01` | Awal periode, `YYYY-MM-DD`. |
+  | `to` | `2026-03-14` | Akhir periode, `YYYY-MM-DD`. |
+
+  > `summary` di sini sengaja **tidak** sama dengan `summary` di analitik konsol
+  > lain. Keduanya berarti "ringkasan analitik konsol ini" dan metriknya memang
+  > berlainan. Jangan bikin satu tipe `Summary` global.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -204,102 +272,3 @@ examples:
             },
             "meta": null
           }
-
-docs: |-
-  # Analytics
-
-  Ringkasan, tren bulanan, top experience, sumber trafik.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/analytics` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/analytics.response.json` |
-
-  ## Query parameter
-
-  | Nama | Contoh | Catatan |
-  | --- | --- | --- |
-  | `from` | `2025-10-01` | Tanggal awal rentang, `YYYY-MM-DD`. |
-  | `to` | `2026-03-14` | Tanggal akhir rentang, `YYYY-MM-DD`. |
-
-  ## Request body
-
-  Tidak ada.
-
-  ## Response `200`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": null }
-  ```
-
-  Isi `data`:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `period` | object | tidak |  |
-  | `period.from` | string | tidak | ISO 8601 `+07:00` |
-  | `period.to` | string | tidak | ISO 8601 `+07:00` |
-  | `period.label` | string | tidak |  |
-  | `summary` | object | tidak |  |
-  | `summary.totalRegistrations` | integer | tidak |  |
-  | `summary.totalRevenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `summary.averageTicketPrice` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `summary.checkInRate` | number | tidak |  |
-  | `summary.cancellationRate` | number | tidak |  |
-  | `summary.repeatParticipantRate` | number | tidak |  |
-  | `monthly` | object[] | tidak |  |
-  | `monthly[].period` | string | tidak |  |
-  | `monthly[].registrations` | integer | tidak |  |
-  | `monthly[].revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `topExperiences` | object[] | tidak |  |
-  | `topExperiences[].id` | string | tidak | UUID v4 |
-  | `topExperiences[].title` | string | tidak |  |
-  | `topExperiences[].kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
-  | `topExperiences[].registrations` | integer | tidak |  |
-  | `topExperiences[].revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `topExperiences[].occupancyRate` | integer | tidak |  |
-  | `trafficSources` | object[] | tidak |  |
-  | `trafficSources[].source` | string | tidak |  |
-  | `trafficSources[].visits` | integer | tidak |  |
-  | `trafficSources[].share` | number | tidak |  |
-  | `categoryBreakdown` | object[] | tidak |  |
-  | `categoryBreakdown[].category` | string | tidak |  |
-  | `categoryBreakdown[].registrations` | integer | tidak |  |
-  | `categoryBreakdown[].revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

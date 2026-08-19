@@ -1,0 +1,36 @@
+info:
+  name: Home Trending This Week
+  type: http
+  seq: 12
+
+http:
+  method: GET
+  url: "{{baseUrl}}/home/trending-this-week"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Home Trending This Week
+
+  Endpoint rail beranda "Trending this week".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/home/trending-this-week` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sumber** | `dto/participant/catalog/home-trending-this-week.response.json` |
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

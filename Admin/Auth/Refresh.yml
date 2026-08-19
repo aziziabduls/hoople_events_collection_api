@@ -1,12 +1,21 @@
 info:
-  name: Experience Delete
+  name: Refresh
   type: http
-  seq: 8
+  seq: 3
 
 http:
-  method: DELETE
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
-  auth: inherit
+  method: POST
+  url: "{{baseUrl}}/auth/refresh"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token"
+      }
 
 runtime:
   assertions:
@@ -17,6 +26,14 @@ runtime:
       operator: eq
       value: "true"
   scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        if (body && body.success && body.data && body.data.accessToken) {
+          bru.setEnvVar("accessToken", body.data.accessToken);
+          if (body.data.refreshToken) bru.setEnvVar("refreshToken", body.data.refreshToken);
+          console.log("accessToken disimpan ke environment aktif");
+        }
     - type: tests
       code: |-
         test("envelope lengkap", function () {
@@ -29,36 +46,34 @@ runtime:
         });
 
 docs: |-
-  # Experience Delete
+  # Refresh
 
-  Hapus (soft delete).
+  Perpanjang access token. Menyimpan token baru ke environment, seperti Login.
 
   | | |
   | --- | --- |
-  | **Method** | `DELETE` |
-  | **Path** | `/organizer/experiences/{{experienceId}}` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Method** | `POST` |
+  | **Path** | `/auth/refresh` |
+  | **Auth** | Tidak perlu token |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-delete.response.json` |
+  | **Sumber** | `dto/shared/auth/refresh.request.json`<br>`dto/shared/auth/refresh.response.json` |
 
-  ## Variabel yang dipakai
+  ## Request body
 
-  | Variabel | Untuk |
-  | --- | --- |
-  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+  `application/json`
 
-  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
-  pindah environment tidak berarti menyunting request.
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `refreshToken` | string | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
-  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
-  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
-  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 
@@ -98,10 +113,13 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Experience berhasil dihapus",
+            "message": "Token diperbarui",
             "data": {
-              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-              "deletedAt": "2026-03-14T09:30:00+07:00"
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
             },
             "meta": null
           }

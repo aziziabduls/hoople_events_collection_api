@@ -1,15 +1,8 @@
-name: "Local"
+name: "Local Host"
 variables:
   - name: baseUrl
-<<<<<<< HEAD
-    value: http://localhost:3000
-    description: ""
-  - name: accessToken
-    value: ""
-    description: ""
-=======
-    value: "https://driver-gush-blip.ngrok-free.dev"
-    description: "Tunnel ngrok ke server lokal, untuk diuji dari perangkat lain. Belum memakai prefix versi."
+    value: "http://localhost:3000"
+    description: "Server lokal di mesin sendiri. Belum memakai prefix versi — kalau backend lokal menyajikan /v1, tambahkan di sini."
   - name: accessToken
     value: ""
     description: "Bearer token. Diisi otomatis oleh Admin > Auth > Login."
@@ -22,4 +15,3 @@ variables:
   - name: sessionId
     value: ""
     description: "UUID sesi untuk path param / query. Ambil dari Session List."
->>>>>>> refs/remotes/origin/main

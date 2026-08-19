@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/experiences/{id}"
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
   auth: inherit
 
 runtime:
@@ -16,9 +16,76 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+docs: |-
+  # Experience Detail
+
+  Detail penuh untuk mode edit builder.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/experience-detail.response.json` |
+
+  ## Variabel yang dipakai
+
+  | Variabel | Untuk |
+  | --- | --- |
+  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -174,134 +241,3 @@ examples:
             },
             "meta": null
           }
-
-docs: |-
-  # Experience Detail
-
-  Detail penuh untuk mode edit builder.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/experiences/{id}` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-detail.response.json` |
-
-  ## Path parameter
-
-  | Nama | Catatan |
-  | --- | --- |
-  | `{id}` | UUID entitas. |
-
-  ## Request body
-
-  Tidak ada.
-
-  ## Response `200`
-
-  Envelope standar:
-
-  ```json
-  { "success": true, "message": "…", "data": …, "meta": null }
-  ```
-
-  Isi `data`:
-
-  | Field | Tipe | Nullable | Catatan |
-  | --- | --- | --- | --- |
-  | `id` | string | tidak | UUID v4 |
-  | `slug` | string | tidak |  |
-  | `title` | string | tidak |  |
-  | `kind` | string | tidak | enum `experienceKind`: `event`, `activity` |
-  | `status` | string | tidak | enum `experienceStatus`: `draft`, `published`, `ongoing`, `completed`, `cancelled` |
-  | `visibility` | string | tidak | enum `visibility`: `public`, `unlisted`, `private` |
-  | `category` | string | tidak |  |
-  | `coverImageUrl` | string | tidak | URL |
-  | `startsAt` | string | tidak | ISO 8601 `+07:00` |
-  | `endsAt` | string | tidak | ISO 8601 `+07:00` |
-  | `note` | string | tidak |  |
-  | `venue` | object | tidak |  |
-  | `venue.name` | string | tidak |  |
-  | `venue.area` | string | tidak |  |
-  | `venue.city` | string | tidak |  |
-  | `venue.address` | string | tidak |  |
-  | `venue.latitude` | number | tidak |  |
-  | `venue.longitude` | number | tidak |  |
-  | `registeredCount` | integer | tidak |  |
-  | `capacity` | integer | tidak |  |
-  | `occupancyRate` | number | tidak |  |
-  | `revenue` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `sessionCount` | integer | tidak |  |
-  | `createdAt` | string | tidak | ISO 8601 `+07:00` |
-  | `publishedAt` | string | tidak | ISO 8601 `+07:00` |
-  | `summary` | string | tidak |  |
-  | `description` | string | tidak |  |
-  | `difficulty` | string | tidak | enum `difficulty`: `beginner`, `intermediate`, `advanced` |
-  | `language` | string | tidak |  |
-  | `basePrice` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `defaultCapacity` | integer | tidak |  |
-  | `minParticipants` | integer | tidak |  |
-  | `effectivePeriod` | object | tidak |  |
-  | `effectivePeriod.startDate` | string | tidak | `YYYY-MM-DD` |
-  | `effectivePeriod.endDate` | — | ya | selalu `null` di contoh — tipe ditentukan backend |
-  | `effectivePeriod.noEndDate` | boolean | tidak |  |
-  | `schedule` | object | tidak |  |
-  | `schedule.repeatWeekly` | boolean | tidak |  |
-  | `schedule.operatingDays` | string[] | tidak |  |
-  | `schedule.skippedDates` | string[] | tidak |  |
-  | `schedule.pickedDates` | array | tidak | boleh kosong |
-  | `schedule.timezone` | string | tidak |  |
-  | `sessions` | object[] | tidak |  |
-  | `sessions[].id` | string | tidak |  |
-  | `sessions[].name` | string | tidak |  |
-  | `sessions[].startTime` | string | tidak | `HH:mm` |
-  | `sessions[].endTime` | string | tidak | `HH:mm` |
-  | `sessions[].weekdays` | string[] | tidak |  |
-  | `sessions[].capacity` | integer | tidak |  |
-  | `sessions[].price` | money | tidak | `{ amount: integer, currency: "IDR" }` |
-  | `sessions[].instructor` | string | tidak |  |
-  | `sessions[].isActive` | boolean | tidak |  |
-  | `instructors` | object[] | tidak |  |
-  | `instructors[].id` | string | tidak |  |
-  | `instructors[].name` | string | tidak |  |
-  | `instructors[].role` | string | tidak |  |
-  | `instructors[].bio` | string | tidak |  |
-  | `instructors[].avatarUrl` | string | ya | boleh `null` |
-  | `instructors[].expertise` | string[] | tidak |  |
-  | `gallery` | string[] | tidak |  |
-
-  _+14 field lagi — lihat contoh JSON di bawah._
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `404` | `common/error-not-found.response.json` | Id atau slug tidak ditemukan. |
-  | `403` | `common/error-forbidden.response.json` | Akun tidak punya peran untuk konsol ini. |
-  | `500` | `common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

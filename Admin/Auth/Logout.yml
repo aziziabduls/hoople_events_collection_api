@@ -1,11 +1,11 @@
 info:
-  name: Experience Delete
+  name: Logout
   type: http
   seq: 8
 
 http:
-  method: DELETE
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
+  method: POST
+  url: "{{baseUrl}}/auth/logout"
   auth: inherit
 
 runtime:
@@ -29,26 +29,17 @@ runtime:
         });
 
 docs: |-
-  # Experience Delete
+  # Logout
 
-  Hapus (soft delete).
+  Cabut refresh token.
 
   | | |
   | --- | --- |
-  | **Method** | `DELETE` |
-  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Method** | `POST` |
+  | **Path** | `/auth/logout` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-delete.response.json` |
-
-  ## Variabel yang dipakai
-
-  | Variabel | Untuk |
-  | --- | --- |
-  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
-
-  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
-  pindah environment tidak berarti menyunting request.
+  | **Sumber** | `dto/shared/auth/logout.response.json` |
 
   ## Error yang mungkin
 
@@ -56,8 +47,6 @@ docs: |-
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
-  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
@@ -98,10 +87,7 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Experience berhasil dihapus",
-            "data": {
-              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-              "deletedAt": "2026-03-14T09:30:00+07:00"
-            },
+            "message": "Berhasil keluar",
+            "data": null,
             "meta": null
           }
