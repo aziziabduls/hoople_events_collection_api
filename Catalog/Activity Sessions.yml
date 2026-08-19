@@ -1,0 +1,124 @@
+info:
+  name: Activity Sessions
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/{slug}/sessions?from=2026-03-16&to=2026-03-31"
+  auth: none
+  params:
+    - name: from
+      value: "2026-03-16"
+      type: query
+    - name: to
+      value: "2026-03-31"
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Jadwal sesi berhasil diambil",
+            "data": [
+              {
+                "id": "11111111-0001-4aaa-8bbb-000000000001",
+                "date": "2026-03-16",
+                "startsAt": "2026-03-16T07:00:00+07:00",
+                "endsAt": "2026-03-16T08:15:00+07:00",
+                "name": "Sunrise Flow",
+                "coach": "Sekar Ayu",
+                "room": "Studio Utama",
+                "level": "Semua level",
+                "durationMinutes": 75,
+                "capacity": 20,
+                "slotsLeft": 6,
+                "price": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "isPopular": true,
+                "availability": "open"
+              },
+              {
+                "id": "11111111-0002-4aaa-8bbb-000000000002",
+                "date": "2026-03-18",
+                "startsAt": "2026-03-18T07:00:00+07:00",
+                "endsAt": "2026-03-18T08:15:00+07:00",
+                "name": "Sunrise Flow",
+                "coach": "Gita Pramesti",
+                "room": "Studio Utama",
+                "level": "Semua level",
+                "durationMinutes": 75,
+                "capacity": 20,
+                "slotsLeft": 14,
+                "price": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "isPopular": false,
+                "availability": "open"
+              },
+              {
+                "id": "11111111-0003-4aaa-8bbb-000000000003",
+                "date": "2026-03-20",
+                "startsAt": "2026-03-20T18:30:00+07:00",
+                "endsAt": "2026-03-20T19:45:00+07:00",
+                "name": "Evening Unwind",
+                "coach": "Sekar Ayu",
+                "room": "Studio Utama",
+                "level": "Semua level",
+                "durationMinutes": 75,
+                "capacity": 20,
+                "slotsLeft": 0,
+                "price": {
+                  "amount": 135000,
+                  "currency": "IDR"
+                },
+                "isPopular": false,
+                "availability": "sold_out"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 20,
+              "total": 3,
+              "totalPages": 1
+            }
+          }
+
+docs: |-
+  ## Activity Sessions
+
+  Sesi bookable pada rentang tanggal.
+
+  **GET** `/activities/{slug}/sessions?from=&to=`
+
+  - Response: `dto/catalog/activity-sessions.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

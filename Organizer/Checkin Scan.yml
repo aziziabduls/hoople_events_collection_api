@@ -1,0 +1,82 @@
+info:
+  name: Checkin Scan
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizer/check-in/scan"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "ticketCode": "HPL-8K2M-4QX7-1",
+        "sessionId": "ses-0001-4aaa-8bbb-000000000001",
+        "scannedAt": "2026-03-16T06:52:00+07:00"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Check-in berhasil",
+            "data": {
+              "result": "accepted",
+              "ticketCode": "HPL-8K2M-4QX7-1",
+              "registrationId": "reg-0001-4aaa-8bbb-000000000001",
+              "participant": {
+                "name": "Adriani Ajeng",
+                "email": "adriani.ajeng@gmail.com"
+              },
+              "experienceTitle": "Morning Yoga Flow",
+              "sessionStartsAt": "2026-03-16T07:00:00+07:00",
+              "checkedInAt": "2026-03-16T06:52:00+07:00",
+              "sessionProgress": {
+                "checkedIn": 18,
+                "booked": 24,
+                "capacity": 30
+              }
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Checkin Scan
+
+  Scan QR di pintu.
+
+  **POST** `/organizer/check-in/scan`
+
+  - Request: `dto/organizer/checkin-scan.request.json`
+  - Response: `dto/organizer/checkin-scan.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

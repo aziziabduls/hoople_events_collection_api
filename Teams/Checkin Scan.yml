@@ -1,0 +1,85 @@
+info:
+  name: Checkin Scan
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/teams/check-in/scan"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "code": "SN-KO26-0042",
+        "eventId": "f00d1e00-1111-4222-8333-000000000601",
+        "scannerId": "gate-1",
+        "scannedAt": "2026-03-20T09:15:00+07:00"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Check-in berhasil",
+            "data": {
+              "result": "accepted",
+              "registrationId": "treg-0001",
+              "member": {
+                "name": "Adriani Ajeng",
+                "employeeId": "SN-0042",
+                "department": "People Ops",
+                "title": "People Ops Lead"
+              },
+              "passName": "Plus One",
+              "quantity": 2,
+              "checkedInAt": "2026-03-20T09:15:00+07:00",
+              "scannerId": "gate-1",
+              "progress": {
+                "checkedIn": 247,
+                "registered": 412,
+                "rate": 0.599
+              }
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Checkin Scan
+
+  Scan di gate.
+
+  **POST** `/teams/check-in/scan`
+
+  - Request: `dto/teams/checkin-scan.request.json`
+  - Response: `dto/teams/checkin-scan.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

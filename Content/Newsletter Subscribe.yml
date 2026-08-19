@@ -1,0 +1,69 @@
+info:
+  name: Newsletter Subscribe
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/newsletter/subscribe"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "adriani.ajeng@gmail.com",
+        "source": "footer"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Terima kasih! Anda berhasil berlangganan.",
+            "data": {
+              "email": "adriani.ajeng@gmail.com",
+              "status": "subscribed",
+              "subscribedAt": "2026-03-14T09:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Newsletter Subscribe
+
+  Langganan newsletter footer.
+
+  **POST** `/newsletter/subscribe`
+
+  - Request: `dto/content/newsletter-subscribe.request.json`
+  - Response: `dto/content/newsletter-subscribe.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

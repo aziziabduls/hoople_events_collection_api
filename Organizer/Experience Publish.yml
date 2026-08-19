@@ -1,0 +1,59 @@
+info:
+  name: Experience Publish
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizer/experiences/{id}/publish"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Experience berhasil dipublikasikan",
+            "data": {
+              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+              "status": "published",
+              "publishedAt": "2026-03-14T09:30:00+07:00",
+              "publicUrl": "https://hoople.id/events/ux-in-practice"
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Experience Publish
+
+  Draft → published.
+
+  **POST** `/organizer/experiences/{id}/publish`
+
+  - Response: `dto/organizer/experience-publish.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

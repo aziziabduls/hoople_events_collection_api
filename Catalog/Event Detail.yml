@@ -1,0 +1,189 @@
+info:
+  name: Event Detail
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events/{slug}"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail event berhasil diambil",
+            "data": {
+              "id": "e1f2a3b4-1111-4c5d-9e6f-000000000201",
+              "slug": "jakarta-coffee-week",
+              "title": "Jakarta Coffee Week 2026",
+              "kind": "event",
+              "host": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000401",
+                "name": "Kopi Karya",
+                "slug": "kopi-karya",
+                "avatarUrl": "https://cdn.hoople.id/hosts/kopi-karya.jpg",
+                "verified": true,
+                "rating": 4.8,
+                "experienceCount": 12,
+                "bio": "Kolektif kopi Jakarta yang menggelar acara sejak 2019."
+              },
+              "category": "Food & Drink",
+              "badge": "featured",
+              "status": "published",
+              "summary": "Tiga hari, 80 roaster lokal, cupping session tiap jam.",
+              "coverImageUrl": "https://cdn.hoople.id/covers/jakarta-coffee-week.jpg",
+              "startsAt": "2026-04-11T10:00:00+07:00",
+              "endsAt": "2026-04-12T21:00:00+07:00",
+              "price": {
+                "amount": 150000,
+                "currency": "IDR"
+              },
+              "isFree": false,
+              "soldOut": false,
+              "capacity": 4000,
+              "registeredCount": 3120,
+              "venue": {
+                "name": "Balai Kartini",
+                "area": "Kuningan",
+                "city": "Jakarta Selatan",
+                "address": "Jl. Gatot Subroto Kav. 37, Kuningan Timur, Jakarta Selatan 12950",
+                "latitude": -6.2331,
+                "longitude": 106.8283,
+                "notes": [
+                  "Pintu masuk lewat Lobby Utama",
+                  "Parkir motor di basement B1"
+                ]
+              },
+              "isSaved": false,
+              "description": "Jakarta Coffee Week kembali untuk tahun keenam. Delapan puluh roaster dari seluruh Indonesia, panggung talk harian, dan kompetisi brewing terbuka untuk umum.",
+              "doorsOpenAt": "2026-04-11T09:30:00+07:00",
+              "ticketTypes": [
+                {
+                  "id": "22222222-0001-4ccc-8ddd-000000000001",
+                  "name": "Presale Day 1",
+                  "description": "Akses hari pertama.",
+                  "price": {
+                    "amount": 150000,
+                    "currency": "IDR"
+                  },
+                  "quota": 1500,
+                  "sold": 1500,
+                  "soldOut": true,
+                  "salesEndAt": "2026-03-31T23:59:00+07:00"
+                },
+                {
+                  "id": "22222222-0002-4ccc-8ddd-000000000002",
+                  "name": "Regular Day 1",
+                  "description": "Akses hari pertama.",
+                  "price": {
+                    "amount": 185000,
+                    "currency": "IDR"
+                  },
+                  "quota": 1200,
+                  "sold": 840,
+                  "soldOut": false,
+                  "salesEndAt": "2026-04-11T18:00:00+07:00"
+                },
+                {
+                  "id": "22222222-0003-4ccc-8ddd-000000000003",
+                  "name": "Bundle 2 Hari",
+                  "description": "Akses hari pertama dan kedua.",
+                  "price": {
+                    "amount": 320000,
+                    "currency": "IDR"
+                  },
+                  "quota": 800,
+                  "sold": 612,
+                  "soldOut": false,
+                  "salesEndAt": "2026-04-11T18:00:00+07:00"
+                }
+              ],
+              "schedule": [
+                {
+                  "time": "10:00",
+                  "label": "Pintu dibuka"
+                },
+                {
+                  "time": "11:00",
+                  "label": "Cupping session — Gayo & Toraja"
+                },
+                {
+                  "time": "14:00",
+                  "label": "Talk: Rantai pasok kopi Indonesia"
+                },
+                {
+                  "time": "17:00",
+                  "label": "Brewing competition — babak final"
+                },
+                {
+                  "time": "20:00",
+                  "label": "Live music"
+                }
+              ],
+              "faqs": [
+                {
+                  "question": "Apakah tiket bisa dipindahtangankan?",
+                  "answer": "Bisa, sampai H-1 melalui halaman tiket Anda."
+                },
+                {
+                  "question": "Apakah anak-anak boleh masuk?",
+                  "answer": "Boleh, di bawah 12 tahun gratis dengan pendamping."
+                }
+              ],
+              "lineup": [
+                {
+                  "name": "Bara Pattiradjawane",
+                  "role": "Q Grader",
+                  "avatarUrl": null
+                },
+                {
+                  "name": "Sinta Wijaya",
+                  "role": "Head Roaster, Kopi Karya",
+                  "avatarUrl": null
+                }
+              ],
+              "policy": {
+                "cancellation": "Tiket tidak dapat dikembalikan.",
+                "ageRestriction": null,
+                "photography": "Diperbolehkan"
+              }
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Event Detail
+
+  Detail + jenis tiket + rundown.
+
+  **GET** `/events/{slug}`
+
+  - Response: `dto/catalog/event-detail.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

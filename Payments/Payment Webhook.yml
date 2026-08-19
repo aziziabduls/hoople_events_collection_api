@@ -1,0 +1,56 @@
+info:
+  name: Payment Webhook
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/webhooks/payment"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "eventType": "payment.succeeded",
+        "deliveryId": "evt-0a1b2c3d-1111-4222-8333-000000000801",
+        "occurredAt": "2026-03-14T09:41:00+07:00",
+        "data": {
+          "paymentId": "pay-9f8e7d6c-1111-4222-8333-000000000701",
+          "bookingId": "b0071e5c-1111-4d2e-8a3f-000000000301",
+          "status": "paid",
+          "amount": 251520,
+          "currency": "IDR",
+          "reference": "TRX-BCA-260314-77120"
+        },
+        "signature": "sha256=6b8f0c2a1d4e5f7890abcdef1234567890abcdef1234567890abcdef12345678"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  ## Payment Webhook
+
+  Callback dari payment gateway ke backend.
+
+  **POST** `/webhooks/payment`
+
+  - Request: `dto/payments/payment-webhook.request.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

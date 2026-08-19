@@ -1,0 +1,315 @@
+info:
+  name: Home Feed
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/home"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Beranda berhasil dimuat",
+            "data": {
+              "hero": {
+                "headline": "Temukan pengalaman yang menghidupkan komunitasmu",
+                "subheadline": "Kelas, event, dan komunitas di sekitarmu — semua dalam satu tempat.",
+                "searchPlaceholder": "Cari yoga, kopi, atau padel...",
+                "backgroundImageUrl": "https://cdn.hoople.id/hero/landing.jpg"
+              },
+              "sections": [
+                {
+                  "key": "trending",
+                  "title": "Sedang ramai minggu ini",
+                  "items": [
+                    {
+                      "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                      "slug": "morning-yoga-flow",
+                      "title": "Morning Yoga Flow",
+                      "kind": "activity",
+                      "host": "Flow with Me Studio",
+                      "category": "Yoga & Wellness",
+                      "categoryLabel": "YOGA & WELLNESS",
+                      "badge": "popular",
+                      "summary": "Kelas yoga pagi 75 menit untuk memulai hari dengan tenang dan lentur.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+                      "rating": 4.9,
+                      "reviewCount": 218,
+                      "priceFrom": {
+                        "amount": 120000,
+                        "currency": "IDR"
+                      },
+                      "isFree": false,
+                      "recurrence": "Setiap Senin, Rabu, Jumat",
+                      "recurrenceTime": "07:00 - 08:15 WIB",
+                      "durationMinutes": 75,
+                      "level": "Semua level",
+                      "joinedCount": 1240,
+                      "venue": {
+                        "name": "Waktu Luang Studio",
+                        "area": "Kemang",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": true,
+                      "soldOut": false,
+                      "nextSessionAt": "2026-03-16T07:00:00+07:00"
+                    },
+                    {
+                      "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                      "slug": "sunset-rooftop-jazz",
+                      "title": "Sunset Rooftop Jazz",
+                      "kind": "event",
+                      "host": "Waktu Luang",
+                      "category": "Music",
+                      "badge": "trending",
+                      "status": "published",
+                      "summary": "Kuartet jazz di rooftop SCBD, matahari terbenam sebagai latar.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg",
+                      "startsAt": "2026-03-28T17:30:00+07:00",
+                      "endsAt": "2026-03-28T22:00:00+07:00",
+                      "price": {
+                        "amount": 275000,
+                        "currency": "IDR"
+                      },
+                      "isFree": false,
+                      "soldOut": true,
+                      "capacity": 300,
+                      "registeredCount": 300,
+                      "venue": {
+                        "name": "Strive Gym SCBD",
+                        "area": "SCBD",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": true
+                    },
+                    {
+                      "id": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
+                      "slug": "healthy-cooking-class",
+                      "title": "Healthy Cooking Class",
+                      "kind": "activity",
+                      "host": "GreenBite Kitchen",
+                      "category": "Food & Drink",
+                      "categoryLabel": "FOOD & DRINK",
+                      "badge": "featured",
+                      "summary": "Masak tiga menu sehat dalam dua jam, bahan sudah disiapkan.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/healthy-cooking-class.jpg",
+                      "rating": 4.9,
+                      "reviewCount": 133,
+                      "priceFrom": {
+                        "amount": 175000,
+                        "currency": "IDR"
+                      },
+                      "isFree": false,
+                      "recurrence": "Setiap Minggu",
+                      "recurrenceTime": "10:00 - 12:00 WIB",
+                      "durationMinutes": 120,
+                      "level": "Semua level",
+                      "joinedCount": 640,
+                      "venue": {
+                        "name": "GreenBite Kitchen",
+                        "area": "Pantai Indah Kapuk",
+                        "city": "Jakarta Utara"
+                      },
+                      "isSaved": false,
+                      "soldOut": false,
+                      "nextSessionAt": "2026-03-22T10:00:00+07:00"
+                    }
+                  ]
+                },
+                {
+                  "key": "this_weekend",
+                  "title": "Akhir pekan ini",
+                  "items": [
+                    {
+                      "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
+                      "slug": "pasar-kreatif-kemang",
+                      "title": "Pasar Kreatif Kemang",
+                      "kind": "event",
+                      "host": "Komunitas Kemang",
+                      "category": "Market",
+                      "badge": null,
+                      "status": "published",
+                      "summary": "Bazar produk lokal, 60 tenant, gratis masuk.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
+                      "startsAt": "2026-03-22T09:00:00+07:00",
+                      "endsAt": "2026-03-22T18:00:00+07:00",
+                      "price": {
+                        "amount": 0,
+                        "currency": "IDR"
+                      },
+                      "isFree": true,
+                      "soldOut": false,
+                      "capacity": 2000,
+                      "registeredCount": 780,
+                      "venue": {
+                        "name": "Waktu Luang Studio",
+                        "area": "Kemang",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": false
+                    },
+                    {
+                      "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+                      "slug": "pottery-class",
+                      "title": "Kelas Keramik untuk Pemula",
+                      "kind": "activity",
+                      "host": "Waktu Luang",
+                      "category": "Classes",
+                      "categoryLabel": "CLASSES",
+                      "badge": "trending",
+                      "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/pottery-class.jpg",
+                      "rating": 4.8,
+                      "reviewCount": 96,
+                      "priceFrom": {
+                        "amount": 250000,
+                        "currency": "IDR"
+                      },
+                      "isFree": false,
+                      "recurrence": "Setiap Sabtu",
+                      "recurrenceTime": "14:00 - 16:00 WIB",
+                      "durationMinutes": 120,
+                      "level": "Pemula",
+                      "joinedCount": 380,
+                      "venue": {
+                        "name": "Waktu Luang Studio",
+                        "area": "Kemang",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": false,
+                      "soldOut": false,
+                      "nextSessionAt": "2026-03-16T07:00:00+07:00"
+                    }
+                  ]
+                },
+                {
+                  "key": "free",
+                  "title": "Gratis untuk dicoba",
+                  "items": [
+                    {
+                      "id": "a1b2c3d4-4444-4a2b-8c3d-000000000104",
+                      "slug": "padel-friday",
+                      "title": "Padel Friday Social",
+                      "kind": "activity",
+                      "host": "Strive Gym SCBD",
+                      "category": "Sports & Fitness",
+                      "categoryLabel": "SPORTS & FITNESS",
+                      "badge": null,
+                      "summary": "Main padel santai tiap Jumat sore. Gratis, raket disediakan.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/padel-friday.jpg",
+                      "rating": 4.6,
+                      "reviewCount": 41,
+                      "priceFrom": {
+                        "amount": 0,
+                        "currency": "IDR"
+                      },
+                      "isFree": true,
+                      "recurrence": "Setiap Jumat",
+                      "recurrenceTime": "17:00 - 19:00 WIB",
+                      "durationMinutes": 120,
+                      "level": "Semua level",
+                      "joinedCount": 152,
+                      "venue": {
+                        "name": "Strive Gym SCBD",
+                        "area": "SCBD",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": false,
+                      "soldOut": false,
+                      "nextSessionAt": "2026-03-20T17:00:00+07:00"
+                    },
+                    {
+                      "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
+                      "slug": "pasar-kreatif-kemang",
+                      "title": "Pasar Kreatif Kemang",
+                      "kind": "event",
+                      "host": "Komunitas Kemang",
+                      "category": "Market",
+                      "badge": null,
+                      "status": "published",
+                      "summary": "Bazar produk lokal, 60 tenant, gratis masuk.",
+                      "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
+                      "startsAt": "2026-03-22T09:00:00+07:00",
+                      "endsAt": "2026-03-22T18:00:00+07:00",
+                      "price": {
+                        "amount": 0,
+                        "currency": "IDR"
+                      },
+                      "isFree": true,
+                      "soldOut": false,
+                      "capacity": 2000,
+                      "registeredCount": 780,
+                      "venue": {
+                        "name": "Waktu Luang Studio",
+                        "area": "Kemang",
+                        "city": "Jakarta Selatan"
+                      },
+                      "isSaved": false
+                    }
+                  ]
+                }
+              ],
+              "categories": [
+                {
+                  "slug": "sports_fitness",
+                  "name": "Sports & Fitness",
+                  "experienceCount": 42
+                },
+                {
+                  "slug": "food_drink",
+                  "name": "Food & Drink",
+                  "experienceCount": 35
+                },
+                {
+                  "slug": "wellness",
+                  "name": "Yoga & Wellness",
+                  "experienceCount": 31
+                }
+              ],
+              "stats": {
+                "experienceCount": 312,
+                "communityCount": 48,
+                "cityCount": 6
+              }
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Home Feed
+
+  Hero + section beranda + kategori.
+
+  **GET** `/home`
+
+  - Response: `dto/catalog/home-feed.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

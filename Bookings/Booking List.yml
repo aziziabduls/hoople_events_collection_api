@@ -1,0 +1,407 @@
+info:
+  name: Booking List
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/bookings"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar pesanan berhasil diambil",
+            "data": [
+              {
+                "id": "b0071e5c-1111-4d2e-8a3f-000000000301",
+                "orderId": "ORD-20260314-0001",
+                "ticketId": "HPL-8K2M-4QX7",
+                "status": "confirmed",
+                "paymentStatus": "paid",
+                "kind": "activity",
+                "experience": {
+                  "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                  "slug": "morning-yoga-flow",
+                  "title": "Morning Yoga Flow",
+                  "host": "Flow with Me Studio",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg"
+                },
+                "session": {
+                  "id": "11111111-0001-4aaa-8bbb-000000000001",
+                  "name": "Sunrise Flow",
+                  "startsAt": "2026-03-16T07:00:00+07:00",
+                  "endsAt": "2026-03-16T08:15:00+07:00",
+                  "coach": "Sekar Ayu",
+                  "room": "Studio Utama"
+                },
+                "ticketType": null,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan",
+                  "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+                  "latitude": -6.2607,
+                  "longitude": 106.8138
+                },
+                "quantity": 2,
+                "participants": [
+                  {
+                    "fullName": "Adriani Ajeng",
+                    "email": "adriani.ajeng@gmail.com",
+                    "phone": "+62 812 3456 7890",
+                    "checkedInAt": null
+                  },
+                  {
+                    "fullName": "Dewi Lestari",
+                    "email": "dewi.lestari@gmail.com",
+                    "phone": "+62 813 9988 7766",
+                    "checkedInAt": null
+                  }
+                ],
+                "buyer": {
+                  "fullName": "Adriani Ajeng",
+                  "email": "adriani.ajeng@gmail.com",
+                  "phone": "+62 812 3456 7890"
+                },
+                "price": {
+                  "unitPrice": {
+                    "amount": 120000,
+                    "currency": "IDR"
+                  },
+                  "quantity": 2,
+                  "subtotal": {
+                    "amount": 240000,
+                    "currency": "IDR"
+                  },
+                  "discount": {
+                    "amount": 0,
+                    "currency": "IDR"
+                  },
+                  "platformFee": {
+                    "amount": 7200,
+                    "currency": "IDR"
+                  },
+                  "gatewayFee": {
+                    "amount": 4320,
+                    "currency": "IDR"
+                  },
+                  "total": {
+                    "amount": 251520,
+                    "currency": "IDR"
+                  },
+                  "currency": "IDR"
+                },
+                "payment": {
+                  "methodId": "pm-bca-va",
+                  "methodName": "BCA Virtual Account",
+                  "virtualAccountNumber": "8277 0812 3456 7890",
+                  "paidAt": "2026-03-14T09:41:00+07:00",
+                  "expiresAt": null,
+                  "reference": "TRX-BCA-260314-77120"
+                },
+                "qrCodeUrl": "https://cdn.hoople.id/qr/HPL-8K2M-4QX7.png",
+                "createdAt": "2026-03-14T09:30:00+07:00",
+                "cancelledAt": null,
+                "cancellationReason": null
+              },
+              {
+                "id": "b0071e5c-4444-4d2e-8a3f-000000000304",
+                "orderId": "ORD-20260314-0207",
+                "ticketId": null,
+                "status": "pending",
+                "paymentStatus": "pending",
+                "kind": "activity",
+                "experience": {
+                  "id": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
+                  "slug": "healthy-cooking-class",
+                  "title": "Healthy Cooking Class",
+                  "host": "GreenBite Kitchen",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/healthy-cooking-class.jpg"
+                },
+                "session": {
+                  "id": "11111111-0009-4aaa-8bbb-000000000009",
+                  "name": "Kelas Minggu Pagi",
+                  "startsAt": "2026-03-22T10:00:00+07:00",
+                  "endsAt": "2026-03-22T12:00:00+07:00",
+                  "coach": "Chef Alit",
+                  "room": "Main Kitchen"
+                },
+                "ticketType": null,
+                "venue": {
+                  "name": "GreenBite Kitchen",
+                  "area": "Pantai Indah Kapuk",
+                  "city": "Jakarta Utara",
+                  "address": "Ruko Garden House Blok B No. 12, Pantai Indah Kapuk, Jakarta Utara 14470",
+                  "latitude": -6.1094,
+                  "longitude": 106.7405
+                },
+                "quantity": 1,
+                "participants": [
+                  {
+                    "fullName": "Adriani Ajeng",
+                    "email": "adriani.ajeng@gmail.com",
+                    "phone": "+62 812 3456 7890",
+                    "checkedInAt": null
+                  }
+                ],
+                "buyer": {
+                  "fullName": "Adriani Ajeng",
+                  "email": "adriani.ajeng@gmail.com",
+                  "phone": "+62 812 3456 7890"
+                },
+                "price": {
+                  "unitPrice": {
+                    "amount": 175000,
+                    "currency": "IDR"
+                  },
+                  "quantity": 1,
+                  "subtotal": {
+                    "amount": 175000,
+                    "currency": "IDR"
+                  },
+                  "discount": {
+                    "amount": 0,
+                    "currency": "IDR"
+                  },
+                  "platformFee": {
+                    "amount": 5250,
+                    "currency": "IDR"
+                  },
+                  "gatewayFee": {
+                    "amount": 3150,
+                    "currency": "IDR"
+                  },
+                  "total": {
+                    "amount": 183400,
+                    "currency": "IDR"
+                  },
+                  "currency": "IDR"
+                },
+                "payment": {
+                  "methodId": "pm-qris",
+                  "methodName": "QRIS",
+                  "virtualAccountNumber": null,
+                  "paidAt": null,
+                  "expiresAt": "2026-03-14T10:15:00+07:00",
+                  "reference": null
+                },
+                "qrCodeUrl": null,
+                "createdAt": "2026-03-14T09:45:00+07:00",
+                "cancelledAt": null,
+                "cancellationReason": null
+              },
+              {
+                "id": "b0071e5c-2222-4d2e-8a3f-000000000302",
+                "orderId": "ORD-20260228-0114",
+                "ticketId": "HPL-3P9Z-1LM5",
+                "status": "completed",
+                "paymentStatus": "paid",
+                "kind": "event",
+                "experience": {
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                  "slug": "sunset-rooftop-jazz",
+                  "title": "Sunset Rooftop Jazz",
+                  "host": "Waktu Luang",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg"
+                },
+                "session": null,
+                "ticketType": {
+                  "id": "22222222-0009-4ccc-8ddd-000000000009",
+                  "name": "Regular",
+                  "description": "Akses masuk umum."
+                },
+                "venue": {
+                  "name": "Strive Gym SCBD",
+                  "area": "SCBD",
+                  "city": "Jakarta Selatan",
+                  "address": "Equity Tower Lantai 3, Jl. Jend. Sudirman Kav. 52-53, Jakarta Selatan 12190",
+                  "latitude": -6.2258,
+                  "longitude": 106.8092
+                },
+                "quantity": 1,
+                "participants": [
+                  {
+                    "fullName": "Adriani Ajeng",
+                    "email": "adriani.ajeng@gmail.com",
+                    "phone": "+62 812 3456 7890",
+                    "checkedInAt": "2026-02-28T17:44:00+07:00"
+                  }
+                ],
+                "buyer": {
+                  "fullName": "Adriani Ajeng",
+                  "email": "adriani.ajeng@gmail.com",
+                  "phone": "+62 812 3456 7890"
+                },
+                "price": {
+                  "unitPrice": {
+                    "amount": 275000,
+                    "currency": "IDR"
+                  },
+                  "quantity": 1,
+                  "subtotal": {
+                    "amount": 275000,
+                    "currency": "IDR"
+                  },
+                  "discount": {
+                    "amount": 0,
+                    "currency": "IDR"
+                  },
+                  "platformFee": {
+                    "amount": 8250,
+                    "currency": "IDR"
+                  },
+                  "gatewayFee": {
+                    "amount": 4950,
+                    "currency": "IDR"
+                  },
+                  "total": {
+                    "amount": 288200,
+                    "currency": "IDR"
+                  },
+                  "currency": "IDR"
+                },
+                "payment": {
+                  "methodId": "pm-gopay",
+                  "methodName": "GoPay",
+                  "virtualAccountNumber": null,
+                  "paidAt": "2026-02-20T11:02:00+07:00",
+                  "expiresAt": null,
+                  "reference": "TRX-GOPAY-260220-40881"
+                },
+                "qrCodeUrl": "https://cdn.hoople.id/qr/HPL-8K2M-4QX7.png",
+                "createdAt": "2026-02-20T11:00:00+07:00",
+                "cancelledAt": null,
+                "cancellationReason": null
+              },
+              {
+                "id": "b0071e5c-3333-4d2e-8a3f-000000000303",
+                "orderId": "ORD-20260210-0077",
+                "ticketId": "HPL-6D4W-8RN2",
+                "status": "cancelled",
+                "paymentStatus": "refunded",
+                "kind": "activity",
+                "experience": {
+                  "id": "a1b2c3d4-3333-4a2b-8c3d-000000000103",
+                  "slug": "latte-art-workshop",
+                  "title": "Latte Art Workshop",
+                  "host": "Kopi Karya",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/latte-art-workshop.jpg"
+                },
+                "session": {
+                  "id": "11111111-0044-4aaa-8bbb-000000000044",
+                  "name": "Kelas Kamis",
+                  "startsAt": "2026-02-19T10:00:00+07:00",
+                  "endsAt": "2026-02-19T12:00:00+07:00",
+                  "coach": "Bagas Nugroho",
+                  "room": "Training Bar"
+                },
+                "ticketType": null,
+                "venue": {
+                  "name": "GreenBite Kitchen",
+                  "area": "Pantai Indah Kapuk",
+                  "city": "Jakarta Utara",
+                  "address": "Ruko Garden House Blok B No. 12, Pantai Indah Kapuk, Jakarta Utara 14470",
+                  "latitude": -6.1094,
+                  "longitude": 106.7405
+                },
+                "quantity": 1,
+                "participants": [
+                  {
+                    "fullName": "Adriani Ajeng",
+                    "email": "adriani.ajeng@gmail.com",
+                    "phone": "+62 812 3456 7890",
+                    "checkedInAt": null
+                  }
+                ],
+                "buyer": {
+                  "fullName": "Adriani Ajeng",
+                  "email": "adriani.ajeng@gmail.com",
+                  "phone": "+62 812 3456 7890"
+                },
+                "price": {
+                  "unitPrice": {
+                    "amount": 185000,
+                    "currency": "IDR"
+                  },
+                  "quantity": 1,
+                  "subtotal": {
+                    "amount": 185000,
+                    "currency": "IDR"
+                  },
+                  "discount": {
+                    "amount": 0,
+                    "currency": "IDR"
+                  },
+                  "platformFee": {
+                    "amount": 5550,
+                    "currency": "IDR"
+                  },
+                  "gatewayFee": {
+                    "amount": 3330,
+                    "currency": "IDR"
+                  },
+                  "total": {
+                    "amount": 193880,
+                    "currency": "IDR"
+                  },
+                  "currency": "IDR"
+                },
+                "payment": {
+                  "methodId": "pm-bca-va",
+                  "methodName": "BCA Virtual Account",
+                  "virtualAccountNumber": "8277 0812 3456 7890",
+                  "paidAt": "2026-03-14T09:41:00+07:00",
+                  "expiresAt": null,
+                  "reference": "TRX-BCA-260314-77120"
+                },
+                "qrCodeUrl": null,
+                "createdAt": "2026-02-10T16:20:00+07:00",
+                "cancelledAt": "2026-02-14T09:05:00+07:00",
+                "cancellationReason": "Dibatalkan oleh peserta"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 13,
+              "totalPages": 2
+            }
+          }
+
+docs: |-
+  ## Booking List
+
+  "Pesanan Saya" — variasi confirmed/completed/cancelled.
+
+  **GET** `/bookings`
+
+  - Response: `dto/bookings/booking-list.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

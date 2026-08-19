@@ -1,0 +1,85 @@
+info:
+  name: Department List
+  type: http
+  seq: 12
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/departments"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar departemen berhasil diambil",
+            "data": [
+              {
+                "id": "dep-01",
+                "name": "Engineering",
+                "headcount": 164
+              },
+              {
+                "id": "dep-02",
+                "name": "Product & Design",
+                "headcount": 78
+              },
+              {
+                "id": "dep-03",
+                "name": "Sales & Growth",
+                "headcount": 96
+              },
+              {
+                "id": "dep-04",
+                "name": "Operations",
+                "headcount": 74
+              },
+              {
+                "id": "dep-05",
+                "name": "People Ops",
+                "headcount": 38
+              },
+              {
+                "id": "dep-06",
+                "name": "Finance & Legal",
+                "headcount": 36
+              }
+            ],
+            "meta": null
+          }
+
+docs: |-
+  ## Department List
+
+  Departemen + headcount, untuk memilih audiens.
+
+  **GET** `/teams/departments`
+
+  - Response: `dto/teams/department-list.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

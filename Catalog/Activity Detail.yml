@@ -1,0 +1,177 @@
+info:
+  name: Activity Detail
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/{slug}"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail aktivitas berhasil diambil",
+            "data": {
+              "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+              "slug": "morning-yoga-flow",
+              "title": "Morning Yoga Flow",
+              "kind": "activity",
+              "host": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000401",
+                "name": "Flow with Me Studio",
+                "slug": "flow-with-me",
+                "avatarUrl": "https://cdn.hoople.id/hosts/flow-with-me.jpg",
+                "verified": true,
+                "rating": 4.9,
+                "experienceCount": 6,
+                "bio": "Studio yoga di Kemang yang fokus pada kelas kecil dan personal."
+              },
+              "category": "Yoga & Wellness",
+              "categoryLabel": "YOGA & WELLNESS",
+              "badge": "popular",
+              "summary": "Kelas yoga pagi 75 menit untuk memulai hari dengan tenang dan lentur.",
+              "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+              "rating": 4.9,
+              "reviewCount": 218,
+              "priceFrom": {
+                "amount": 120000,
+                "currency": "IDR"
+              },
+              "isFree": false,
+              "recurrence": "Setiap Senin, Rabu, Jumat",
+              "recurrenceTime": "07:00 - 08:15 WIB",
+              "durationMinutes": 75,
+              "level": "Semua level",
+              "joinedCount": 1240,
+              "venue": {
+                "name": "Waktu Luang Studio",
+                "area": "Kemang",
+                "city": "Jakarta Selatan",
+                "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+                "latitude": -6.2607,
+                "longitude": 106.8138,
+                "notes": [
+                  "5 menit jalan kaki dari Halte TransJakarta Kemang",
+                  "Parkir mobil tersedia, Rp 5.000 flat"
+                ]
+              },
+              "isSaved": true,
+              "soldOut": false,
+              "nextSessionAt": "2026-03-16T07:00:00+07:00",
+              "description": "Kelas yoga pagi dengan tempo lembut. Dimulai dari pernapasan, lanjut ke sun salutation, dan ditutup dengan savasana. Cocok untuk yang baru mulai maupun yang sudah rutin.",
+              "learn": "Teknik pernapasan, rangkaian sun salutation, dan pose dasar berdiri.",
+              "includes": "Matras, handuk kecil, dan air mineral.",
+              "language": "Bahasa Indonesia",
+              "classSize": "Maksimal 20 orang",
+              "highlights": [
+                "Instruktur bersertifikasi Yoga Alliance RYT-200",
+                "Studio ber-AC dengan lantai kayu",
+                "Matras dan properti disediakan"
+              ],
+              "tags": [
+                "Yoga",
+                "Pemula",
+                "Pagi"
+              ],
+              "galleryImageUrls": [
+                "https://cdn.hoople.id/gallery/morning-yoga-flow-1.jpg",
+                "https://cdn.hoople.id/gallery/morning-yoga-flow-2.jpg",
+                "https://cdn.hoople.id/gallery/morning-yoga-flow-3.jpg"
+              ],
+              "bring": [
+                {
+                  "title": "Pakaian olahraga",
+                  "detail": "Yang nyaman dan menyerap keringat."
+                },
+                {
+                  "title": "Botol minum",
+                  "detail": "Isi ulang tersedia di studio."
+                }
+              ],
+              "closedWeekdays": [
+                0,
+                2,
+                4,
+                6
+              ],
+              "faqs": [
+                {
+                  "question": "Apakah pemula boleh ikut?",
+                  "answer": "Boleh. Instruktur memberi variasi pose untuk setiap level."
+                },
+                {
+                  "question": "Bagaimana kalau saya terlambat?",
+                  "answer": "Masih bisa masuk sampai menit ke-10 agar tidak mengganggu kelas."
+                }
+              ],
+              "reviews": [
+                {
+                  "id": "7a1b2c3d-0001-4e5f-8a9b-000000000001",
+                  "author": "Dewi Lestari",
+                  "avatarUrl": null,
+                  "rating": 5,
+                  "body": "Instrukturnya sabar banget, studio bersih. Recommended!",
+                  "createdAt": "2026-03-02T08:12:00+07:00"
+                },
+                {
+                  "id": "7a1b2c3d-0002-4e5f-8a9b-000000000002",
+                  "author": "Raka Mahendra",
+                  "avatarUrl": null,
+                  "rating": 4,
+                  "body": "Enak buat pagi hari. Parkiran agak penuh kalau weekend.",
+                  "createdAt": "2026-02-24T07:55:00+07:00"
+                }
+              ],
+              "ratingBreakdown": {
+                "1": 1,
+                "2": 3,
+                "3": 8,
+                "4": 34,
+                "5": 172
+              },
+              "policy": {
+                "cancellation": "Batal gratis hingga 24 jam sebelum sesi dimulai.",
+                "lateArrival": "Toleransi keterlambatan 10 menit.",
+                "photography": "Diperbolehkan"
+              }
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Activity Detail
+
+  Detail lengkap + ulasan + FAQ.
+
+  **GET** `/activities/{slug}`
+
+  - Response: `dto/catalog/activity-detail.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

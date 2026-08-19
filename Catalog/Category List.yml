@@ -1,0 +1,97 @@
+info:
+  name: Category List
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/categories"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar kategori berhasil diambil",
+            "data": [
+              {
+                "id": "cat-0001",
+                "slug": "sports_fitness",
+                "name": "Sports & Fitness",
+                "experienceCount": 42,
+                "iconKey": "sports"
+              },
+              {
+                "id": "cat-0002",
+                "slug": "art_design",
+                "name": "Art & Design",
+                "experienceCount": 28,
+                "iconKey": "art"
+              },
+              {
+                "id": "cat-0003",
+                "slug": "food_drink",
+                "name": "Food & Drink",
+                "experienceCount": 35,
+                "iconKey": "food"
+              },
+              {
+                "id": "cat-0004",
+                "slug": "music",
+                "name": "Music",
+                "experienceCount": 19,
+                "iconKey": "music"
+              },
+              {
+                "id": "cat-0005",
+                "slug": "business_professional",
+                "name": "Business & Professional",
+                "experienceCount": 23,
+                "iconKey": "business"
+              },
+              {
+                "id": "cat-0006",
+                "slug": "wellness",
+                "name": "Yoga & Wellness",
+                "experienceCount": 31,
+                "iconKey": "wellness"
+              }
+            ],
+            "meta": null
+          }
+
+docs: |-
+  ## Category List
+
+  Kategori untuk filter & navigasi.
+
+  **GET** `/categories`
+
+  - Response: `dto/catalog/category-list.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

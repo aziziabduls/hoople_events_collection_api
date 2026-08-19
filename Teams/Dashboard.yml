@@ -1,0 +1,323 @@
+info:
+  name: Dashboard
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/dashboard"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Dashboard berhasil dimuat",
+            "data": {
+              "organization": {
+                "id": "d0d0d0d0-bbbb-4ccc-8ddd-000000000501",
+                "name": "Sinar Nusantara",
+                "legalName": "PT Sinar Nusantara Digital",
+                "initials": "SN",
+                "handle": "sinar-nusantara",
+                "domain": "sinarnusantara.co.id",
+                "plan": "organization",
+                "memberCount": 486,
+                "city": "Jakarta Selatan"
+              },
+              "admin": {
+                "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+                "name": "Adriani Ajeng",
+                "role": "People Ops Lead",
+                "email": "adriani.ajeng@sinarnusantara.co.id",
+                "phone": "+62 812 3456 7890"
+              },
+              "activeEvent": {
+                "id": "f00d1e00-1111-4222-8333-000000000601",
+                "slug": "annual-kick-off-2026",
+                "title": "Annual Kick-off 2026",
+                "summary": "Rencana tahunan, penghargaan, dan makan malam bersama.",
+                "status": "published",
+                "format": "onsite",
+                "costModel": "company_paid",
+                "audience": [
+                  "All members"
+                ],
+                "code": "SN-KO26",
+                "startsAt": "2026-03-20T08:00:00+07:00",
+                "endsAt": "2026-03-20T17:00:00+07:00",
+                "timezone": "Asia/Jakarta",
+                "venue": "Balai Kartini",
+                "room": "Grand Ballroom",
+                "onlineUrl": null,
+                "capacity": 500,
+                "registeredCount": 412,
+                "checkedInCount": 0,
+                "onsiteScanCount": 0,
+                "coverImageUrl": "https://cdn.hoople.id/teams/annual-kick-off-2026.jpg",
+                "organiser": "People Ops",
+                "recurring": null,
+                "createdAt": "2026-01-08T10:00:00+07:00",
+                "publishedAt": "2026-01-10T09:00:00+07:00",
+                "passes": [
+                  {
+                    "id": "pass-regular",
+                    "name": "Regular",
+                    "note": "Seluruh karyawan",
+                    "price": {
+                      "amount": 0,
+                      "currency": "IDR"
+                    },
+                    "sold": 380,
+                    "quota": 450,
+                    "onsite": true
+                  },
+                  {
+                    "id": "pass-guest",
+                    "name": "Plus One",
+                    "note": "Membawa pasangan",
+                    "price": {
+                      "amount": 600000,
+                      "currency": "IDR"
+                    },
+                    "sold": 32,
+                    "quota": 50,
+                    "onsite": true
+                  }
+                ]
+              },
+              "stats": [
+                {
+                  "key": "upcomingEvents",
+                  "label": "Event Mendatang",
+                  "value": 4,
+                  "unit": "count",
+                  "deltaRate": null,
+                  "deltaLabel": "30 hari ke depan"
+                },
+                {
+                  "key": "registrations",
+                  "label": "Registrasi",
+                  "value": 412,
+                  "unit": "count",
+                  "deltaRate": 0.12,
+                  "deltaLabel": "12% vs event lalu"
+                },
+                {
+                  "key": "attendanceRate",
+                  "label": "Tingkat Kehadiran",
+                  "value": 0.86,
+                  "unit": "rate",
+                  "deltaRate": 0.04,
+                  "deltaLabel": "4% vs event lalu"
+                },
+                {
+                  "key": "collected",
+                  "label": "Dana Terkumpul",
+                  "value": 19200000,
+                  "unit": "idr",
+                  "deltaRate": null,
+                  "deltaLabel": "Dari plus one & patungan"
+                }
+              ],
+              "upcomingEvents": [
+                {
+                  "id": "f00d1e00-1111-4222-8333-000000000601",
+                  "slug": "annual-kick-off-2026",
+                  "title": "Annual Kick-off 2026",
+                  "summary": "Rencana tahunan, penghargaan, dan makan malam bersama.",
+                  "status": "published",
+                  "format": "onsite",
+                  "costModel": "company_paid",
+                  "audience": [
+                    "All members"
+                  ],
+                  "code": "SN-KO26",
+                  "startsAt": "2026-03-20T08:00:00+07:00",
+                  "endsAt": "2026-03-20T17:00:00+07:00",
+                  "timezone": "Asia/Jakarta",
+                  "venue": "Balai Kartini",
+                  "room": "Grand Ballroom",
+                  "onlineUrl": null,
+                  "capacity": 500,
+                  "registeredCount": 412,
+                  "checkedInCount": 0,
+                  "onsiteScanCount": 0,
+                  "coverImageUrl": "https://cdn.hoople.id/teams/annual-kick-off-2026.jpg",
+                  "organiser": "People Ops",
+                  "recurring": null,
+                  "createdAt": "2026-01-08T10:00:00+07:00",
+                  "publishedAt": "2026-01-10T09:00:00+07:00",
+                  "passes": [
+                    {
+                      "id": "pass-regular",
+                      "name": "Regular",
+                      "note": "Seluruh karyawan",
+                      "price": {
+                        "amount": 0,
+                        "currency": "IDR"
+                      },
+                      "sold": 380,
+                      "quota": 450,
+                      "onsite": true
+                    },
+                    {
+                      "id": "pass-guest",
+                      "name": "Plus One",
+                      "note": "Membawa pasangan",
+                      "price": {
+                        "amount": 600000,
+                        "currency": "IDR"
+                      },
+                      "sold": 32,
+                      "quota": 50,
+                      "onsite": true
+                    }
+                  ]
+                },
+                {
+                  "id": "f00d1e00-5555-4222-8333-000000000605",
+                  "slug": "padel-friday-club",
+                  "title": "Padel Friday",
+                  "summary": "Klub padel mingguan, terbuka untuk semua departemen.",
+                  "status": "published",
+                  "format": "onsite",
+                  "costModel": "cost_shared",
+                  "audience": [
+                    "All members"
+                  ],
+                  "code": "SN-PDL",
+                  "startsAt": "2026-03-20T17:00:00+07:00",
+                  "endsAt": "2026-03-20T19:00:00+07:00",
+                  "timezone": "Asia/Jakarta",
+                  "venue": "Strive Gym SCBD",
+                  "room": "Lapangan 1-2",
+                  "onlineUrl": null,
+                  "capacity": 24,
+                  "registeredCount": 24,
+                  "checkedInCount": 0,
+                  "onsiteScanCount": 0,
+                  "coverImageUrl": "https://cdn.hoople.id/teams/padel-friday-club.jpg",
+                  "organiser": "Sports Club",
+                  "recurring": "Setiap Jumat",
+                  "createdAt": "2026-01-08T10:00:00+07:00",
+                  "publishedAt": "2026-01-10T09:00:00+07:00",
+                  "passes": [
+                    {
+                      "id": "pass-player",
+                      "name": "Pemain",
+                      "note": "Patungan sewa lapangan",
+                      "price": {
+                        "amount": 75000,
+                        "currency": "IDR"
+                      },
+                      "sold": 24,
+                      "quota": 24,
+                      "onsite": true
+                    }
+                  ]
+                },
+                {
+                  "id": "f00d1e00-3333-4222-8333-000000000603",
+                  "slug": "onboarding-batch-12",
+                  "title": "Onboarding Batch 12",
+                  "summary": "Tiga hari orientasi untuk karyawan baru.",
+                  "status": "published",
+                  "format": "onsite",
+                  "costModel": "company_paid",
+                  "audience": [
+                    "People Ops",
+                    "Engineering",
+                    "Product & Design"
+                  ],
+                  "code": "SN-OB12",
+                  "startsAt": "2026-04-06T09:00:00+07:00",
+                  "endsAt": "2026-04-08T16:00:00+07:00",
+                  "timezone": "Asia/Jakarta",
+                  "venue": "Kantor Pusat",
+                  "room": "Ruang Nusantara",
+                  "onlineUrl": null,
+                  "capacity": 40,
+                  "registeredCount": 38,
+                  "checkedInCount": 0,
+                  "onsiteScanCount": 0,
+                  "coverImageUrl": "https://cdn.hoople.id/teams/onboarding-batch-12.jpg",
+                  "organiser": "People Ops",
+                  "recurring": null,
+                  "createdAt": "2026-01-08T10:00:00+07:00",
+                  "publishedAt": "2026-01-10T09:00:00+07:00",
+                  "passes": [
+                    {
+                      "id": "pass-newjoiner",
+                      "name": "New joiner",
+                      "note": "Wajib hadir",
+                      "price": {
+                        "amount": 0,
+                        "currency": "IDR"
+                      },
+                      "sold": 38,
+                      "quota": 40,
+                      "onsite": true
+                    }
+                  ]
+                }
+              ],
+              "recentActivity": [
+                {
+                  "id": "act-0001",
+                  "type": "registration",
+                  "label": "Bagas Nugroho mendaftar Annual Kick-off 2026",
+                  "occurredAt": "2026-03-14T09:12:00+07:00"
+                },
+                {
+                  "id": "act-0002",
+                  "type": "checkin",
+                  "label": "142 orang sudah check-in di Town Hall Q3",
+                  "occurredAt": "2026-03-14T14:08:00+07:00"
+                },
+                {
+                  "id": "act-0003",
+                  "type": "publish",
+                  "label": "Padel Friday dipublikasikan",
+                  "occurredAt": "2026-03-13T16:30:00+07:00"
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Dashboard
+
+  Organisasi, event aktif, statistik, aktivitas terbaru.
+
+  **GET** `/teams/dashboard`
+
+  - Response: `dto/teams/dashboard.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

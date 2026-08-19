@@ -1,0 +1,190 @@
+info:
+  name: Event Detail
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/events/{id}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail event berhasil diambil",
+            "data": {
+              "id": "f00d1e00-1111-4222-8333-000000000601",
+              "slug": "annual-kick-off-2026",
+              "title": "Annual Kick-off 2026",
+              "summary": "Rencana tahunan, penghargaan, dan makan malam bersama.",
+              "status": "published",
+              "format": "onsite",
+              "costModel": "company_paid",
+              "audience": [
+                "All members"
+              ],
+              "code": "SN-KO26",
+              "startsAt": "2026-03-20T08:00:00+07:00",
+              "endsAt": "2026-03-20T17:00:00+07:00",
+              "timezone": "Asia/Jakarta",
+              "venue": "Balai Kartini",
+              "room": "Grand Ballroom",
+              "onlineUrl": null,
+              "capacity": 500,
+              "registeredCount": 412,
+              "checkedInCount": 0,
+              "onsiteScanCount": 0,
+              "coverImageUrl": "https://cdn.hoople.id/teams/annual-kick-off-2026.jpg",
+              "organiser": "People Ops",
+              "recurring": null,
+              "createdAt": "2026-01-08T10:00:00+07:00",
+              "publishedAt": "2026-01-10T09:00:00+07:00",
+              "passes": [
+                {
+                  "id": "pass-regular",
+                  "name": "Regular",
+                  "note": "Seluruh karyawan",
+                  "price": {
+                    "amount": 0,
+                    "currency": "IDR"
+                  },
+                  "sold": 380,
+                  "quota": 450,
+                  "onsite": true
+                },
+                {
+                  "id": "pass-guest",
+                  "name": "Plus One",
+                  "note": "Membawa pasangan",
+                  "price": {
+                    "amount": 600000,
+                    "currency": "IDR"
+                  },
+                  "sold": 32,
+                  "quota": 50,
+                  "onsite": true
+                }
+              ],
+              "description": "Kick-off tahunan Sinar Nusantara. Paparan strategi 2026, penghargaan karyawan, dan gala dinner.",
+              "agenda": [
+                {
+                  "time": "08:00",
+                  "label": "Registrasi & sarapan"
+                },
+                {
+                  "time": "09:00",
+                  "label": "Pembukaan oleh CEO"
+                },
+                {
+                  "time": "10:30",
+                  "label": "Paparan strategi per direktorat"
+                },
+                {
+                  "time": "12:00",
+                  "label": "Makan siang"
+                },
+                {
+                  "time": "14:00",
+                  "label": "Breakout session"
+                },
+                {
+                  "time": "16:00",
+                  "label": "Penghargaan karyawan"
+                },
+                {
+                  "time": "18:00",
+                  "label": "Gala dinner"
+                }
+              ],
+              "memberLink": "https://teams.hoople.id/sinar-nusantara/annual-kick-off-2026",
+              "requiresCompanySignIn": true,
+              "settlement": {
+                "collected": {
+                  "amount": 19200000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 886400,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 18313600,
+                  "currency": "IDR"
+                },
+                "gatewayRate": 0.0395,
+                "gatewayFlat": {
+                  "amount": 4000,
+                  "currency": "IDR"
+                },
+                "platformRate": 0
+              },
+              "funnel": [
+                {
+                  "key": "invited",
+                  "label": "Diundang",
+                  "note": "Anggota yang menerima undangan",
+                  "count": 486
+                },
+                {
+                  "key": "opened",
+                  "label": "Membuka",
+                  "note": "Membuka undangan",
+                  "count": 340
+                },
+                {
+                  "key": "started",
+                  "label": "Mulai mendaftar",
+                  "note": "Sampai ke formulir RSVP",
+                  "count": 511
+                },
+                {
+                  "key": "registered",
+                  "label": "Terdaftar",
+                  "note": "Kursi terkonfirmasi",
+                  "count": 412
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Event Detail
+
+  Detail + agenda + funnel + settlement.
+
+  **GET** `/teams/events/{id}`
+
+  - Response: `dto/teams/event-detail.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

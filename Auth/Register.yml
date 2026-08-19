@@ -1,0 +1,91 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Adriani Ajeng",
+        "email": "adriani.ajeng@gmail.com",
+        "phone": "+62 812 3456 7890",
+        "password": "RahasiaKu123",
+        "passwordConfirmation": "RahasiaKu123",
+        "interests": [
+          "sports_fitness",
+          "art_design"
+        ],
+        "acceptedTermsAt": "2026-03-14T09:30:00+07:00"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Pendaftaran berhasil",
+            "data": {
+              "user": {
+                "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+                "fullName": "Adriani Ajeng",
+                "email": "adriani.ajeng@gmail.com",
+                "phone": "+62 812 3456 7890",
+                "avatarUrl": null,
+                "roles": [
+                  "participant"
+                ],
+                "emailVerifiedAt": null,
+                "createdAt": "2026-03-14T09:30:00+07:00"
+              },
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Register
+
+  Daftar akun baru + minat awal.
+
+  **POST** `/auth/register`
+
+  - Request: `dto/auth/register.request.json`
+  - Response: `dto/auth/register.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

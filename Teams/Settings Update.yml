@@ -1,0 +1,65 @@
+info:
+  name: Settings Update
+  type: http
+  seq: 14
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/teams/settings"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "organization": {
+          "name": "Sinar Nusantara",
+          "legalName": "PT Sinar Nusantara Digital",
+          "city": "Jakarta Selatan",
+          "domain": "sinarnusantara.co.id"
+        },
+        "membership": {
+          "rule": "email_domain",
+          "allowedDomains": [
+            "sinarnusantara.co.id"
+          ],
+          "requireCompanySignIn": true,
+          "autoApprove": true
+        },
+        "collections": {
+          "bankName": "BCA",
+          "accountNumber": "1122334821",
+          "accountHolder": "PT Sinar Nusantara Digital",
+          "disbursement": "after_event",
+          "payoutSchedule": "weekly"
+        }
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  ## Settings Update
+
+  Simpan pengaturan.
+
+  **PATCH** `/teams/settings`
+
+  - Request: `dto/teams/settings-update.request.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

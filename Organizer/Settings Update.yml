@@ -1,0 +1,71 @@
+info:
+  name: Settings Update
+  type: http
+  seq: 17
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizer/settings"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "workspace": {
+          "name": "Waktu Luang",
+          "category": "Community & Lifestyle",
+          "description": "Kelas kreatif akhir pekan di Jakarta Selatan.",
+          "contactEmail": "halo@waktuluang.id",
+          "contactPhone": "+62 812 3456 7890",
+          "socials": {
+            "website": "https://waktuluang.id",
+            "instagram": "@waktuluang",
+            "youtube": null
+          }
+        },
+        "payout": {
+          "bankName": "BCA",
+          "accountNumber": "1234567890",
+          "accountHolder": "Adriani Ajeng",
+          "schedule": "weekly"
+        },
+        "fees": {
+          "absorbedByOrganizer": false
+        },
+        "notifications": {
+          "newRegistration": true,
+          "paymentReceived": true,
+          "payoutSettled": true,
+          "weeklyDigest": true
+        }
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  ## Settings Update
+
+  Simpan pengaturan.
+
+  **PATCH** `/organizer/settings`
+
+  - Request: `dto/organizer/settings-update.request.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

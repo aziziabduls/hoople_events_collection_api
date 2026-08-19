@@ -1,0 +1,131 @@
+info:
+  name: Payment Settlement
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/payments?eventId=f00d1e00-1111-4222-8333-000000000601"
+  auth: inherit
+  params:
+    - name: eventId
+      value: f00d1e00-1111-4222-8333-000000000601
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Ringkasan keuangan berhasil diambil",
+            "data": {
+              "eventId": "f00d1e00-1111-4222-8333-000000000601",
+              "eventTitle": "Annual Kick-off 2026",
+              "costModel": "company_paid",
+              "settlement": {
+                "collected": {
+                  "amount": 19200000,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 886400,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "net": {
+                  "amount": 18313600,
+                  "currency": "IDR"
+                },
+                "gatewayRate": 0.0395,
+                "gatewayFlat": {
+                  "amount": 4000,
+                  "currency": "IDR"
+                },
+                "platformRate": 0
+              },
+              "paidOrders": 32,
+              "pendingOrders": 4,
+              "refundedOrders": 1,
+              "payoutAccount": {
+                "bankName": "BCA",
+                "accountNumber": "****4821",
+                "accountHolder": "PT Sinar Nusantara Digital",
+                "isVerified": true
+              },
+              "payoutSteps": [
+                {
+                  "key": "collected",
+                  "label": "Dana terkumpul",
+                  "status": "done",
+                  "occurredAt": "2026-03-13T23:59:00+07:00",
+                  "amount": {
+                    "amount": 19200000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "key": "event_ended",
+                  "label": "Event selesai",
+                  "status": "pending",
+                  "occurredAt": null,
+                  "amount": null
+                },
+                {
+                  "key": "settlement",
+                  "label": "Rekonsiliasi",
+                  "status": "pending",
+                  "occurredAt": null,
+                  "amount": null
+                },
+                {
+                  "key": "payout",
+                  "label": "Dana ditransfer",
+                  "status": "pending",
+                  "occurredAt": null,
+                  "amount": {
+                    "amount": 18313600,
+                    "currency": "IDR"
+                  }
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Payment Settlement
+
+  Dana terkumpul, potongan, tahapan pencairan.
+
+  **GET** `/teams/payments?eventId=`
+
+  - Response: `dto/teams/payment-settlement.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

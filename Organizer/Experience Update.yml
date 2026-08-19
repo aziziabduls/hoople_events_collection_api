@@ -1,0 +1,56 @@
+info:
+  name: Experience Update
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizer/experiences/{id}"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "identity": {
+          "title": "Kelas Keramik untuk Pemula (Batch 2)",
+          "category": "Classes",
+          "summary": "Belajar teknik pinch dan coil.",
+          "coverImageUrl": "https://cdn.hoople.id/covers/pottery.jpg"
+        },
+        "pricing": {
+          "basePrice": 275000,
+          "currency": "IDR",
+          "defaultCapacity": 12,
+          "minParticipants": 3
+        }
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  ## Experience Update
+
+  Update parsial.
+
+  **PATCH** `/organizer/experiences/{id}`
+
+  - Request: `dto/organizer/experience-update.request.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

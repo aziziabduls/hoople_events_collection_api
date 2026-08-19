@@ -1,0 +1,200 @@
+info:
+  name: Event List
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar event berhasil diambil",
+            "data": [
+              {
+                "id": "e1f2a3b4-1111-4c5d-9e6f-000000000201",
+                "slug": "jakarta-coffee-week",
+                "title": "Jakarta Coffee Week 2026",
+                "kind": "event",
+                "host": "Kopi Karya",
+                "category": "Food & Drink",
+                "badge": "featured",
+                "status": "published",
+                "summary": "Tiga hari, 80 roaster lokal, cupping session tiap jam.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/jakarta-coffee-week.jpg",
+                "startsAt": "2026-04-11T10:00:00+07:00",
+                "endsAt": "2026-04-12T21:00:00+07:00",
+                "price": {
+                  "amount": 150000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 4000,
+                "registeredCount": 3120,
+                "venue": {
+                  "name": "Balai Kartini",
+                  "area": "Kuningan",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                "slug": "sunset-rooftop-jazz",
+                "title": "Sunset Rooftop Jazz",
+                "kind": "event",
+                "host": "Waktu Luang",
+                "category": "Music",
+                "badge": "trending",
+                "status": "published",
+                "summary": "Kuartet jazz di rooftop SCBD, matahari terbenam sebagai latar.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg",
+                "startsAt": "2026-03-28T17:30:00+07:00",
+                "endsAt": "2026-03-28T22:00:00+07:00",
+                "price": {
+                  "amount": 275000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": true,
+                "capacity": 300,
+                "registeredCount": 300,
+                "venue": {
+                  "name": "Strive Gym SCBD",
+                  "area": "SCBD",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": true
+              },
+              {
+                "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
+                "slug": "pasar-kreatif-kemang",
+                "title": "Pasar Kreatif Kemang",
+                "kind": "event",
+                "host": "Komunitas Kemang",
+                "category": "Market",
+                "badge": null,
+                "status": "published",
+                "summary": "Bazar produk lokal, 60 tenant, gratis masuk.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
+                "startsAt": "2026-03-22T09:00:00+07:00",
+                "endsAt": "2026-03-22T18:00:00+07:00",
+                "price": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "isFree": true,
+                "soldOut": false,
+                "capacity": 2000,
+                "registeredCount": 780,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "e1f2a3b4-4444-4c5d-9e6f-000000000204",
+                "slug": "creative-talk-build-your-brand",
+                "title": "Creative Talk: Build Your Brand",
+                "kind": "event",
+                "host": "Waktu Luang",
+                "category": "Business & Professional",
+                "badge": null,
+                "status": "published",
+                "summary": "Empat pembicara, studi kasus brand lokal yang tumbuh dari nol.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/creative-talk-build-your-brand.jpg",
+                "startsAt": "2026-04-04T13:00:00+07:00",
+                "endsAt": "2026-04-04T17:00:00+07:00",
+                "price": {
+                  "amount": 95000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 250,
+                "registeredCount": 188,
+                "venue": {
+                  "name": "Sasana Budaya Ganesha",
+                  "area": "Coblong",
+                  "city": "Bandung"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+                "slug": "ux-in-practice",
+                "title": "UX in Practice",
+                "kind": "event",
+                "host": "Lingua Space",
+                "category": "Business & Professional",
+                "badge": "new",
+                "status": "published",
+                "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/ux-in-practice.jpg",
+                "startsAt": "2026-05-09T09:00:00+07:00",
+                "endsAt": "2026-05-09T16:00:00+07:00",
+                "price": {
+                  "amount": 125000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 120,
+                "registeredCount": 34,
+                "venue": {
+                  "name": "Balai Kartini",
+                  "area": "Kuningan",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 18,
+              "totalPages": 2
+            }
+          }
+
+docs: |-
+  ## Event List
+
+  Daftar event (sekali jalan).
+
+  **GET** `/events`
+
+  - Response: `dto/catalog/event-list.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

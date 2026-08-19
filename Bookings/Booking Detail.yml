@@ -1,0 +1,168 @@
+info:
+  name: Booking Detail
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/bookings/{id}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail pesanan berhasil diambil",
+            "data": {
+              "id": "b0071e5c-1111-4d2e-8a3f-000000000301",
+              "orderId": "ORD-20260314-0001",
+              "ticketId": "HPL-8K2M-4QX7",
+              "status": "confirmed",
+              "paymentStatus": "paid",
+              "kind": "activity",
+              "experience": {
+                "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                "slug": "morning-yoga-flow",
+                "title": "Morning Yoga Flow",
+                "host": "Flow with Me Studio",
+                "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg"
+              },
+              "session": {
+                "id": "11111111-0001-4aaa-8bbb-000000000001",
+                "name": "Sunrise Flow",
+                "startsAt": "2026-03-16T07:00:00+07:00",
+                "endsAt": "2026-03-16T08:15:00+07:00",
+                "coach": "Sekar Ayu",
+                "room": "Studio Utama"
+              },
+              "ticketType": null,
+              "venue": {
+                "name": "Waktu Luang Studio",
+                "area": "Kemang",
+                "city": "Jakarta Selatan",
+                "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+                "latitude": -6.2607,
+                "longitude": 106.8138
+              },
+              "quantity": 2,
+              "participants": [
+                {
+                  "fullName": "Adriani Ajeng",
+                  "email": "adriani.ajeng@gmail.com",
+                  "phone": "+62 812 3456 7890",
+                  "checkedInAt": null
+                },
+                {
+                  "fullName": "Dewi Lestari",
+                  "email": "dewi.lestari@gmail.com",
+                  "phone": "+62 813 9988 7766",
+                  "checkedInAt": null
+                }
+              ],
+              "buyer": {
+                "fullName": "Adriani Ajeng",
+                "email": "adriani.ajeng@gmail.com",
+                "phone": "+62 812 3456 7890"
+              },
+              "price": {
+                "unitPrice": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "quantity": 2,
+                "subtotal": {
+                  "amount": 240000,
+                  "currency": "IDR"
+                },
+                "discount": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "platformFee": {
+                  "amount": 7200,
+                  "currency": "IDR"
+                },
+                "gatewayFee": {
+                  "amount": 4320,
+                  "currency": "IDR"
+                },
+                "total": {
+                  "amount": 251520,
+                  "currency": "IDR"
+                },
+                "currency": "IDR"
+              },
+              "payment": {
+                "methodId": "pm-bca-va",
+                "methodName": "BCA Virtual Account",
+                "virtualAccountNumber": "8277 0812 3456 7890",
+                "paidAt": "2026-03-14T09:41:00+07:00",
+                "expiresAt": null,
+                "reference": "TRX-BCA-260314-77120"
+              },
+              "qrCodeUrl": "https://cdn.hoople.id/qr/HPL-8K2M-4QX7.png",
+              "createdAt": "2026-03-14T09:30:00+07:00",
+              "cancelledAt": null,
+              "cancellationReason": null,
+              "timeline": [
+                {
+                  "status": "created",
+                  "label": "Pesanan dibuat",
+                  "occurredAt": "2026-03-14T09:30:00+07:00"
+                },
+                {
+                  "status": "paid",
+                  "label": "Pembayaran diterima",
+                  "occurredAt": "2026-03-14T09:41:00+07:00"
+                },
+                {
+                  "status": "confirmed",
+                  "label": "Tiket diterbitkan",
+                  "occurredAt": "2026-03-14T09:41:05+07:00"
+                }
+              ],
+              "policy": {
+                "cancellation": "Batal gratis hingga 24 jam sebelum sesi dimulai.",
+                "refundableUntil": "2026-03-15T07:00:00+07:00"
+              },
+              "canCancel": true,
+              "canReschedule": true
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Booking Detail
+
+  Detail + timeline + kebijakan.
+
+  **GET** `/bookings/{id}`
+
+  - Response: `dto/bookings/booking-detail.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

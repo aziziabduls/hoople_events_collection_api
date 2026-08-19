@@ -1,0 +1,220 @@
+info:
+  name: Activity List
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Daftar aktivitas berhasil diambil",
+            "data": [
+              {
+                "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                "slug": "morning-yoga-flow",
+                "title": "Morning Yoga Flow",
+                "kind": "activity",
+                "host": "Flow with Me Studio",
+                "category": "Yoga & Wellness",
+                "categoryLabel": "YOGA & WELLNESS",
+                "badge": "popular",
+                "summary": "Kelas yoga pagi 75 menit untuk memulai hari dengan tenang dan lentur.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+                "rating": 4.9,
+                "reviewCount": 218,
+                "priceFrom": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Senin, Rabu, Jumat",
+                "recurrenceTime": "07:00 - 08:15 WIB",
+                "durationMinutes": 75,
+                "level": "Semua level",
+                "joinedCount": 1240,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": true,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-16T07:00:00+07:00"
+              },
+              {
+                "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+                "slug": "pottery-class",
+                "title": "Kelas Keramik untuk Pemula",
+                "kind": "activity",
+                "host": "Waktu Luang",
+                "category": "Classes",
+                "categoryLabel": "CLASSES",
+                "badge": "trending",
+                "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/pottery-class.jpg",
+                "rating": 4.8,
+                "reviewCount": 96,
+                "priceFrom": {
+                  "amount": 250000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Sabtu",
+                "recurrenceTime": "14:00 - 16:00 WIB",
+                "durationMinutes": 120,
+                "level": "Pemula",
+                "joinedCount": 380,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-16T07:00:00+07:00"
+              },
+              {
+                "id": "a1b2c3d4-3333-4a2b-8c3d-000000000103",
+                "slug": "latte-art-workshop",
+                "title": "Latte Art Workshop",
+                "kind": "activity",
+                "host": "Kopi Karya",
+                "category": "Food & Drink",
+                "categoryLabel": "FOOD & DRINK",
+                "badge": "new",
+                "summary": "Dari milk steaming sampai rosetta, langsung praktik di mesin espresso.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/latte-art-workshop.jpg",
+                "rating": 4.7,
+                "reviewCount": 64,
+                "priceFrom": {
+                  "amount": 185000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Kamis",
+                "recurrenceTime": "10:00 - 12:00 WIB",
+                "durationMinutes": 120,
+                "level": "Pemula",
+                "joinedCount": 210,
+                "venue": {
+                  "name": "GreenBite Kitchen",
+                  "area": "Pantai Indah Kapuk",
+                  "city": "Jakarta Utara"
+                },
+                "isSaved": false,
+                "soldOut": true,
+                "nextSessionAt": "2026-03-19T10:00:00+07:00"
+              },
+              {
+                "id": "a1b2c3d4-4444-4a2b-8c3d-000000000104",
+                "slug": "padel-friday",
+                "title": "Padel Friday Social",
+                "kind": "activity",
+                "host": "Strive Gym SCBD",
+                "category": "Sports & Fitness",
+                "categoryLabel": "SPORTS & FITNESS",
+                "badge": null,
+                "summary": "Main padel santai tiap Jumat sore. Gratis, raket disediakan.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/padel-friday.jpg",
+                "rating": 4.6,
+                "reviewCount": 41,
+                "priceFrom": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "isFree": true,
+                "recurrence": "Setiap Jumat",
+                "recurrenceTime": "17:00 - 19:00 WIB",
+                "durationMinutes": 120,
+                "level": "Semua level",
+                "joinedCount": 152,
+                "venue": {
+                  "name": "Strive Gym SCBD",
+                  "area": "SCBD",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-20T17:00:00+07:00"
+              },
+              {
+                "id": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
+                "slug": "healthy-cooking-class",
+                "title": "Healthy Cooking Class",
+                "kind": "activity",
+                "host": "GreenBite Kitchen",
+                "category": "Food & Drink",
+                "categoryLabel": "FOOD & DRINK",
+                "badge": "featured",
+                "summary": "Masak tiga menu sehat dalam dua jam, bahan sudah disiapkan.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/healthy-cooking-class.jpg",
+                "rating": 4.9,
+                "reviewCount": 133,
+                "priceFrom": {
+                  "amount": 175000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Minggu",
+                "recurrenceTime": "10:00 - 12:00 WIB",
+                "durationMinutes": 120,
+                "level": "Semua level",
+                "joinedCount": 640,
+                "venue": {
+                  "name": "GreenBite Kitchen",
+                  "area": "Pantai Indah Kapuk",
+                  "city": "Jakarta Utara"
+                },
+                "isSaved": false,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-22T10:00:00+07:00"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 34,
+              "totalPages": 4
+            }
+          }
+
+docs: |-
+  ## Activity List
+
+  Daftar aktivitas (berulang).
+
+  **GET** `/activities`
+
+  - Response: `dto/catalog/activity-list.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

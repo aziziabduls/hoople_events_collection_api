@@ -1,0 +1,6 @@
+name: Staging
+variables:
+  - name: baseUrl
+    value: https://api-staging.hoople.id/v1
+  - name: accessToken
+    value: ""

@@ -1,0 +1,6 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: http://localhost:8000/v1
+  - name: accessToken
+    value: ""

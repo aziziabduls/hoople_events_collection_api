@@ -1,0 +1,212 @@
+info:
+  name: Activity Create
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizer/experiences/activities"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "kind": "activity",
+        "identity": {
+          "title": "Kelas Keramik untuk Pemula",
+          "category": "Classes",
+          "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+          "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-8f2a.jpg"
+        },
+        "details": {
+          "difficulty": "beginner",
+          "language": "Bahasa Indonesia",
+          "visibility": "public"
+        },
+        "participantInfo": {
+          "whatToBring": [
+            "Pakaian yang boleh kotor"
+          ],
+          "requirements": [
+            "Usia 12 tahun ke atas"
+          ]
+        },
+        "venue": {
+          "name": "Waktu Luang Studio",
+          "area": "Kemang",
+          "city": "Jakarta Selatan",
+          "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+          "latitude": -6.2607,
+          "longitude": 106.8138,
+          "notes": [
+            "5 menit dari Halte TransJakarta Kemang"
+          ]
+        },
+        "schedule": {
+          "startDate": "2026-03-01",
+          "endDate": null,
+          "noEndDate": true,
+          "repeatWeekly": true,
+          "operatingDays": [
+            "mon",
+            "wed",
+            "fri",
+            "sat"
+          ],
+          "skippedDates": [
+            "2026-04-02"
+          ],
+          "pickedDates": [],
+          "timezone": "Asia/Jakarta"
+        },
+        "sessions": [
+          {
+            "name": "Sesi Sabtu Siang",
+            "startTime": "14:00",
+            "endTime": "16:00",
+            "weekdays": [
+              "sat"
+            ],
+            "capacity": 12,
+            "price": 250000,
+            "instructor": "Rani Putri",
+            "isActive": true
+          },
+          {
+            "name": "Sesi Rabu Malam",
+            "startTime": "18:30",
+            "endTime": "20:30",
+            "weekdays": [
+              "wed"
+            ],
+            "capacity": 10,
+            "price": 275000,
+            "instructor": "Kevin Ardiansyah",
+            "isActive": true
+          }
+        ],
+        "pricing": {
+          "basePrice": 250000,
+          "currency": "IDR",
+          "defaultCapacity": 12,
+          "minParticipants": 3
+        },
+        "booking": {
+          "opensBefore": "30d",
+          "closesBefore": "2h",
+          "confirmation": "instant",
+          "cancellationPolicy": "flexible",
+          "allowWaitlist": true
+        },
+        "instructors": [
+          {
+            "name": "Rani Putri",
+            "role": "Pottery Instructor",
+            "bio": "Delapan tahun mengajar keramik.",
+            "expertise": [
+              "Wheel throwing",
+              "Glazing"
+            ],
+            "avatarUrl": null
+          }
+        ],
+        "gallery": [
+          "https://cdn.hoople.id/uploads/tmp/g1.jpg",
+          "https://cdn.hoople.id/uploads/tmp/g2.jpg"
+        ],
+        "facilities": [
+          "Ruang ber-AC",
+          "Loker",
+          "Wi-Fi"
+        ],
+        "equipment": [
+          "Tanah liat",
+          "Alat putar",
+          "Apron"
+        ],
+        "houseRules": [
+          "Datang 10 menit lebih awal"
+        ],
+        "publish": {
+          "mode": "now",
+          "scheduledAt": null,
+          "showOnDiscovery": true
+        }
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Aktivitas berhasil dibuat",
+            "data": {
+              "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+              "slug": "kelas-keramik-untuk-pemula",
+              "title": "Kelas Keramik untuk Pemula",
+              "kind": "activity",
+              "status": "published",
+              "visibility": "public",
+              "category": "Classes",
+              "coverImageUrl": "https://cdn.hoople.id/covers/kelas-keramik-untuk-pemula.jpg",
+              "startsAt": "2026-03-21T14:00:00+07:00",
+              "endsAt": "2026-03-21T16:00:00+07:00",
+              "note": "Sesi berikutnya Sabtu",
+              "venue": {
+                "name": "Waktu Luang Studio",
+                "area": "Kemang",
+                "city": "Jakarta Selatan"
+              },
+              "registeredCount": 9,
+              "capacity": 12,
+              "occupancyRate": 0.75,
+              "revenue": {
+                "amount": 2250000,
+                "currency": "IDR"
+              },
+              "sessionCount": 24,
+              "createdAt": "2026-01-12T10:00:00+07:00",
+              "publishedAt": "2026-03-14T09:30:00+07:00",
+              "publicUrl": "https://hoople.id/activities/kelas-keramik-untuk-pemula"
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Activity Create
+
+  Submit builder aktivitas (5 langkah).
+
+  **POST** `/organizer/experiences/activities`
+
+  - Request: `dto/organizer/activity-create.request.json`
+  - Response: `dto/organizer/activity-create.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

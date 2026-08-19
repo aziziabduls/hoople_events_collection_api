@@ -1,0 +1,73 @@
+info:
+  name: Support Contact
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/support/tickets"
+  auth: none
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Adriani Ajeng",
+        "email": "adriani.ajeng@gmail.com",
+        "topic": "pembayaran",
+        "orderId": "ORD-20260314-0001",
+        "message": "Pembayaran saya sudah terpotong tapi status pesanan masih pending."
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Pesan Anda telah dikirim",
+            "data": {
+              "ticketId": "SUP-20260314-0042",
+              "status": "open",
+              "estimatedResponseAt": "2026-03-15T09:30:00+07:00",
+              "createdAt": "2026-03-14T09:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Support Contact
+
+  Form hubungi kami.
+
+  **POST** `/support/tickets`
+
+  - Request: `dto/content/support-contact.request.json`
+  - Response: `dto/content/support-contact.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

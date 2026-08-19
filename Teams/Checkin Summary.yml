@@ -1,0 +1,80 @@
+info:
+  name: Checkin Summary
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/check-in/summary?eventId=f00d1e00-1111-4222-8333-000000000601"
+  auth: inherit
+  params:
+    - name: eventId
+      value: f00d1e00-1111-4222-8333-000000000601
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Ringkasan check-in berhasil diambil",
+            "data": {
+              "eventId": "f00d1e00-1111-4222-8333-000000000601",
+              "eventTitle": "Annual Kick-off 2026",
+              "registered": 412,
+              "checkedIn": 247,
+              "noShow": 0,
+              "pending": 165,
+              "checkInRate": 0.599,
+              "scanners": [
+                {
+                  "id": "gate-1",
+                  "label": "Gate 1 — Lobby",
+                  "scans": 138,
+                  "lastScanAt": "2026-03-20T09:15:00+07:00"
+                },
+                {
+                  "id": "gate-2",
+                  "label": "Gate 2 — Ballroom",
+                  "scans": 109,
+                  "lastScanAt": "2026-03-20T09:14:00+07:00"
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Checkin Summary
+
+  Progres per scanner.
+
+  **GET** `/teams/check-in/summary?eventId=`
+
+  - Response: `dto/teams/checkin-summary.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

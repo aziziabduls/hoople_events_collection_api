@@ -1,0 +1,116 @@
+info:
+  name: Settings
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/settings"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Pengaturan organisasi berhasil diambil",
+            "data": {
+              "organization": {
+                "id": "d0d0d0d0-bbbb-4ccc-8ddd-000000000501",
+                "name": "Sinar Nusantara",
+                "legalName": "PT Sinar Nusantara Digital",
+                "initials": "SN",
+                "handle": "sinar-nusantara",
+                "domain": "sinarnusantara.co.id",
+                "plan": "organization",
+                "memberCount": 486,
+                "city": "Jakarta Selatan"
+              },
+              "membership": {
+                "rule": "email_domain",
+                "allowedDomains": [
+                  "sinarnusantara.co.id"
+                ],
+                "requireCompanySignIn": true,
+                "autoApprove": true
+              },
+              "departments": [
+                {
+                  "id": "dep-01",
+                  "name": "Engineering",
+                  "headcount": 164
+                },
+                {
+                  "id": "dep-02",
+                  "name": "Product & Design",
+                  "headcount": 78
+                },
+                {
+                  "id": "dep-03",
+                  "name": "Sales & Growth",
+                  "headcount": 96
+                }
+              ],
+              "collections": {
+                "bankName": "BCA",
+                "accountNumber": "****4821",
+                "accountHolder": "PT Sinar Nusantara Digital",
+                "disbursement": "after_event",
+                "platformFeeRate": 0,
+                "payoutSchedule": "weekly",
+                "isVerified": true
+              },
+              "admins": [
+                {
+                  "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
+                  "name": "Adriani Ajeng",
+                  "email": "adriani.ajeng@sinarnusantara.co.id",
+                  "role": "owner",
+                  "addedAt": "2025-11-02T09:00:00+07:00"
+                },
+                {
+                  "id": "9c4d6f13-2a75-4e90-b3c1-44a5b6c7d203",
+                  "name": "Raka Mahendra",
+                  "email": "raka.mahendra@sinarnusantara.co.id",
+                  "role": "admin",
+                  "addedAt": "2026-01-15T10:30:00+07:00"
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Settings
+
+  Organisasi, aturan keanggotaan, rekening, admin.
+
+  **GET** `/teams/settings`
+
+  - Response: `dto/teams/settings.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

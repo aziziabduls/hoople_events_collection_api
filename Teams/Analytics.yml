@@ -1,0 +1,220 @@
+info:
+  name: Analytics
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{baseUrl}}/teams/analytics?eventId=f00d1e00-1111-4222-8333-000000000601"
+  auth: inherit
+  params:
+    - name: eventId
+      value: f00d1e00-1111-4222-8333-000000000601
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Analitik berhasil dimuat",
+            "data": {
+              "eventId": "f00d1e00-1111-4222-8333-000000000601",
+              "eventTitle": "Annual Kick-off 2026",
+              "summary": {
+                "invited": 486,
+                "registered": 412,
+                "checkedIn": 0,
+                "registrationRate": 0.848,
+                "attendanceRate": null,
+                "collected": {
+                  "amount": 19200000,
+                  "currency": "IDR"
+                }
+              },
+              "funnel": [
+                {
+                  "key": "invited",
+                  "label": "Diundang",
+                  "note": "Anggota yang menerima undangan",
+                  "count": 486
+                },
+                {
+                  "key": "opened",
+                  "label": "Membuka",
+                  "note": "Membuka undangan",
+                  "count": 340
+                },
+                {
+                  "key": "started",
+                  "label": "Mulai mendaftar",
+                  "note": "Sampai ke formulir RSVP",
+                  "count": 511
+                },
+                {
+                  "key": "registered",
+                  "label": "Terdaftar",
+                  "note": "Kursi terkonfirmasi",
+                  "count": 412
+                }
+              ],
+              "departmentResponse": [
+                {
+                  "name": "Engineering",
+                  "headcount": 164,
+                  "registered": 142,
+                  "share": 0.866
+                },
+                {
+                  "name": "Product & Design",
+                  "headcount": 78,
+                  "registered": 71,
+                  "share": 0.91
+                },
+                {
+                  "name": "Sales & Growth",
+                  "headcount": 96,
+                  "registered": 68,
+                  "share": 0.708
+                },
+                {
+                  "name": "Operations",
+                  "headcount": 74,
+                  "registered": 57,
+                  "share": 0.77
+                },
+                {
+                  "name": "People Ops",
+                  "headcount": 38,
+                  "registered": 36,
+                  "share": 0.947
+                },
+                {
+                  "name": "Finance & Legal",
+                  "headcount": 36,
+                  "registered": 38,
+                  "share": 1
+                }
+              ],
+              "registrationSources": [
+                {
+                  "source": "Undangan email",
+                  "count": 214,
+                  "share": 0.52
+                },
+                {
+                  "source": "Slack",
+                  "count": 112,
+                  "share": 0.27
+                },
+                {
+                  "source": "Intranet",
+                  "count": 54,
+                  "share": 0.13
+                },
+                {
+                  "source": "Atasan langsung",
+                  "count": 32,
+                  "share": 0.08
+                }
+              ],
+              "deviceSplit": [
+                {
+                  "device": "mobile",
+                  "share": 0.68
+                },
+                {
+                  "device": "desktop",
+                  "share": 0.32
+                }
+              ],
+              "registrationTrend": [
+                {
+                  "date": "2026-03-01",
+                  "count": 24
+                },
+                {
+                  "date": "2026-03-03",
+                  "count": 58
+                },
+                {
+                  "date": "2026-03-05",
+                  "count": 96
+                },
+                {
+                  "date": "2026-03-07",
+                  "count": 142
+                },
+                {
+                  "date": "2026-03-09",
+                  "count": 231
+                },
+                {
+                  "date": "2026-03-11",
+                  "count": 336
+                },
+                {
+                  "date": "2026-03-13",
+                  "count": 412
+                }
+              ],
+              "checkInCurve": [
+                {
+                  "time": "08:00",
+                  "count": 42
+                },
+                {
+                  "time": "08:30",
+                  "count": 118
+                },
+                {
+                  "time": "09:00",
+                  "count": 246
+                },
+                {
+                  "time": "09:30",
+                  "count": 318
+                },
+                {
+                  "time": "10:00",
+                  "count": 352
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Analytics
+
+  Funnel, respons per departemen, tren, kurva check-in.
+
+  **GET** `/teams/analytics?eventId=`
+
+  - Response: `dto/teams/analytics.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

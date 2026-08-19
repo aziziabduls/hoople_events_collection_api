@@ -1,0 +1,222 @@
+info:
+  name: Analytics
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizer/analytics?from=2025-10-01&to=2026-03-14"
+  auth: inherit
+  params:
+    - name: from
+      value: "2025-10-01"
+      type: query
+    - name: to
+      value: "2026-03-14"
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Analitik berhasil dimuat",
+            "data": {
+              "period": {
+                "from": "2025-10-01T00:00:00+07:00",
+                "to": "2026-03-14T23:59:59+07:00",
+                "label": "6 bulan terakhir"
+              },
+              "summary": {
+                "totalRegistrations": 1248,
+                "totalRevenue": {
+                  "amount": 128450000,
+                  "currency": "IDR"
+                },
+                "averageTicketPrice": {
+                  "amount": 102928,
+                  "currency": "IDR"
+                },
+                "checkInRate": 0.82,
+                "cancellationRate": 0.04,
+                "repeatParticipantRate": 0.37
+              },
+              "monthly": [
+                {
+                  "period": "2025-10",
+                  "registrations": 118,
+                  "revenue": {
+                    "amount": 14200000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2025-11",
+                  "registrations": 142,
+                  "revenue": {
+                    "amount": 17800000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2025-12",
+                  "registrations": 196,
+                  "revenue": {
+                    "amount": 24100000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-01",
+                  "registrations": 174,
+                  "revenue": {
+                    "amount": 21500000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-02",
+                  "registrations": 228,
+                  "revenue": {
+                    "amount": 26900000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-03",
+                  "registrations": 264,
+                  "revenue": {
+                    "amount": 31950000,
+                    "currency": "IDR"
+                  }
+                }
+              ],
+              "topExperiences": [
+                {
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                  "title": "Sunset Rooftop Jazz",
+                  "kind": "event",
+                  "registrations": 300,
+                  "revenue": {
+                    "amount": 82500000,
+                    "currency": "IDR"
+                  },
+                  "occupancyRate": 1
+                },
+                {
+                  "id": "e1f2a3b4-1111-4c5d-9e6f-000000000201",
+                  "title": "Jakarta Coffee Week 2026",
+                  "kind": "event",
+                  "registrations": 312,
+                  "revenue": {
+                    "amount": 46800000,
+                    "currency": "IDR"
+                  },
+                  "occupancyRate": 0.78
+                },
+                {
+                  "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                  "title": "Morning Yoga Flow",
+                  "kind": "activity",
+                  "registrations": 288,
+                  "revenue": {
+                    "amount": 34560000,
+                    "currency": "IDR"
+                  },
+                  "occupancyRate": 0.8
+                }
+              ],
+              "trafficSources": [
+                {
+                  "source": "Pencarian Hoople",
+                  "visits": 4820,
+                  "share": 0.42
+                },
+                {
+                  "source": "Instagram",
+                  "visits": 3140,
+                  "share": 0.27
+                },
+                {
+                  "source": "Tautan langsung",
+                  "visits": 2050,
+                  "share": 0.18
+                },
+                {
+                  "source": "WhatsApp",
+                  "visits": 1490,
+                  "share": 0.13
+                }
+              ],
+              "categoryBreakdown": [
+                {
+                  "category": "Music",
+                  "registrations": 412,
+                  "revenue": {
+                    "amount": 58200000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "category": "Classes",
+                  "registrations": 386,
+                  "revenue": {
+                    "amount": 34100000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "category": "Yoga & Wellness",
+                  "registrations": 288,
+                  "revenue": {
+                    "amount": 24150000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "category": "Food & Drink",
+                  "registrations": 162,
+                  "revenue": {
+                    "amount": 12000000,
+                    "currency": "IDR"
+                  }
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |-
+  ## Analytics
+
+  Ringkasan, tren bulanan, top experience, sumber trafik.
+
+  **GET** `/organizer/analytics?from=&to=`
+
+  - Response: `dto/organizer/analytics.response.json`
+
+  Envelope: `{ success, message, data, meta }`. Uang di response berbentuk
+  `{ amount, currency }`; di request integer polos. Enum lowercase.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
