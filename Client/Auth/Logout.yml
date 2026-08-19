@@ -17,6 +17,12 @@ runtime:
       operator: eq
       value: "true"
 
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
 examples:
   - name: Sukses
     response:
@@ -35,7 +41,7 @@ examples:
             "meta": null
           }
 
-docs: |-
+docs: |
   # Logout
 
   Cabut refresh token.
@@ -86,11 +92,3 @@ docs: |-
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

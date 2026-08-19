@@ -17,6 +17,166 @@ runtime:
       operator: eq
       value: "true"
 
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Home: popular right now berhasil diambil",
+            "data": [
+              {
+                "id": "e1f2a3b4-1111-4c5d-9e6f-000000000201",
+                "slug": "jakarta-coffee-week",
+                "title": "Jakarta Coffee Week 2026",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000401",
+                  "name": "Kopi Karya",
+                  "slug": "kopi-karya"
+                },
+                "category": "Food & Drink",
+                "badge": "featured",
+                "status": "published",
+                "summary": "Tiga hari, 80 roaster lokal, cupping session tiap jam.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/jakarta-coffee-week.jpg",
+                "startsAt": "2026-04-11T10:00:00+07:00",
+                "endsAt": "2026-04-12T21:00:00+07:00",
+                "price": {
+                  "amount": 150000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 4000,
+                "registeredCount": 3120,
+                "venue": {
+                  "name": "Balai Kartini",
+                  "area": "Kuningan",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                "slug": "morning-yoga-flow",
+                "title": "Morning Yoga Flow",
+                "kind": "activity",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Yoga & Wellness",
+                "categoryLabel": "YOGA & WELLNESS",
+                "badge": "popular",
+                "summary": "Kelas yoga pagi 75 menit untuk memulai hari dengan tenang dan lentur.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+                "rating": 4.9,
+                "reviewCount": 218,
+                "priceFrom": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Senin, Rabu, Jumat",
+                "recurrenceTime": "07:00 - 08:15 WIB",
+                "durationMinutes": 75,
+                "level": "Semua level",
+                "joinedCount": 1240,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": true,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-16T07:00:00+07:00"
+              },
+              {
+                "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
+                "slug": "pasar-kreatif-kemang",
+                "title": "Pasar Kreatif Kemang",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Market",
+                "badge": null,
+                "status": "published",
+                "summary": "Bazar produk lokal, 60 tenant, gratis masuk.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
+                "startsAt": "2026-03-22T09:00:00+07:00",
+                "endsAt": "2026-03-22T18:00:00+07:00",
+                "price": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "isFree": true,
+                "soldOut": false,
+                "capacity": 2000,
+                "registeredCount": 780,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
+                "slug": "healthy-cooking-class",
+                "title": "Healthy Cooking Class",
+                "kind": "activity",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000406",
+                  "name": "GreenBite Kitchen",
+                  "slug": "greenbite-kitchen"
+                },
+                "category": "Food & Drink",
+                "categoryLabel": "FOOD & DRINK",
+                "badge": "featured",
+                "summary": "Masak tiga menu sehat dalam dua jam, bahan sudah disiapkan.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/healthy-cooking-class.jpg",
+                "rating": 4.9,
+                "reviewCount": 133,
+                "priceFrom": {
+                  "amount": 175000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Minggu",
+                "recurrenceTime": "10:00 - 12:00 WIB",
+                "durationMinutes": 120,
+                "level": "Semua level",
+                "joinedCount": 640,
+                "venue": {
+                  "name": "GreenBite Kitchen",
+                  "area": "Pantai Indah Kapuk",
+                  "city": "Jakarta Utara"
+                },
+                "isSaved": false,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-22T10:00:00+07:00"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 4,
+              "totalPages": 1
+            }
+          }
+
 docs: |-
   # Home Popular Right Now
 

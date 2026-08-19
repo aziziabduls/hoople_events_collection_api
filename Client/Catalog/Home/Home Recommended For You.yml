@@ -17,6 +17,166 @@ runtime:
       operator: eq
       value: "true"
 
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Home: recommended for you berhasil diambil",
+            "data": [
+              {
+                "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                "slug": "morning-yoga-flow",
+                "title": "Morning Yoga Flow",
+                "kind": "activity",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Yoga & Wellness",
+                "categoryLabel": "YOGA & WELLNESS",
+                "badge": "popular",
+                "summary": "Kelas yoga pagi 75 menit untuk memulai hari dengan tenang dan lentur.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+                "rating": 4.9,
+                "reviewCount": 218,
+                "priceFrom": {
+                  "amount": 120000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Senin, Rabu, Jumat",
+                "recurrenceTime": "07:00 - 08:15 WIB",
+                "durationMinutes": 75,
+                "level": "Semua level",
+                "joinedCount": 1240,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": true,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-16T07:00:00+07:00"
+              },
+              {
+                "id": "e1f2a3b4-4444-4c5d-9e6f-000000000204",
+                "slug": "creative-talk-build-your-brand",
+                "title": "Creative Talk: Build Your Brand",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Business & Professional",
+                "badge": null,
+                "status": "published",
+                "summary": "Empat pembicara, studi kasus brand lokal yang tumbuh dari nol.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/creative-talk-build-your-brand.jpg",
+                "startsAt": "2026-04-04T13:00:00+07:00",
+                "endsAt": "2026-04-04T17:00:00+07:00",
+                "price": {
+                  "amount": 95000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 250,
+                "registeredCount": 188,
+                "venue": {
+                  "name": "Sasana Budaya Ganesha",
+                  "area": "Coblong",
+                  "city": "Bandung"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+                "slug": "pottery-class",
+                "title": "Kelas Keramik untuk Pemula",
+                "kind": "activity",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Classes",
+                "categoryLabel": "CLASSES",
+                "badge": "trending",
+                "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/pottery-class.jpg",
+                "rating": 4.8,
+                "reviewCount": 96,
+                "priceFrom": {
+                  "amount": 250000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "recurrence": "Setiap Sabtu",
+                "recurrenceTime": "14:00 - 16:00 WIB",
+                "durationMinutes": 120,
+                "level": "Pemula",
+                "joinedCount": 380,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false,
+                "soldOut": false,
+                "nextSessionAt": "2026-03-16T07:00:00+07:00"
+              },
+              {
+                "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+                "slug": "ux-in-practice",
+                "title": "UX in Practice",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Business & Professional",
+                "badge": "new",
+                "status": "published",
+                "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/ux-in-practice.jpg",
+                "startsAt": "2026-05-09T09:00:00+07:00",
+                "endsAt": "2026-05-09T16:00:00+07:00",
+                "price": {
+                  "amount": 125000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 120,
+                "registeredCount": 34,
+                "venue": {
+                  "name": "Balai Kartini",
+                  "area": "Kuningan",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 4,
+              "totalPages": 1
+            }
+          }
+
 docs: |-
   # Home Recommended For You
 
