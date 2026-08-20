@@ -5,8 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/media/upload"
-  auth: inherit
+  url: "{{baseUrl}}/org/media/upload"
   headers:
     - name: Content-Type
       value: multipart/form-data
@@ -19,15 +18,9 @@ http:
       - name: purpose
         type: text
         value: cover
+  auth: inherit
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -39,6 +32,13 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -47,7 +47,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
