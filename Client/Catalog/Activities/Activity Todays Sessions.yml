@@ -17,6 +17,64 @@ runtime:
       operator: eq
       value: "true"
 
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Activity: today's sessions berhasil diambil",
+            "data": [
+              {
+                "sessionId": "11111111-0001-4aaa-8bbb-000000000001",
+                "activity": {
+                  "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                  "slug": "morning-yoga-flow",
+                  "title": "Morning Yoga Flow",
+                  "kind": "activity",
+                  "host": {
+                    "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                    "name": "Waktu Luang",
+                    "slug": "waktu-luang"
+                  },
+                  "category": "Yoga & Wellness",
+                  "categoryLabel": "YOGA & WELLNESS",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg"
+                },
+                "session": {
+                  "date": "2026-03-16",
+                  "startsAt": "2026-03-16T07:00:00+07:00",
+                  "endsAt": "2026-03-16T08:15:00+07:00",
+                  "name": "Sunrise Flow",
+                  "coach": "Sekar Ayu",
+                  "room": "Studio Utama",
+                  "level": "Semua level",
+                  "durationMinutes": 75,
+                  "capacity": 20,
+                  "slotsLeft": 6,
+                  "price": {
+                    "amount": 120000,
+                    "currency": "IDR"
+                  },
+                  "availability": "open"
+                }
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 1,
+              "totalPages": 1
+            }
+          }
+
 docs: |-
   # Activity Todays Sessions
 

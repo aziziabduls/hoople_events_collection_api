@@ -17,6 +17,126 @@ runtime:
       operator: eq
       value: "true"
 
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Event: trending this week berhasil diambil",
+            "data": [
+              {
+                "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                "slug": "sunset-rooftop-jazz",
+                "title": "Sunset Rooftop Jazz",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Music",
+                "badge": "trending",
+                "status": "published",
+                "summary": "Kuartet jazz di rooftop SCBD, matahari terbenam sebagai latar.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg",
+                "startsAt": "2026-03-28T17:30:00+07:00",
+                "endsAt": "2026-03-28T22:00:00+07:00",
+                "price": {
+                  "amount": 275000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": true,
+                "capacity": 300,
+                "registeredCount": 300,
+                "venue": {
+                  "name": "Strive Gym SCBD",
+                  "area": "SCBD",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": true
+              },
+              {
+                "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
+                "slug": "pasar-kreatif-kemang",
+                "title": "Pasar Kreatif Kemang",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Market",
+                "badge": null,
+                "status": "published",
+                "summary": "Bazar produk lokal, 60 tenant, gratis masuk.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
+                "startsAt": "2026-03-22T09:00:00+07:00",
+                "endsAt": "2026-03-22T18:00:00+07:00",
+                "price": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "isFree": true,
+                "soldOut": false,
+                "capacity": 2000,
+                "registeredCount": 780,
+                "venue": {
+                  "name": "Waktu Luang Studio",
+                  "area": "Kemang",
+                  "city": "Jakarta Selatan"
+                },
+                "isSaved": false
+              },
+              {
+                "id": "e1f2a3b4-4444-4c5d-9e6f-000000000204",
+                "slug": "creative-talk-build-your-brand",
+                "title": "Creative Talk: Build Your Brand",
+                "kind": "event",
+                "host": {
+                  "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                  "name": "Waktu Luang",
+                  "slug": "waktu-luang"
+                },
+                "category": "Business & Professional",
+                "badge": null,
+                "status": "published",
+                "summary": "Empat pembicara, studi kasus brand lokal yang tumbuh dari nol.",
+                "coverImageUrl": "https://cdn.hoople.id/covers/creative-talk-build-your-brand.jpg",
+                "startsAt": "2026-04-04T13:00:00+07:00",
+                "endsAt": "2026-04-04T17:00:00+07:00",
+                "price": {
+                  "amount": 95000,
+                  "currency": "IDR"
+                },
+                "isFree": false,
+                "soldOut": false,
+                "capacity": 250,
+                "registeredCount": 188,
+                "venue": {
+                  "name": "Sasana Budaya Ganesha",
+                  "area": "Coblong",
+                  "city": "Bandung"
+                },
+                "isSaved": false
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 3,
+              "totalPages": 1
+            }
+          }
+
 docs: |-
   # Event Trending This Week
 

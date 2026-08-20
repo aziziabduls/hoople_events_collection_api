@@ -6,7 +6,6 @@ info:
 http:
   method: PATCH
   url: "{{baseUrl}}/auth/me"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -29,6 +28,7 @@ http:
           "push": false
         }
       }
+  auth: inherit
 
 runtime:
   assertions:
@@ -38,6 +38,12 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
   - name: Sukses
@@ -70,7 +76,8 @@ examples:
             },
             "meta": null
           }
-docs: |-
+
+docs: |
   # Profile Update
 
   Ubah profil & preferensi notifikasi.
@@ -148,11 +155,3 @@ docs: |-
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-
-  Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
