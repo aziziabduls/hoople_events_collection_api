@@ -69,6 +69,7 @@ examples:
               {
                 "id": "reg-0001-4aaa-8bbb-000000000001",
                 "orderId": "ORD-20260314-0001",
+                "ticketCode": "HPL-8K2M-4QX7-1",
                 "participant": {
                   "name": "Dewi Lestari",
                   "email": "dewi.lestari@gmail.com",
@@ -91,6 +92,7 @@ examples:
               {
                 "id": "reg-0002-4aaa-8bbb-000000000002",
                 "orderId": "ORD-20260313-0198",
+                "ticketCode": "HPL-2M9X-7KL3-1",
                 "participant": {
                   "name": "Raka Mahendra",
                   "email": "raka.mahendra@gmail.com",
@@ -113,6 +115,7 @@ examples:
               {
                 "id": "reg-0003-4aaa-8bbb-000000000003",
                 "orderId": "ORD-20260312-0155",
+                "ticketCode": "HPL-5R7T-2WQ8-1",
                 "participant": {
                   "name": "Sinta Wijaya",
                   "email": "sinta.wijaya@gmail.com",
@@ -135,6 +138,7 @@ examples:
               {
                 "id": "reg-0004-4aaa-8bbb-000000000004",
                 "orderId": "ORD-20260310-0102",
+                "ticketCode": "HPL-9D4F-6YH2-1",
                 "participant": {
                   "name": "Bagas Nugroho",
                   "email": "bagas.nugroho@gmail.com",
@@ -157,6 +161,7 @@ examples:
               {
                 "id": "reg-0005-4aaa-8bbb-000000000005",
                 "orderId": "ORD-20260308-0088",
+                "ticketCode": "HPL-3N8B-1VC5-1",
                 "participant": {
                   "name": "Putri Handayani",
                   "email": "putri.handayani@gmail.com",
