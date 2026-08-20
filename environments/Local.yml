@@ -1,25 +1,8 @@
-name: "Local"
+name: Local
 variables:
   - name: baseUrl
-<<<<<<< HEAD
     value: http://localhost:3000
-    description: ""
   - name: accessToken
-    value: ""
-    description: ""
-=======
-    value: "https://driver-gush-blip.ngrok-free.dev"
-    description: "Tunnel ngrok ke server lokal, untuk diuji dari perangkat lain. Belum memakai prefix versi."
-  - name: accessToken
-    value: ""
-    description: "Bearer token. Diisi otomatis oleh Admin > Auth > Login."
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMTYxOTQsImV4cCI6MTc4NzIxOTc5NH0.lEUF6B7zOb59hf1Ctm2rzcickqdyGoHu0s0_1pJ64Y8
   - name: refreshToken
-    value: ""
-    description: "Diisi otomatis oleh Login; dipakai body Auth > Refresh."
-  - name: experienceId
-    value: ""
-    description: "UUID experience untuk path param. Ambil dari Experience List."
-  - name: sessionId
-    value: ""
-    description: "UUID sesi untuk path param / query. Ambil dari Session List."
->>>>>>> refs/remotes/origin/main
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMTYxOTQsImV4cCI6MTc4NzgyMDk5NH0.qPNnR9z0fEFMRvWTe2CeIwm4CIYKCUvMGQ9plEoI_h8

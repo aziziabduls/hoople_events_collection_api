@@ -1,34 +1,14 @@
 info:
-  name: Experience List
+  name: Event List
   type: http
   seq: 2
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/experiences"
+  url: "{{baseUrl}}/org/events"
   auth: inherit
-  params:
-    - name: scope
-      value: "all"
-      type: query
-      description: "Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol."
-    - name: page
-      value: "1"
-      type: query
-      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
-    - name: perPage
-      value: "10"
-      type: query
-      description: "Baris per halaman. Contoh dto memakai 10."
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -48,63 +28,13 @@ runtime:
           expect(meta).to.have.property("total");
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
-
-docs: |-
-  # Experience List
-
-  Daftar experience; `scope` menggerakkan keempat tab.
-
-  | | |
-  | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/organizer/experiences` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-list.response.json` |
-
-  ## Query parameter
-
-  | Parameter | Contoh | Catatan |
-  | --- | --- | --- |
-  | `scope` | `all` | Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol. |
-  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
-  | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
-
-  ## Dua sumbu status
-
-  Setiap experience membawa dua status yang berdiri sendiri:
-
-  - `publishState` — apakah peserta bisa melihatnya (`draft`, `published`, `cancelled`).
-  - `lifecycle` — di mana posisinya dalam hidupnya sendiri (`upcoming`, `ongoing`, `completed`, `cancelled`).
-
-  Jangan gabungkan keduanya jadi satu kolom; konsol menampilkan dua-duanya.
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
-
-  Selengkapnya di `dto/README.md`.
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -113,7 +43,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -303,3 +233,60 @@ examples:
               "totalPages": 3
             }
           }
+
+docs: |-
+  # Experience List
+
+  Daftar experience; `scope` menggerakkan keempat tab.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/experiences` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/experience-list.response.json` |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Catatan |
+  | --- | --- | --- |
+  | `scope` | `all` | Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol. |
+  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
+  | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
+
+  ## Dua sumbu status
+
+  Setiap experience membawa dua status yang berdiri sendiri:
+
+  - `publishState` — apakah peserta bisa melihatnya (`draft`, `published`, `cancelled`).
+  - `lifecycle` — di mana posisinya dalam hidupnya sendiri (`upcoming`, `ongoing`, `completed`, `cancelled`).
+
+  Jangan gabungkan keduanya jadi satu kolom; konsol menampilkan dua-duanya.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
