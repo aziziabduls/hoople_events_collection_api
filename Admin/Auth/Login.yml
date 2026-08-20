@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/org/auth/logins"
+  url: "{{baseUrl}}/org/auth/login"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,12 +13,19 @@ http:
     type: json
     data: |-
       {
-        "email": "nadia.puspitas@gmail.com",
+        "identifier": "adriani.ajeng@gmail.com",
         "password": "RahasiaKu123",
         "rememberMe": true
       }
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: after-response
       code: |-
@@ -38,13 +45,6 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
 
 settings:
   encodeUrl: true
@@ -53,7 +53,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -89,7 +89,7 @@ examples:
             },
             "meta": null
           }
-  - name: Kredensial salah
+  - name: "Kredensial salah"
     response:
       status: 401
       statusText: Unauthorized
@@ -133,11 +133,7 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-<<<<<<< HEAD
-  | `Email` | string | ya |  |
-=======
-  | `email` | string | ya | email |
->>>>>>> a7f46b4ce007915dae68d52fbc44cddc20a625e3
+  | `identifier` | string | ya | email |
   | `password` | string | ya |  |
   | `rememberMe` | boolean | ya |  |
 
