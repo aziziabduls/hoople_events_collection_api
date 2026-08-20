@@ -1,0 +1,11 @@
+info:
+  name: Experiences
+  seq: 3
+
+docs: |
+  # Experiences
+
+  Daftar experience dan dua builder yang mengisinya.
+
+  Aktivitas berulang setiap minggu; event terjadi sekali. Keduanya masuk ke
+  daftar yang sama, dibedakan `kind`.

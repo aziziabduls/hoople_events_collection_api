@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/auth/refresh"
-  auth: none
   headers:
     - name: Content-Type
       value: application/json
@@ -45,7 +44,37 @@ runtime:
           expect(body).to.have.property("meta");
         });
 
-docs: |-
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Token diperbarui",
+            "data": {
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |
   # Refresh
 
   Perpanjang access token. Menyimpan token baru ke environment, seperti Login.
@@ -93,33 +122,3 @@ docs: |-
   - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-
-examples:
-  - name: "Sukses"
-    response:
-      status: 200
-      statusText: OK
-      headers:
-        - name: Content-Type
-          value: application/json
-      body:
-        type: json
-        data: |-
-          {
-            "success": true,
-            "message": "Token diperbarui",
-            "data": {
-              "tokenType": "Bearer",
-              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
-              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
-              "expiresIn": 3600,
-              "expiresAt": "2026-03-14T10:30:00+07:00"
-            },
-            "meta": null
-          }

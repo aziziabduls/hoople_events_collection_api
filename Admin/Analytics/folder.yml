@@ -1,0 +1,8 @@
+info:
+  name: Analytics
+  seq: 7
+
+docs: |
+  # Analytics
+
+  Ringkasan periode, tren bulanan, experience teratas, dan sumber trafik.

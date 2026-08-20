@@ -1,0 +1,278 @@
+info:
+  name: Dashboard
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizer/dashboard"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Dashboard berhasil dimuat",
+            "data": {
+              "workspace": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
+                "name": "Waktu Luang",
+                "category": "Community & Lifestyle",
+                "plan": "starter",
+                "initials": "WL",
+                "role": "owner",
+                "logoUrl": null
+              },
+              "period": {
+                "from": "2026-02-14T00:00:00+07:00",
+                "to": "2026-03-14T23:59:59+07:00",
+                "label": "30 hari terakhir"
+              },
+              "statCards": [
+                {
+                  "key": "experiences",
+                  "label": "Total Experience",
+                  "value": 24,
+                  "unit": "count",
+                  "deltaRate": 0.2,
+                  "deltaLabel": "20% vs bulan lalu"
+                },
+                {
+                  "key": "events",
+                  "label": "Event Aktif",
+                  "value": 8,
+                  "unit": "count",
+                  "deltaRate": 0.14,
+                  "deltaLabel": "14% vs bulan lalu"
+                },
+                {
+                  "key": "activities",
+                  "label": "Aktivitas Aktif",
+                  "value": 16,
+                  "unit": "count",
+                  "deltaRate": 0.33,
+                  "deltaLabel": "33% vs bulan lalu"
+                },
+                {
+                  "key": "registrations",
+                  "label": "Total Registrasi",
+                  "value": 1248,
+                  "unit": "count",
+                  "deltaRate": 0.18,
+                  "deltaLabel": "18% vs bulan lalu"
+                },
+                {
+                  "key": "revenue",
+                  "label": "Pendapatan",
+                  "value": 128450000,
+                  "unit": "idr",
+                  "deltaRate": 0.22,
+                  "deltaLabel": "22% vs bulan lalu"
+                },
+                {
+                  "key": "upcomingSessions",
+                  "label": "Sesi Mendatang",
+                  "value": 35,
+                  "unit": "count",
+                  "deltaRate": null,
+                  "deltaLabel": "7 hari ke depan"
+                }
+              ],
+              "upcomingSessions": [
+                {
+                  "id": "ses-0001-4aaa-8bbb-000000000001",
+                  "experienceId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                  "experienceTitle": "Morning Yoga Flow",
+                  "kind": "activity",
+                  "startsAt": "2026-03-16T07:00:00+07:00",
+                  "endsAt": "2026-03-16T08:15:00+07:00",
+                  "coach": "Sekar Ayu",
+                  "room": "Studio Utama",
+                  "bookedCount": 24,
+                  "capacity": 30
+                },
+                {
+                  "id": "ses-0002-4aaa-8bbb-000000000002",
+                  "experienceId": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
+                  "experienceTitle": "Kelas Keramik untuk Pemula",
+                  "kind": "activity",
+                  "startsAt": "2026-03-21T14:00:00+07:00",
+                  "endsAt": "2026-03-21T16:00:00+07:00",
+                  "coach": "Rani Putri",
+                  "room": "Studio A",
+                  "bookedCount": 9,
+                  "capacity": 12
+                }
+              ],
+              "recentRegistrations": [
+                {
+                  "id": "reg-0001-4aaa-8bbb-000000000001",
+                  "participantName": "Dewi Lestari",
+                  "experienceTitle": "Sunset Rooftop Jazz",
+                  "quantity": 2,
+                  "amount": {
+                    "amount": 550000,
+                    "currency": "IDR"
+                  },
+                  "status": "confirmed",
+                  "createdAt": "2026-03-14T08:15:00+07:00"
+                },
+                {
+                  "id": "reg-0002-4aaa-8bbb-000000000002",
+                  "participantName": "Raka Mahendra",
+                  "experienceTitle": "Kelas Keramik untuk Pemula",
+                  "quantity": 1,
+                  "amount": {
+                    "amount": 250000,
+                    "currency": "IDR"
+                  },
+                  "status": "pending",
+                  "createdAt": "2026-03-13T19:42:00+07:00"
+                }
+              ],
+              "revenueTrend": [
+                {
+                  "period": "2025-10",
+                  "registrations": 118,
+                  "revenue": {
+                    "amount": 14200000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2025-11",
+                  "registrations": 142,
+                  "revenue": {
+                    "amount": 17800000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2025-12",
+                  "registrations": 196,
+                  "revenue": {
+                    "amount": 24100000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-01",
+                  "registrations": 174,
+                  "revenue": {
+                    "amount": 21500000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-02",
+                  "registrations": 228,
+                  "revenue": {
+                    "amount": 26900000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "period": "2026-03",
+                  "registrations": 264,
+                  "revenue": {
+                    "amount": 31950000,
+                    "currency": "IDR"
+                  }
+                }
+              ],
+              "pendingActions": [
+                {
+                  "key": "payout_on_hold",
+                  "label": "1 pencairan tertahan",
+                  "count": 1,
+                  "href": "/organizer/payments"
+                },
+                {
+                  "key": "draft_experiences",
+                  "label": "3 experience masih draft",
+                  "count": 3,
+                  "href": "/organizer/drafts"
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |
+  # Dashboard
+
+  Kartu statistik, sesi mendatang, registrasi terbaru, tren.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/organizer/dashboard` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/dashboard.response.json` |
+
+  > **`statCards`, bukan `stats`.** Larik kartu dashboard bernama `statCards`;
+  > `stats` selalu berarti objek counter milik entitas induknya (lihat Experience
+  > Detail). Keduanya sempat bernama sama dan itu memecah klien bertipe.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

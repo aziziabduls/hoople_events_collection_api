@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/auth/login"
-  auth: none
   headers:
     - name: Content-Type
       value: application/json
@@ -14,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "email": "adriani.ajeng@gmail.com",
+        "identifier": "adriani.ajeng@gmail.com",
         "password": "RahasiaKu123",
         "rememberMe": true
       }
@@ -46,68 +45,6 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
-
-docs: |-
-  # Login
-
-  Masuk, mengembalikan token. **Jalankan ini lebih dulu** — script after-response menyimpan `accessToken` ke environment aktif, dan seluruh folder Admin membacanya.
-
-  | | |
-  | --- | --- |
-  | **Method** | `POST` |
-  | **Path** | `/auth/login` |
-  | **Auth** | Tidak perlu token |
-  | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/shared/auth/login.request.json`<br>`dto/shared/auth/login.response.json`<br>`dto/shared/auth/login-invalid.response.json` |
-
-  ## Request body
-
-  `application/json`
-
-  | Field | Tipe | Wajib | Catatan |
-  | --- | --- | --- | --- |
-  | `email` | string | ya | email |
-  | `password` | string | ya |  |
-  | `rememberMe` | boolean | ya |  |
-
-  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
-  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
-
-  ## Yang dilakukan script
-
-  Setelah response sukses, `accessToken` dan `refreshToken` ditulis ke environment
-  yang sedang aktif lewat `bru.setEnvVar`. Semua request lain di folder **Admin**
-  memakai `auth: inherit`, yang mengambil bearer token dari `Admin/folder.yml`
-  — jadi tidak ada yang perlu menempel token manual.
-
-  Akun contoh punya `roles: ["participant", "organizer", "teams_admin"]`. Guard
-  harus memakai `roles.includes("organizer")`, bukan `roles === "organizer"`.
-
-  ## Error yang mungkin
-
-  | Kode | Contoh | Kapan |
-  | --- | --- | --- |
-  | `401` | `shared/auth/login-invalid.response.json` | Email atau password salah — lihat contoh kedua. |
-  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
-
-  ## Konvensi yang berlaku
-
-  - **Nama field** camelCase.
-  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
-
-  Selengkapnya di `dto/README.md`.
 
 settings:
   encodeUrl: true
@@ -176,3 +113,65 @@ examples:
               }
             }
           }
+
+docs: |
+  # Login
+
+  Masuk, mengembalikan token. **Jalankan ini lebih dulu** — script after-response menyimpan `accessToken` ke environment aktif, dan seluruh folder Admin membacanya.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/login` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/login.request.json`<br>`dto/shared/auth/login.response.json`<br>`dto/shared/auth/login-invalid.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `identifier` | string | ya | email |
+  | `password` | string | ya |  |
+  | `rememberMe` | boolean | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Yang dilakukan script
+
+  Setelah response sukses, `accessToken` dan `refreshToken` ditulis ke environment
+  yang sedang aktif lewat `bru.setEnvVar`. Semua request lain di folder **Admin**
+  memakai `auth: inherit`, yang mengambil bearer token dari `Admin/folder.yml`
+  — jadi tidak ada yang perlu menempel token manual.
+
+  Akun contoh punya `roles: ["participant", "organizer", "teams_admin"]`. Guard
+  harus memakai `roles.includes("organizer")`, bukan `roles === "organizer"`.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/auth/login-invalid.response.json` | Email atau password salah — lihat contoh kedua. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

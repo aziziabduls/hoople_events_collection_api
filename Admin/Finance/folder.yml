@@ -1,0 +1,9 @@
+info:
+  name: Finance
+  seq: 8
+
+docs: |
+  # Finance
+
+  Uang masuk dan uang keluar: pencairan beserta potongannya, dan buku
+  transaksi di belakangnya.

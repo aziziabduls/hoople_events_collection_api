@@ -9,50 +9,86 @@ auth:
   type: bearer
   token: "{{accessToken}}"
 
-docs: |-
+docs: |
   # Admin — Hoople for Organizers
 
-  Konsol penyelenggara: satu studio atau komunitas mengelola experience
-  publiknya sendiri. Semua endpoint di bawah `Organizer/` berawalan
-  `/organizer/` dan menuntut token yang `roles`-nya memuat `organizer`.
+  Semua yang dipanggil konsol penyelenggara, dalam satu folder. Konsol ini
+  adalah situsnya sendiri: satu studio atau komunitas mengelola experience
+  publiknya — membuatnya, menjualnya, menjaga pintunya, dan menerima uangnya.
 
-  Bagian ini diregenerasi dari `dto/` di repositori frontend
-  `hoople-event-admin-dashboard`, jadi setiap body request dan setiap contoh
-  response di sini **identik** dengan berkas JSON di sana. Kalau `dto/` berubah,
-  bagian ini harus dibangkitkan ulang — jangan disunting sebelah tangan.
+  28 request, dibangkitkan dari `dto/` di repositori frontend
+  `hoople-event-admin-dashboard`. Setiap body request dan setiap contoh response
+  di sini **identik** dengan berkas JSON di sana, jadi keduanya tidak bisa
+  berbeda diam-diam.
+
+  > `Client/` adalah situs peserta dan **bukan urusan folder ini**. Keduanya
+  > kebetulan memakai beberapa endpoint yang sama (`/auth/*`, `/media/upload`),
+  > tapi masing-masing dipelihara terpisah.
 
   ## Mulai dari mana
 
   1. Pilih environment: **Local Host**, **Local**, atau **Staging**.
-  2. Jalankan **Auth → Login**. Script `after-response`-nya menyimpan
+  2. Jalankan **Base URL Check**. Satu request, dan tab Tests-nya bilang apakah
+     `baseUrl` yang aktif benar - termasuk apakah environment itu perlu prefix
+     `/v1` atau tidak. Lakukan ini dulu; menebak prefix berarti 26 request lain
+     gagal dengan 404 yang terlihat seperti masalah backend.
+  3. Jalankan **Auth → Login**. Script `after-response`-nya menyimpan
      `accessToken` dan `refreshToken` ke environment yang sedang aktif.
-  3. Jalankan endpoint mana pun di **Organizer**. Semuanya `auth: inherit` dan
-     mengambil bearer token dari folder ini — tidak ada yang perlu ditempel
-     manual.
-  4. Kalau token kedaluwarsa (`401`), jalankan **Auth → Refresh**; script yang
-     sama menimpa token lama.
+  4. Jalankan endpoint mana pun. Semuanya `auth: inherit` dan mengambil bearer
+     token dari folder ini — tidak ada yang perlu ditempel manual.
+  5. Kalau kena `401`, jalankan **Auth → Refresh**; script yang sama menimpa
+     token lama.
+
+  Endpoint dengan path param membaca `{{experienceId}}` dan `{{sessionId}}` dari
+  environment. Isi sekali, ambil nilainya dari **Experiences → Experience List**
+  dan **Sessions → Session List**.
 
   ## Isi
 
-  | Folder | Sumber | Isi |
-  | --- | --- | --- |
-  | `Auth/` | `dto/shared/auth/` | 8 endpoint — login, register, refresh, logout, profil, reset password |
-  | `Organizer/` | `dto/organizer/` | 17 endpoint — dashboard, experience, sesi, registrasi, check-in, analitik, keuangan, pengaturan |
-  | `Media/` | `dto/shared/media/` | 1 endpoint — unggah gambar (`multipart/form-data`) |
+  Folder mengikuti layar konsol, bukan berkas DTO-nya.
 
-  `Auth/` dan `Media/` berasal dari `dto/shared/`, yang berarti **endpoint yang
-  sama juga dipakai situs peserta** (lihat `Client/`). Kontraknya satu; kalau
-  Anda mengubah salah satu sisi, ubah dua-duanya atau jangan ubah sama sekali.
+  | Folder | Request | Untuk layar |
+  | --- | --- | --- |
+  | *(akar)* | `Base URL Check` | Memastikan `baseUrl` benar sebelum yang lain |
+  | `Auth` | 10 | Daftar host, masuk, keluar, profil, reset sandi, verifikasi OTP |
+  | `Dashboard` | 1 | Layar pertama setelah masuk |
+  | `Experiences` | 7 | Daftar experience + dua builder |
+  | `Sessions` | 1 | Semua slot yang bisa dipesan |
+  | `Registrations` | 1 | Siapa yang mendaftar |
+  | `Check-in` | 2 | Pintu masuk acara |
+  | `Analytics` | 1 | Angka-angka |
+  | `Finance` | 2 | Pencairan dan buku transaksi |
+  | `Settings` | 2 | Workspace, rekening, fee, paket |
+  | `Media` | 1 | Unggah gambar |
+
+  ## Peran dan pendaftaran
+
+  Semua endpoint `/organizer/*` menuntut token yang `roles`-nya **memuat**
+  `organizer`. `roles` adalah array, jadi guard harus `roles.includes(...)`,
+  bukan `===` — satu orang bisa jadi peserta sekaligus penyelenggara.
+
+  **Auth → Register Host** membuat akun host, dan itu bukan `/auth/register`
+  milik situs peserta: tidak ada minat, tidak ada langkah profil, `email`
+  opsional, dan nomor WhatsApp wajib. Rinciannya ada di docs request itu.
+
+  Pendaftaran mengembalikan token dengan `emailVerifiedAt: null`. Verifikasi
+  adalah langkah **sesudahnya**, bukan gerbang: **Auth → OTP Request** lalu
+  **OTP Verify**. Keduanya memakai bearer token dan tidak menerima alamat email
+  di body — kode selalu dikirim ke alamat milik akun yang sedang masuk.
 
   ## Variabel
 
-  | Variabel | Dari mana | Untuk |
+  | Variabel | Diisi oleh | Untuk |
   | --- | --- | --- |
   | `baseUrl` | environment | Origin + prefix versi API |
-  | `accessToken` | diisi otomatis oleh **Login** / **Refresh** | Bearer token |
-  | `refreshToken` | diisi otomatis oleh **Login** / **Refresh** | Body **Refresh** |
-  | `experienceId` | isi sendiri, ambil dari **Experience List** | Path param experience |
-  | `sessionId` | isi sendiri, ambil dari **Session List** | Path param / query sesi |
+  | `accessToken` | otomatis, oleh Login / Refresh / Register Host | Bearer token |
+  | `refreshToken` | otomatis, oleh Login / Refresh | Body Auth → Refresh |
+  | `experienceId` | manual | Path param experience |
+  | `sessionId` | manual | Path param / query sesi |
+
+  Hanya **Staging** yang memakai prefix `/v1`, dan prefix itu sudah termasuk di
+  nilai `baseUrl`-nya. Kalau server lokal ternyata juga menyajikannya, tambahkan
+  ke variabel environment — jangan ke URL request, supaya tetap satu tempat.
 
   ## Envelope
 
@@ -64,8 +100,61 @@ docs: |-
 
   `meta` berisi paginasi (`page`, `perPage`, `total`, `totalPages`) pada endpoint
   daftar, dan `null` di endpoint lain. Response error memakai envelope yang sama
-  ditambah blok `error`. Setiap request punya assertion untuk `res.status < 400`
-  dan `res.body.success == true`, plus test yang memeriksa keempat kunci envelope
-  benar-benar ada — termasuk `meta`, yang paling sering lupa dikirim.
+  ditambah blok `error`.
 
-  Rinciannya di `dto/README.md`.
+  Setiap request membawa assertion `res.status < 400` dan `res.body.success ==
+  true`, plus test yang memeriksa keempat kunci envelope benar-benar ada —
+  termasuk `meta`, yang paling sering lupa dikirim. Endpoint daftar mendapat
+  test tambahan: `totalPages == ceil(total / perPage)`.
+
+  ## Empat nama yang mudah salah
+
+  | Hal | Benar | Salah |
+  | --- | --- | --- |
+  | Larik kartu dashboard | `statCards` | `stats` — itu selalu objek counter |
+  | Irama pencairan | `payout.payoutSchedule` | `payout.schedule` |
+  | Rincian checkout | `priceBreakdown` | `price` — itu objek uang |
+  | Alamat korporat | `workEmail` | `email` — itu alamat akun Hoople |
+
+  Dan satu yang struktural: **satu organisasi = satu UUID**, entah muncul
+  sebagai `workspace.id` di sini, `host.id` di katalog publik, atau
+  `community.id` di halaman komunitas.
+
+  ## Kalau endpoint aslinya belum ada
+
+  Berkas di `dto/` adalah **fixture**, bukan server yang berjalan. Kebijakan
+  lengkapnya ada di `dto/README.md` §5; ringkasnya:
+
+  | | |
+  | --- | --- |
+  | **Mock dinyalakan oleh** | satu flag konfigurasi (`MOCK_API_ENABLED`), bukan oleh apakah endpoint pernah dipanggil |
+  | **Fallback ke fixture** | hanya saat *network error* atau `5xx`, dan hanya untuk `GET` |
+  | **Tidak pernah fallback** | `401`, `403`, `404`, `409`, `422` — itu jawaban bisnis yang sungguhan |
+  | **Tulis (`POST`/`PATCH`/`DELETE`)** | tidak boleh pura-pura berhasil, titik |
+
+  > Ide "mock mati sendiri setelah sekali kena hit" sengaja **tidak** dipakai.
+  > Request kedua jadi tidak bisa ditebak, dan tampilan bisa hilang tiba-tiba
+  > tanpa ada yang mengubah apa pun. Hasil yang diinginkan — tampilan tetap ada
+  > tanpa menunggu backend — sudah didapat dari aturan fallback di atas: begitu
+  > endpoint asli menjawab, jawabannya yang dipakai; begitu ia mati, fixture
+  > menambal tampilannya lagi.
+
+  Karena itu contoh response di koleksi ini bukan sekadar dokumentasi — itu
+  payload yang sama persis dengan yang dipakai frontend saat menambal.
+
+  ## Regenerasi
+
+  Bagian ini tidak disunting tangan. Kalau `dto/` berubah, jalankan dari
+  repositori frontend:
+
+  ```bash
+  node scripts/bruno-admin.mjs "<path ke koleksi ini>"
+  ```
+
+  Setelah itu `git diff` seharusnya hanya berisi perubahan yang memang berasal
+  dari `dto/`. Kalau ada yang lain, berarti seseorang menyunting `Admin/`
+  langsung. Berkas ini dan `Base URL Check.yml` ditulis tangan; generator hanya
+  menulis sepuluh folder di bawah ini dan tidak menghapus apa pun, jadi keduanya
+  aman.
+
+  Selengkapnya di `dto/README.md`.

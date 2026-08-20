@@ -1,8 +1,9 @@
 info:
   name: Media
-  seq: 3
+  seq: 10
 
-docs: |-
+docs: |
   # Media
 
-  Unggah berkas bersama (`dto/shared/media/`). Satu-satunya endpoint `multipart/form-data`.
+  Unggah gambar. Satu-satunya endpoint `multipart/form-data`, dan sumber `url`
+  yang dipakai payload kedua builder.

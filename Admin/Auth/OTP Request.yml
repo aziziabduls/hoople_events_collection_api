@@ -1,0 +1,191 @@
+info:
+  name: OTP Request
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/otp/request"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "purpose": "phone_verification",
+        "channel": "whatsapp",
+        "destination": "+62 813 8899 2200"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Kode verifikasi dikirim",
+            "data": {
+              "purpose": "phone_verification",
+              "channel": "whatsapp",
+              "sentTo": "+62 813 **** 2200",
+              "codeLength": 6,
+              "expiresAt": "2026-03-14T09:40:00+07:00",
+              "resendAvailableAt": "2026-03-14T09:31:00+07:00",
+              "attemptsAllowed": 5
+            },
+            "meta": null
+          }
+  - name: "Terlalu sering"
+    response:
+      status: 429
+      statusText: Too Many Requests
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Terlalu banyak permintaan kode. Coba lagi nanti.",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_RATE_LIMITED",
+              "errors": null,
+              "retryAfterSeconds": 47
+            }
+          }
+  - name: "Sudah terverifikasi"
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Email ini sudah terverifikasi",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "ALREADY_VERIFIED",
+              "errors": null
+            }
+          }
+
+docs: |
+  # OTP Request
+
+  Kirim (atau kirim ulang) kode ke `destination`. Tanpa token - akunnya belum ada.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/otp/request` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/otp-request.request.json`<br>`dto/shared/auth/otp-request.response.json`<br>`dto/shared/auth/otp-rate-limited.response.json`<br>`dto/shared/auth/otp-already-verified.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
+  | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+  | `destination` | string | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Kenapa tanpa token
+
+  Akunnya belum ada. Desain pendaftaran memverifikasi **sebelum** membuat akun -
+  langkah 2 mengirim kode, langkah 3 membuat akunnya - jadi tidak ada bearer
+  token yang bisa dipakai, dan `destination` disebut di body.
+
+  Konsekuensinya seluruh keamanan endpoint ini bertumpu pada **pembatasan laju,
+  per `destination` dan per IP**. Tanpa itu, ini adalah cara mengirimi nomor
+  orang lain pesan WhatsApp berulang kali. Karena itu `429` di sini bukan
+  tambahan opsional, dan `retryAfterSeconds` wajib ada.
+
+  ## Yang dipakai tampilan
+
+  | Field | Untuk |
+  | --- | --- |
+  | `sentTo` | Ditampilkan apa adanya. Server sudah menyamarkannya (`+62 813 **** 2200`) - jangan kirim nomor penuh. |
+  | `codeLength` | Jumlah kotak input, supaya 4 atau 6 digit tidak perlu perubahan kode. |
+  | `expiresAt` | Batas berlaku kode. |
+  | `resendAvailableAt` | Kapan tombol "Kirim ulang" hidup lagi. Tanpa ini tombolnya cuma menebak. |
+  | `attemptsAllowed` | Berapa kali boleh salah sebelum harus minta kode baru. |
+
+  > **Kanal utamanya WhatsApp.** Layarnya bertuliskan "Confirm your WhatsApp",
+  > dengan "Send by email instead" sebagai jalan kedua - karena itu `channel`
+  > ada di kontrak sejak awal. Email tetap opsional saat mendaftar; yang
+  > diverifikasi adalah nomor, yang justru wajib.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `409` | `shared/auth/otp-already-verified.response.json` | Alamat ini sudah terverifikasi; tidak ada yang perlu dikirim. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `429` | `shared/auth/otp-rate-limited.response.json` | Terlalu sering meminta kode. `error.retryAfterSeconds` memberi tahu berapa detik lagi. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

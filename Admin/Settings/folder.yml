@@ -1,0 +1,8 @@
+info:
+  name: Settings
+  seq: 9
+
+docs: |
+  # Settings
+
+  Profil workspace, rekening pencairan, penanggung fee, paket, dan notifikasi.

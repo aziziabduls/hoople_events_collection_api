@@ -1,0 +1,9 @@
+info:
+  name: Dashboard
+  seq: 2
+
+docs: |
+  # Dashboard
+
+  Layar pertama setelah masuk: kartu statistik, sesi mendatang, registrasi
+  terbaru, dan tren pendapatan.

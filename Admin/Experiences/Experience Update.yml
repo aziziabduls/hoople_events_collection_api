@@ -1,11 +1,11 @@
 info:
-  name: Profile Update
+  name: Experience Update
   type: http
   seq: 5
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/auth/me"
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
   auth: inherit
   headers:
     - name: Content-Type
@@ -14,19 +14,17 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Adriani Ajeng",
-        "phone": "+62 812 3456 7890",
-        "city": "Jakarta Selatan",
-        "avatarUrl": null,
-        "interests": [
-          "sports_fitness",
-          "art_design",
-          "food_drink"
-        ],
-        "notificationPreferences": {
-          "email": true,
-          "whatsapp": true,
-          "push": false
+        "identity": {
+          "title": "Kelas Keramik untuk Pemula (Batch 2)",
+          "category": "Classes",
+          "summary": "Belajar teknik pinch dan coil.",
+          "coverImageUrl": "https://cdn.hoople.id/covers/pottery.jpg"
+        },
+        "pricing": {
+          "basePrice": 275000,
+          "currency": "IDR",
+          "defaultCapacity": 12,
+          "minParticipants": 3
         }
       }
 
@@ -56,50 +54,27 @@ settings:
   followRedirects: true
   maxRedirects: 5
 
-examples:
-  - name: "Sukses"
-    response:
-      status: 200
-      statusText: OK
-      headers:
-        - name: Content-Type
-          value: application/json
-      body:
-        type: json
-        data: |-
-          {
-            "success": true,
-            "message": "Profil berhasil diperbarui",
-            "data": {
-              "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
-              "fullName": "Adriani Ajeng",
-              "email": "adriani.ajeng@gmail.com",
-              "phone": "+62 812 3456 7890",
-              "avatarUrl": null,
-              "roles": [
-                "participant",
-                "organizer",
-                "teams_admin"
-              ],
-              "emailVerifiedAt": null,
-              "createdAt": "2026-03-14T09:30:00+07:00",
-              "city": "Jakarta Selatan"
-            },
-            "meta": null
-          }
-
 docs: |
-  # Profile Update
+  # Experience Update
 
-  Ubah profil & preferensi notifikasi.
+  Update parsial. Kirim hanya field yang berubah.
 
   | | |
   | --- | --- |
   | **Method** | `PATCH` |
-  | **Path** | `/auth/me` |
+  | **Path** | `/organizer/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/shared/auth/profile-update.request.json`<br>`dto/shared/auth/profile-update.response.json` |
+  | **Sumber** | `dto/organizer/experience-update.request.json` |
+
+  ## Variabel yang dipakai
+
+  | Variabel | Untuk |
+  | --- | --- |
+  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
 
   ## Request body
 
@@ -107,18 +82,27 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `fullName` | string | ya |  |
-  | `phone` | string | ya |  |
-  | `city` | string | ya |  |
-  | `avatarUrl` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
-  | `interests` | array | ya |  |
-  | `notificationPreferences` | object | ya |  |
-  | `notificationPreferences.email` | boolean | ya |  |
-  | `notificationPreferences.whatsapp` | boolean | ya |  |
-  | `notificationPreferences.push` | boolean | ya |  |
+  | `identity` | object | ya |  |
+  | `identity.title` | string | ya |  |
+  | `identity.category` | string | ya |  |
+  | `identity.summary` | string | ya |  |
+  | `identity.coverImageUrl` | string | ya | URL |
+  | `pricing` | object | ya |  |
+  | `pricing.basePrice` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `pricing.currency` | string | ya |  |
+  | `pricing.defaultCapacity` | integer | ya |  |
+  | `pricing.minParticipants` | integer | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Response
+
+  `dto/` **tidak** mendefinisikan response untuk endpoint ini, jadi tidak ada
+  contoh yang ditempel di sini — mengarang satu hanya akan jadi kontrak palsu.
+  Yang paling konsisten dengan endpoint lain: kembalikan resource yang sudah
+  diperbarui, bentuknya sama dengan **Experience Detail**. Mohon dikonfirmasi tim
+  backend, lalu tambahkan `dto/organizer/experience-update.response.json`.
 
   ## Error yang mungkin
 
@@ -126,6 +110,7 @@ docs: |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
   | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 

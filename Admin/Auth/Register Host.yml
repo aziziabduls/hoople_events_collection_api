@@ -1,0 +1,184 @@
+info:
+  name: Register Host
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register/host"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "hostName": "Ruang Tumbuh",
+        "email": null,
+        "whatsappNumber": "+62 813 8899 2200",
+        "password": "RahasiaKu123",
+        "passwordConfirmation": "RahasiaKu123",
+        "acceptedTermsAt": "2026-03-14T09:30:00+07:00",
+        "verificationToken": "vt_8f2a1c9d4b6e0a37c5d1"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Akun host berhasil dibuat",
+            "data": {
+              "user": {
+                "id": "5f1a7c62-9d84-4e13-8b57-44a1c6e7b902",
+                "fullName": "Ruang Tumbuh",
+                "email": null,
+                "phone": "+62 813 8899 2200",
+                "avatarUrl": null,
+                "roles": [
+                  "organizer"
+                ],
+                "emailVerifiedAt": null,
+                "createdAt": "2026-03-14T09:30:00+07:00"
+              },
+              "workspace": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000408",
+                "name": "Ruang Tumbuh",
+                "slug": "ruang-tumbuh",
+                "category": null,
+                "plan": "starter",
+                "role": "owner",
+                "logoUrl": null
+              },
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:30:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |
+  # Register Host
+
+  Buat akun host beserta workspace-nya.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/register/host` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `201 Created` |
+  | **Sumber** | `dto/organizer/register-host.request.json`<br>`dto/organizer/register-host.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `hostName` | string | ya |  |
+  | `email` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `whatsappNumber` | string | ya |  |
+  | `password` | string | ya |  |
+  | `passwordConfirmation` | string | ya |  |
+  | `acceptedTermsAt` | string | ya | ISO 8601 `+07:00` |
+  | `verificationToken` | string | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Kenapa bukan `/auth/register`
+
+  Akun host bukan akun peserta, dan payload-nya membuktikannya:
+
+  | Peserta (`/auth/register`) | Host (di sini) |
+  | --- | --- |
+  | `fullName` — nama orang | `hostName` — nama komunitas atau studio |
+  | `email` **wajib** | `email` **opsional**, boleh `null` |
+  | `phone` pelengkap | `whatsappNumber` **wajib** — jalur pemberitahuan utama |
+  | `interests[]` untuk rekomendasi | tidak ada; konsol tidak merekomendasikan apa pun |
+  | `roles: ["participant"]` | `roles: ["organizer"]` |
+
+  Menumpangkan keduanya di satu endpoint berarti separuh field selalu tidak
+  terpakai dan validasinya bergantung pada peran yang belum ada saat request
+  dikirim. Karena itu jalurnya sendiri, dan berkas DTO-nya ada di
+  `dto/organizer/` — bukan di `dto/shared/auth/`, karena situs lain tidak
+  memilikinya.
+
+  Jalurnya tetap di bawah `/auth/` karena ini urusan layanan autentikasi dan
+  **publik** — tidak boleh ditaruh di bawah `/organizer/*`, yang seluruhnya
+  menuntut token dengan peran `organizer` yang justru baru dibuat di sini.
+
+  ## Yang dikembalikan
+
+  Satu akun **dan** satu workspace sekaligus, plus token — jadi form pendaftaran
+  bisa langsung masuk ke dashboard tanpa login ulang. `workspace.id` adalah UUID
+  organisasi itu selamanya: id yang sama nanti muncul sebagai `host.id` di
+  katalog publik dan `community.id` di halaman komunitas.
+
+  > **Menunggu keputusan backend.** `passwordConfirmation` ikut dikirim karena
+  > form memang memintanya dua kali; kalau backend memvalidasi kecocokan di sisi
+  > klien saja, field ini boleh dihapus. `acceptedTermsAt` adalah instant, bukan
+  > boolean, supaya tercatat *kapan* persetujuan diberikan.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `409` | `shared/common/error-conflict.response.json` | Nomor WhatsApp atau email sudah terdaftar. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

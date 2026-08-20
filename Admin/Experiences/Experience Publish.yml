@@ -1,11 +1,11 @@
 info:
-  name: Me
+  name: Experience Publish
   type: http
-  seq: 4
+  seq: 6
 
 http:
-  method: GET
-  url: "{{baseUrl}}/auth/me"
+  method: POST
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}/publish"
   auth: inherit
 
 runtime:
@@ -47,52 +47,41 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Profil berhasil diambil",
+            "message": "Experience berhasil dipublikasikan",
             "data": {
-              "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
-              "fullName": "Adriani Ajeng",
-              "email": "adriani.ajeng@gmail.com",
-              "phone": "+62 812 3456 7890",
-              "avatarUrl": null,
-              "roles": [
-                "participant",
-                "organizer",
-                "teams_admin"
-              ],
-              "emailVerifiedAt": "2026-03-14T09:41:00+07:00",
-              "createdAt": "2026-03-14T09:30:00+07:00",
-              "interests": [
-                "sports_fitness",
-                "art_design"
-              ],
-              "city": "Jakarta Selatan",
-              "stats": {
-                "bookingsTotal": 12,
-                "bookingsUpcoming": 2,
-                "savedTotal": 7,
-                "communitiesJoined": 3
-              },
-              "notificationPreferences": {
-                "email": true,
-                "whatsapp": true,
-                "push": false
-              }
+              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+              "status": "published",
+              "publishedAt": "2026-03-14T09:30:00+07:00",
+              "publicUrl": "https://hoople.id/events/ux-in-practice"
             },
             "meta": null
           }
 
 docs: |
-  # Me
+  # Experience Publish
 
-  Profil + statistik ringkas milik akun yang sedang masuk. Berguna untuk memastikan token yang tersimpan benar-benar dipakai.
+  Draft → published.
 
   | | |
   | --- | --- |
-  | **Method** | `GET` |
-  | **Path** | `/auth/me` |
+  | **Method** | `POST` |
+  | **Path** | `/organizer/experiences/{{experienceId}}/publish` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/shared/auth/profile.response.json` |
+  | **Sumber** | `dto/organizer/experience-publish.response.json` |
+
+  ## Variabel yang dipakai
+
+  | Variabel | Untuk |
+  | --- | --- |
+  | `{{experienceId}}` | UUID experience — ambil dari **Experience List** |
+
+  Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
+  pindah environment tidak berarti menyunting request.
+
+  > Publish terjadwal **tetap** `draft` sampai waktunya tiba — `publishMode`
+  > (`now`, `scheduled`, `draft`) yang menentukan, bukan endpoint ini dipanggil
+  > atau tidak.
 
   ## Error yang mungkin
 
@@ -100,6 +89,8 @@ docs: |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | Resource tidak ada atau bukan milik workspace ini. |
+  | `409` | `shared/common/error-conflict.response.json` | Bentrok state. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
