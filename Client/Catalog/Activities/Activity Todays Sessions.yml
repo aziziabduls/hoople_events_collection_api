@@ -1,0 +1,75 @@
+info:
+  name: Activity Todays Sessions
+  type: http
+  seq: 21
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/todays-sessions"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Activity Todays Sessions
+
+  Rail aktivitas "Today's Sessions".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/activities/todays-sessions` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/participant/catalog/activity-todays-sessions.response.json` |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` berisi daftar sesi hari ini, dalam shape `activity + session`.
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `sessionId` | string | tidak | UUID v4 sesi |
+  | `activity` | object | tidak | ringkasan aktivitas |
+  | `activity.id` | string | tidak | UUID v4 aktivitas |
+  | `activity.slug` | string | tidak | slug publik |
+  | `session` | object | tidak | detail sesi hari ini |
+  | `session.startsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.endsAt` | string | tidak | ISO 8601 `+07:00` |
+  | `session.slotsLeft` | integer | tidak | sisa slot |
+  | `session.availability` | string | tidak | enum `sessionAvailability` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount, currency }`.
+  - **Instant** ISO 8601 `+07:00`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

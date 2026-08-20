@@ -1,0 +1,72 @@
+info:
+  name: Activity Ongoing Recurring
+  type: http
+  seq: 22
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/ongoing-recurring"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Activity Ongoing Recurring
+
+  Rail aktivitas "Ongoing & Recurring Activities".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/activities/ongoing-recurring` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/participant/catalog/activity-ongoing-recurring.response.json` |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` berisi aktivitas berulang yang sedang berjalan.
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak | slug publik |
+  | `title` | string | tidak | judul aktivitas |
+  | `recurrence` | string | tidak | pola berulang |
+  | `recurrenceTime` | string | tidak | jam sesi berulang |
+  | `nextSessionAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount, currency }`.
+  - **Instant** ISO 8601 `+07:00`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

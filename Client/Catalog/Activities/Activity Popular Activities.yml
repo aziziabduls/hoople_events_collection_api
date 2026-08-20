@@ -1,0 +1,73 @@
+info:
+  name: Activity Popular Activities
+  type: http
+  seq: 20
+
+http:
+  method: GET
+  url: "{{baseUrl}}/activities/popular-activities"
+  auth: none
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+docs: |-
+  # Activity Popular Activities
+
+  Rail aktivitas "Popular Activities".
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/activities/popular-activities` |
+  | **Auth** | Tidak perlu (publik) |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/participant/catalog/activity-popular-activities.response.json` |
+
+  ## Request body
+
+  Tidak ada.
+
+  ## Response `200`
+
+  Envelope standar:
+
+  ```json
+  { "success": true, "message": "…", "data": …, "meta": { … } }
+  ```
+
+  `data` berisi aktivitas populer.
+
+  | Field | Tipe | Nullable | Catatan |
+  | --- | --- | --- | --- |
+  | `id` | string | tidak | UUID v4 |
+  | `slug` | string | tidak | slug publik |
+  | `title` | string | tidak | judul aktivitas |
+  | `rating` | number | tidak | rating rata-rata |
+  | `reviewCount` | integer | tidak | jumlah review |
+  | `priceFrom` | object | tidak | `{ amount, currency }` |
+  | `nextSessionAt` | string | tidak | ISO 8601 `+07:00` |
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount, currency }`.
+  - **Instant** ISO 8601 `+07:00`.
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
