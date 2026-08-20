@@ -133,7 +133,7 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `identifier` | string | ya | email |
+  | `email` | string | ya | email |
   | `password` | string | ya |  |
   | `rememberMe` | boolean | ya |  |
 
