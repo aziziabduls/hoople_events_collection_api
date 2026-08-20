@@ -34,8 +34,6 @@ docs: |
      gagal dengan 404 yang terlihat seperti masalah backend.
   3. Jalankan **Auth → Login**. Script `after-response`-nya menyimpan
      `accessToken` dan `refreshToken` ke environment yang sedang aktif.
-     **Register Host** memakai script yang sama - mendaftar sudah membuat Anda
-     masuk, jadi tidak perlu Login lagi sesudahnya.
   4. Jalankan endpoint mana pun. Semuanya `auth: inherit` dan mengambil bearer
      token dari folder ini — tidak ada yang perlu ditempel manual.
   5. Kalau kena `401`, jalankan **Auth → Refresh**; script yang sama menimpa
@@ -65,7 +63,7 @@ docs: |
 
   ## Peran dan pendaftaran
 
-  Semua endpoint `/org/*` menuntut token yang `roles`-nya **memuat**
+  Semua endpoint `/organizer/*` menuntut token yang `roles`-nya **memuat**
   `organizer`. `roles` adalah array, jadi guard harus `roles.includes(...)`,
   bukan `===` — satu orang bisa jadi peserta sekaligus penyelenggara.
 
@@ -84,7 +82,7 @@ docs: |
   | --- | --- | --- |
   | `baseUrl` | environment | Origin + prefix versi API |
   | `accessToken` | otomatis, oleh Login / Refresh / Register Host | Bearer token |
-  | `refreshToken` | otomatis, oleh Login / Refresh / Register Host | Body Auth → Refresh |
+  | `refreshToken` | otomatis, oleh Login / Refresh | Body Auth → Refresh |
   | `experienceId` | manual | Path param experience |
   | `sessionId` | manual | Path param / query sesi |
 

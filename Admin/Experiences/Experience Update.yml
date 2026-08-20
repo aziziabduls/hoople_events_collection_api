@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/{{experienceId}}"
+  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
   auth: inherit
   headers:
     - name: Content-Type
@@ -62,7 +62,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `PATCH` |
-  | **Path** | `/org/experiences/{{experienceId}}` |
+  | **Path** | `/organizer/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/experience-update.request.json` |

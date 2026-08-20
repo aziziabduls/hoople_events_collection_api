@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/org/check-in/scan"
+  url: "{{baseUrl}}/organizer/check-in/scan"
   auth: inherit
   headers:
     - name: Content-Type
@@ -111,7 +111,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/org/check-in/scan` |
+  | **Path** | `/organizer/check-in/scan` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/checkin-scan.request.json`<br>`dto/organizer/checkin-scan.response.json`<br>`dto/organizer/checkin-scan-rejected.response.json` |

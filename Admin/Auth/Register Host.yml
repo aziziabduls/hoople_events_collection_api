@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/org/auth/register"
+  url: "{{baseUrl}}/auth/register/host"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,13 +13,13 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Kevin Nathanael",
-        "email": "kevin@ruangtumbuh.id",
-        "phone": "+62 813 8899 2200",
+        "hostName": "Ruang Tumbuh",
+        "email": null,
+        "whatsappNumber": "+62 813 8899 2200",
         "password": "RahasiaKu123",
         "passwordConfirmation": "RahasiaKu123",
-        "interests": [],
-        "acceptedTermsAt": "2026-03-14T09:30:00+07:00"
+        "acceptedTermsAt": "2026-03-14T09:30:00+07:00",
+        "verificationToken": "vt_8f2a1c9d4b6e0a37c5d1"
       }
 
 runtime:
@@ -31,14 +31,6 @@ runtime:
       operator: eq
       value: "true"
   scripts:
-    - type: after-response
-      code: |-
-        const body = res.getBody();
-        if (body && body.success && body.data && body.data.accessToken) {
-          bru.setEnvVar("accessToken", body.data.accessToken);
-          if (body.data.refreshToken) bru.setEnvVar("refreshToken", body.data.refreshToken);
-          console.log("accessToken disimpan ke environment aktif");
-        }
     - type: tests
       code: |-
         test("envelope lengkap", function () {
@@ -69,12 +61,12 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Registration successful",
+            "message": "Akun host berhasil dibuat",
             "data": {
               "user": {
                 "id": "5f1a7c62-9d84-4e13-8b57-44a1c6e7b902",
-                "fullName": "Kevin Nathanael",
-                "email": "kevin@ruangtumbuh.id",
+                "fullName": "Ruang Tumbuh",
+                "email": null,
                 "phone": "+62 813 8899 2200",
                 "avatarUrl": null,
                 "roles": [
@@ -82,6 +74,15 @@ examples:
                 ],
                 "emailVerifiedAt": null,
                 "createdAt": "2026-03-14T09:30:00+07:00"
+              },
+              "workspace": {
+                "id": "c0ffee11-aaaa-4bbb-8ccc-000000000408",
+                "name": "Ruang Tumbuh",
+                "slug": "ruang-tumbuh",
+                "category": null,
+                "plan": "starter",
+                "role": "owner",
+                "logoUrl": null
               },
               "tokenType": "Bearer",
               "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
@@ -95,12 +96,12 @@ examples:
 docs: |
   # Register Host
 
-  Buat akun host. Mendaftar juga membuat Anda masuk, jadi script after-response menyimpan tokennya sama seperti Login.
+  Buat akun host beserta workspace-nya.
 
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/org/auth/register` |
+  | **Path** | `/auth/register/host` |
   | **Auth** | Tidak perlu token |
   | **Sukses** | `201 Created` |
   | **Sumber** | `dto/organizer/register-host.request.json`<br>`dto/organizer/register-host.response.json` |
@@ -111,49 +112,50 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `fullName` | string | ya |  |
-  | `email` | string | ya | email |
-  | `phone` | string | ya |  |
+  | `hostName` | string | ya |  |
+  | `email` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `whatsappNumber` | string | ya |  |
   | `password` | string | ya |  |
   | `passwordConfirmation` | string | ya |  |
-  | `interests` | array | ya |  |
   | `acceptedTermsAt` | string | ya | ISO 8601 `+07:00` |
+  | `verificationToken` | string | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
-  ## Payload-nya sama dengan pendaftaran peserta - terbukti, bukan diasumsikan
+  ## Kenapa bukan `/auth/register`
 
-  Draf dokumen ini semula mengira endpoint ini punya payload sendiri
-  (`hostName`, `whatsappNumber`, `verificationToken`). Diuji langsung ke
-  server: body kosong dibalas `422` yang menyebutkan field yang sebenarnya
-  wajib - `fullName`, `email`, `phone`, `password`,
-  `passwordConfirmation`, `interests` (array), `acceptedTermsAt`. Itu
-  persis bentuk `/auth/register` peserta. Yang membedakan cuma jalurnya dan
-  `roles` yang dikembalikan: mendaftar di sini memberi
-  `roles: ["organizer"]`, bukan `["participant"]`.
+  Akun host bukan akun peserta, dan payload-nya membuktikannya:
 
-  `fullName` bisa berarti nama komunitas atau nama orang - belum terbukti
-  mana yang benar, karena backend menerima apa pun isinya tanpa membedakan.
-  Konsol saat ini mengirim nama komunitas dari form pendaftaran. Kalau ternyata
-  backend membedakan keduanya di tempat lain (mis. tampil di kuitansi), sebut
-  ke tim frontend.
+  | Peserta (`/auth/register`) | Host (di sini) |
+  | --- | --- |
+  | `fullName` — nama orang | `hostName` — nama komunitas atau studio |
+  | `email` **wajib** | `email` **opsional**, boleh `null` |
+  | `phone` pelengkap | `whatsappNumber` **wajib** — jalur pemberitahuan utama |
+  | `interests[]` untuk rekomendasi | tidak ada; konsol tidak merekomendasikan apa pun |
+  | `roles: ["participant"]` | `roles: ["organizer"]` |
 
-  Tidak ada langkah OTP di endpoint ini - kirim body ini sekali, akun dan
-  token langsung kembali. Kalau UI menampilkan langkah verifikasi kode
-  sebelumnya, itu kosmetik di sisi konsol; endpoint ini tidak memintanya dan
-  tidak memerlukan bukti apa pun darinya.
+  Menumpangkan keduanya di satu endpoint berarti separuh field selalu tidak
+  terpakai dan validasinya bergantung pada peran yang belum ada saat request
+  dikirim. Karena itu jalurnya sendiri, dan berkas DTO-nya ada di
+  `dto/organizer/` — bukan di `dto/shared/auth/`, karena situs lain tidak
+  memilikinya.
 
-  Jalurnya `/org/auth/register`, bukan `/org/*` yang lain - endpoint ini
-  tetap **publik**, tidak menuntut token, sementara `/org/*` yang lain
-  menuntut peran `organizer` yang justru baru dibuat di sini.
+  Jalurnya tetap di bawah `/auth/` karena ini urusan layanan autentikasi dan
+  **publik** — tidak boleh ditaruh di bawah `/organizer/*`, yang seluruhnya
+  menuntut token dengan peran `organizer` yang justru baru dibuat di sini.
 
   ## Yang dikembalikan
 
-  `user` dan token, tidak ada objek `workspace` terpisah - diuji langsung,
-  responsnya cuma `{ user, tokenType, accessToken, refreshToken, expiresIn,
-  expiresAt }`. Kalau backend memang berencana mengembalikan workspace di sini
-  juga nanti, sebut - dto ini akan menyesuaikan.
+  Satu akun **dan** satu workspace sekaligus, plus token — jadi form pendaftaran
+  bisa langsung masuk ke dashboard tanpa login ulang. `workspace.id` adalah UUID
+  organisasi itu selamanya: id yang sama nanti muncul sebagai `host.id` di
+  katalog publik dan `community.id` di halaman komunitas.
+
+  > **Menunggu keputusan backend.** `passwordConfirmation` ikut dikirim karena
+  > form memang memintanya dua kali; kalau backend memvalidasi kecocokan di sisi
+  > klien saja, field ini boleh dihapus. `acceptedTermsAt` adalah instant, bukan
+  > boolean, supaya tercatat *kapan* persetujuan diberikan.
 
   ## Error yang mungkin
 

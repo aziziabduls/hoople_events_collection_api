@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/transactions"
+  url: "{{baseUrl}}/organizer/transactions"
   auth: inherit
   params:
     - name: page
@@ -191,7 +191,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/org/transactions` |
+  | **Path** | `/organizer/transactions` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/transaction-list.response.json` |

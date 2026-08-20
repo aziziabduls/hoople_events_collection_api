@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/dashboard"
+  url: "{{baseUrl}}/organizer/dashboard"
   auth: inherit
 
 runtime:
@@ -241,7 +241,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/org/dashboard` |
+  | **Path** | `/organizer/dashboard` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/dashboard.response.json` |

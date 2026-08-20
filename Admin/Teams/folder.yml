@@ -1,0 +1,8 @@
+info:
+  name: Teams
+<<<<<<< HEAD:Teams/folder.yml
+  type: folder
+  seq: 9
+=======
+  seq: 2
+>>>>>>> refs/remotes/origin/main:Admin/Teams/folder.yml

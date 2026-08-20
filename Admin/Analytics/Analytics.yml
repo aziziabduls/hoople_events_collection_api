@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/analytics"
+  url: "{{baseUrl}}/organizer/analytics"
   auth: inherit
   params:
     - name: from
@@ -230,7 +230,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/org/analytics` |
+  | **Path** | `/organizer/analytics` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/analytics.response.json` |

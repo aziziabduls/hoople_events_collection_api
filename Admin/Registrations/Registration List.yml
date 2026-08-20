@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/registrations"
+  url: "{{baseUrl}}/organizer/registrations"
   auth: inherit
   params:
     - name: page
@@ -198,7 +198,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/org/registrations` |
+  | **Path** | `/organizer/registrations` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/registration-list.response.json` |
