@@ -16,7 +16,7 @@ docs: |
   adalah situsnya sendiri: satu studio atau komunitas mengelola experience
   publiknya — membuatnya, menjualnya, menjaga pintunya, dan menerima uangnya.
 
-  26 request, dibangkitkan dari `dto/` di repositori frontend
+  28 request, dibangkitkan dari `dto/` di repositori frontend
   `hoople-event-admin-dashboard`. Setiap body request dan setiap contoh response
   di sini **identik** dengan berkas JSON di sana, jadi keduanya tidak bisa
   berbeda diam-diam.
@@ -50,7 +50,7 @@ docs: |
   | Folder | Request | Untuk layar |
   | --- | --- | --- |
   | *(akar)* | `Base URL Check` | Memastikan `baseUrl` benar sebelum yang lain |
-  | `Auth` | 8 | Daftar host, masuk, keluar, profil, reset sandi |
+  | `Auth` | 10 | Daftar host, masuk, keluar, profil, reset sandi, verifikasi OTP |
   | `Dashboard` | 1 | Layar pertama setelah masuk |
   | `Experiences` | 7 | Daftar experience + dua builder |
   | `Sessions` | 1 | Semua slot yang bisa dipesan |
@@ -70,6 +70,11 @@ docs: |
   **Auth → Register Host** membuat akun host, dan itu bukan `/auth/register`
   milik situs peserta: tidak ada minat, tidak ada langkah profil, `email`
   opsional, dan nomor WhatsApp wajib. Rinciannya ada di docs request itu.
+
+  Pendaftaran mengembalikan token dengan `emailVerifiedAt: null`. Verifikasi
+  adalah langkah **sesudahnya**, bukan gerbang: **Auth → OTP Request** lalu
+  **OTP Verify**. Keduanya memakai bearer token dan tidak menerima alamat email
+  di body — kode selalu dikirim ke alamat milik akun yang sedang masuk.
 
   ## Variabel
 

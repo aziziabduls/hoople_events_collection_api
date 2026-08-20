@@ -1,0 +1,194 @@
+info:
+  name: OTP Request
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/otp/request"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "purpose": "email_verification",
+        "channel": "email"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Kode verifikasi dikirim",
+            "data": {
+              "purpose": "email_verification",
+              "channel": "email",
+              "sentTo": "h***@ruangtumbuh.id",
+              "codeLength": 6,
+              "expiresAt": "2026-03-14T09:40:00+07:00",
+              "resendAvailableAt": "2026-03-14T09:31:00+07:00",
+              "attemptsAllowed": 5
+            },
+            "meta": null
+          }
+  - name: "Terlalu sering"
+    response:
+      status: 429
+      statusText: Too Many Requests
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Terlalu banyak permintaan kode. Coba lagi nanti.",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_RATE_LIMITED",
+              "errors": null,
+              "retryAfterSeconds": 47
+            }
+          }
+  - name: "Sudah terverifikasi"
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Email ini sudah terverifikasi",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "ALREADY_VERIFIED",
+              "errors": null
+            }
+          }
+
+docs: |
+  # OTP Request
+
+  Kirim (atau kirim ulang) kode verifikasi ke akun yang sedang masuk.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/otp/request` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/otp-request.request.json`<br>`dto/shared/auth/otp-request.response.json`<br>`dto/shared/auth/otp-rate-limited.response.json`<br>`dto/shared/auth/otp-already-verified.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
+  | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Kenapa butuh token
+
+  Tidak ada `email` di body — sengaja. Kode selalu dikirim ke alamat milik akun
+  yang sedang masuk, dan itu dibaca dari bearer token. Endpoint yang menerima
+  alamat bebas berarti siapa pun bisa memicu pengiriman email ke alamat orang
+  lain, berkali-kali.
+
+  Alurnya **sesudah** daftar, bukan sebelum. `Register Host` sudah mengembalikan
+  token dan `emailVerifiedAt: null`, jadi akun langsung bisa dipakai dan
+  verifikasi adalah langkah berikutnya, bukan gerbang.
+
+  ## Yang dipakai tampilan
+
+  | Field | Untuk |
+  | --- | --- |
+  | `sentTo` | Ditampilkan apa adanya. Server sudah menyamarkannya (`h***@ruangtumbuh.id`) — jangan kirim alamat penuh. |
+  | `codeLength` | Jumlah kotak input, supaya 4 atau 6 digit tidak perlu perubahan kode. |
+  | `expiresAt` | Hitung mundur "kode berlaku sampai". |
+  | `resendAvailableAt` | Kapan tombol "Kirim ulang" hidup lagi. Tanpa ini tombolnya cuma menebak. |
+  | `attemptsAllowed` | Berapa kali boleh salah sebelum harus minta kode baru. |
+
+  > **`channel` sudah ada meski hari ini hanya `email`.** Pendaftaran host
+  > mewajibkan WhatsApp dan menjadikan email opsional, jadi
+  > `channel: "whatsapp"` bukan kemungkinan yang jauh — dan menambahkannya
+  > belakangan berarti mengubah kontrak yang sudah dipakai. `purpose` ada dengan
+  > alasan yang sama.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `409` | `shared/auth/otp-already-verified.response.json` | Alamat ini sudah terverifikasi; tidak ada yang perlu dikirim. |
+  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `429` | `shared/auth/otp-rate-limited.response.json` | Terlalu sering meminta kode. `error.retryAfterSeconds` memberi tahu berapa detik lagi. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.

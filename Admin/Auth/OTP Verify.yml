@@ -1,0 +1,211 @@
+info:
+  name: OTP Verify
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/otp/verify"
+  auth: inherit
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "purpose": "email_verification",
+        "channel": "email",
+        "code": "482915"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        if (body && body.success && body.data && body.data.accessToken) {
+          bru.setEnvVar("accessToken", body.data.accessToken);
+          if (body.data.refreshToken) bru.setEnvVar("refreshToken", body.data.refreshToken);
+          console.log("accessToken disimpan ke environment aktif");
+        }
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Email berhasil diverifikasi",
+            "data": {
+              "user": {
+                "id": "7c4e9a03-1b62-4d58-9e14-88f0a1b2c3d4",
+                "fullName": "Ruang Tumbuh",
+                "email": "halo@ruangtumbuh.id",
+                "phone": "+62 813 8899 2200",
+                "avatarUrl": null,
+                "roles": [
+                  "organizer"
+                ],
+                "createdAt": "2026-03-14T09:30:00+07:00",
+                "emailVerifiedAt": "2026-03-14T09:33:12+07:00"
+              },
+              "tokenType": "Bearer",
+              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
+              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
+              "expiresIn": 3600,
+              "expiresAt": "2026-03-14T10:33:12+07:00"
+            },
+            "meta": null
+          }
+  - name: "Kode salah"
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Kode verifikasi salah",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_INVALID",
+              "errors": {
+                "code": [
+                  "Kode tidak cocok"
+                ]
+              },
+              "attemptsRemaining": 3
+            }
+          }
+  - name: "Kode kedaluwarsa"
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Kode verifikasi sudah kedaluwarsa",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_EXPIRED",
+              "errors": {
+                "code": [
+                  "Minta kode baru"
+                ]
+              },
+              "attemptsRemaining": 0
+            }
+          }
+
+docs: |
+  # OTP Verify
+
+  Tukar kode dengan status terverifikasi. Menyimpan token baru, seperti Login.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/otp/verify` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/otp-verify.request.json`<br>`dto/shared/auth/otp-verify.response.json`<br>`dto/shared/auth/otp-invalid.response.json`<br>`dto/shared/auth/otp-expired.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
+  | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+  | `code` | string | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Satu status, dua kode
+
+  Kode salah dan kode kedaluwarsa sama-sama `422`, dibedakan `error.code`. Dari
+  sisi klien keduanya berarti hal yang sama — kode ini tidak bisa dipakai — dan
+  menambah satu status lagi ke kebijakan fallback demi satu endpoint lebih mahal
+  daripada satu kode tambahan.
+
+  `OTP_INVALID` membawa `error.attemptsRemaining`. Saat mencapai `0`, tampilan
+  harus mengarahkan ke **OTP Request**, bukan membiarkan orang mengetik lagi.
+
+  ## Kenapa mengembalikan token
+
+  Verifikasi bisa mengubah apa yang boleh dilakukan akun, dan token yang dicetak
+  sebelum itu mungkin membawa klaim lama. Kalau backend memilih tidak mencetak
+  ulang, cukup hilangkan ketiga field token — konsol menyimpan apa yang datang
+  dan mempertahankan pasangan lama kalau tidak ada.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/auth/otp-invalid.response.json` | `OTP_INVALID` kode salah (`error.attemptsRemaining`), `OTP_EXPIRED` kode kedaluwarsa. Bedakan lewat `error.code`, bukan status. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
