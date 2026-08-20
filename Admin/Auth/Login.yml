@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/auth/login"
+  url: "{{baseUrl}}/org/auth/login"
   headers:
     - name: Content-Type
       value: application/json
@@ -122,7 +122,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/auth/login` |
+  | **Path** | `/org/auth/login` |
   | **Auth** | Tidak perlu token |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/auth/login.request.json`<br>`dto/shared/auth/login.response.json`<br>`dto/shared/auth/login-invalid.response.json` |

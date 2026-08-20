@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/sessions"
+  url: "{{baseUrl}}/org/sessions"
   auth: inherit
   params:
     - name: page
@@ -148,7 +148,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/organizer/sessions` |
+  | **Path** | `/org/sessions` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/session-list.response.json` |

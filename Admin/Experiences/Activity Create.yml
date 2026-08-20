@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/organizer/experiences/activities"
+  url: "{{baseUrl}}/org/experiences/activities"
   auth: inherit
   headers:
     - name: Content-Type
@@ -217,7 +217,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/organizer/experiences/activities` |
+  | **Path** | `/org/experiences/activities` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `201 Created` |
   | **Sumber** | `dto/organizer/activity-create.request.json`<br>`dto/organizer/activity-create.response.json` |

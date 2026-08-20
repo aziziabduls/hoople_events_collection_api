@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}/publish"
+  url: "{{baseUrl}}/org/experiences/{{experienceId}}/publish"
   auth: inherit
 
 runtime:
@@ -65,7 +65,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/organizer/experiences/{{experienceId}}/publish` |
+  | **Path** | `/org/experiences/{{experienceId}}/publish` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/experience-publish.response.json` |

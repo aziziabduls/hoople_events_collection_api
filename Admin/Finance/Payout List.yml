@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/payouts"
+  url: "{{baseUrl}}/org/payouts"
   auth: inherit
   params:
     - name: page
@@ -213,7 +213,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/organizer/payouts` |
+  | **Path** | `/org/payouts` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/payout-list.response.json` |

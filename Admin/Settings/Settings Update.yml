@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/organizer/settings"
+  url: "{{baseUrl}}/org/settings"
   auth: inherit
   headers:
     - name: Content-Type
@@ -77,7 +77,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `PATCH` |
-  | **Path** | `/organizer/settings` |
+  | **Path** | `/org/settings` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/settings-update.request.json` |

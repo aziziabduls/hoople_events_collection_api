@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/check-in/summary"
+  url: "{{baseUrl}}/org/check-in/summary"
   auth: inherit
   params:
     - name: sessionId
@@ -86,7 +86,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/organizer/check-in/summary` |
+  | **Path** | `/org/check-in/summary` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/checkin-summary.response.json` |

@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/auth/logout"
+  url: "{{baseUrl}}/org/auth/logout"
   auth: inherit
 
 runtime:
@@ -60,7 +60,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/auth/logout` |
+  | **Path** | `/org/auth/logout` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/auth/logout.response.json` |
