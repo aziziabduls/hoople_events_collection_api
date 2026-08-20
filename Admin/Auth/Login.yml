@@ -13,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "email": "adriani.ajeng@gmail.com",
+        "identifier": "adriani.ajeng@gmail.com",
         "password": "RahasiaKu123",
         "rememberMe": true
       }
@@ -133,7 +133,7 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `email` | string | ya | email |
+  | `identifier` | string | ya | email |
   | `password` | string | ya |  |
   | `rememberMe` | boolean | ya |  |
 

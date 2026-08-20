@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/auth/otp/request"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -14,8 +13,9 @@ http:
     type: json
     data: |-
       {
-        "purpose": "email_verification",
-        "channel": "email"
+        "purpose": "phone_verification",
+        "channel": "whatsapp",
+        "destination": "+62 813 8899 2200"
       }
 
 runtime:
@@ -59,9 +59,9 @@ examples:
             "success": true,
             "message": "Kode verifikasi dikirim",
             "data": {
-              "purpose": "email_verification",
-              "channel": "email",
-              "sentTo": "h***@ruangtumbuh.id",
+              "purpose": "phone_verification",
+              "channel": "whatsapp",
+              "sentTo": "+62 813 **** 2200",
               "codeLength": 6,
               "expiresAt": "2026-03-14T09:40:00+07:00",
               "resendAvailableAt": "2026-03-14T09:31:00+07:00",
@@ -114,13 +114,13 @@ examples:
 docs: |
   # OTP Request
 
-  Kirim (atau kirim ulang) kode verifikasi ke akun yang sedang masuk.
+  Kirim (atau kirim ulang) kode ke `destination`. Tanpa token - akunnya belum ada.
 
   | | |
   | --- | --- |
   | **Method** | `POST` |
   | **Path** | `/auth/otp/request` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Auth** | Tidak perlu token |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/auth/otp-request.request.json`<br>`dto/shared/auth/otp-request.response.json`<br>`dto/shared/auth/otp-rate-limited.response.json`<br>`dto/shared/auth/otp-already-verified.response.json` |
 
@@ -132,47 +132,44 @@ docs: |
   | --- | --- | --- | --- |
   | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
   | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+  | `destination` | string | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
-  ## Kenapa butuh token
+  ## Kenapa tanpa token
 
-  Tidak ada `email` di body — sengaja. Kode selalu dikirim ke alamat milik akun
-  yang sedang masuk, dan itu dibaca dari bearer token. Endpoint yang menerima
-  alamat bebas berarti siapa pun bisa memicu pengiriman email ke alamat orang
-  lain, berkali-kali.
+  Akunnya belum ada. Desain pendaftaran memverifikasi **sebelum** membuat akun -
+  langkah 2 mengirim kode, langkah 3 membuat akunnya - jadi tidak ada bearer
+  token yang bisa dipakai, dan `destination` disebut di body.
 
-  Alurnya **sesudah** daftar, bukan sebelum. `Register Host` sudah mengembalikan
-  token dan `emailVerifiedAt: null`, jadi akun langsung bisa dipakai dan
-  verifikasi adalah langkah berikutnya, bukan gerbang.
+  Konsekuensinya seluruh keamanan endpoint ini bertumpu pada **pembatasan laju,
+  per `destination` dan per IP**. Tanpa itu, ini adalah cara mengirimi nomor
+  orang lain pesan WhatsApp berulang kali. Karena itu `429` di sini bukan
+  tambahan opsional, dan `retryAfterSeconds` wajib ada.
 
   ## Yang dipakai tampilan
 
   | Field | Untuk |
   | --- | --- |
-  | `sentTo` | Ditampilkan apa adanya. Server sudah menyamarkannya (`h***@ruangtumbuh.id`) — jangan kirim alamat penuh. |
+  | `sentTo` | Ditampilkan apa adanya. Server sudah menyamarkannya (`+62 813 **** 2200`) - jangan kirim nomor penuh. |
   | `codeLength` | Jumlah kotak input, supaya 4 atau 6 digit tidak perlu perubahan kode. |
-  | `expiresAt` | Hitung mundur "kode berlaku sampai". |
+  | `expiresAt` | Batas berlaku kode. |
   | `resendAvailableAt` | Kapan tombol "Kirim ulang" hidup lagi. Tanpa ini tombolnya cuma menebak. |
   | `attemptsAllowed` | Berapa kali boleh salah sebelum harus minta kode baru. |
 
-  > **`channel` sudah ada meski hari ini hanya `email`.** Pendaftaran host
-  > mewajibkan WhatsApp dan menjadikan email opsional, jadi
-  > `channel: "whatsapp"` bukan kemungkinan yang jauh — dan menambahkannya
-  > belakangan berarti mengubah kontrak yang sudah dipakai. `purpose` ada dengan
-  > alasan yang sama.
+  > **Kanal utamanya WhatsApp.** Layarnya bertuliskan "Confirm your WhatsApp",
+  > dengan "Send by email instead" sebagai jalan kedua - karena itu `channel`
+  > ada di kontrak sejak awal. Email tetap opsional saat mendaftar; yang
+  > diverifikasi adalah nomor, yang justru wajib.
 
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
-  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
   | `409` | `shared/auth/otp-already-verified.response.json` | Alamat ini sudah terverifikasi; tidak ada yang perlu dikirim. |
   | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
   | `429` | `shared/auth/otp-rate-limited.response.json` | Terlalu sering meminta kode. `error.retryAfterSeconds` memberi tahu berapa detik lagi. |
-  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 

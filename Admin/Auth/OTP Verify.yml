@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/auth/otp/verify"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -14,8 +13,9 @@ http:
     type: json
     data: |-
       {
-        "purpose": "email_verification",
-        "channel": "email",
+        "purpose": "phone_verification",
+        "channel": "whatsapp",
+        "destination": "+62 813 8899 2200",
         "code": "482915"
       }
 
@@ -28,14 +28,6 @@ runtime:
       operator: eq
       value: "true"
   scripts:
-    - type: after-response
-      code: |-
-        const body = res.getBody();
-        if (body && body.success && body.data && body.data.accessToken) {
-          bru.setEnvVar("accessToken", body.data.accessToken);
-          if (body.data.refreshToken) bru.setEnvVar("refreshToken", body.data.refreshToken);
-          console.log("accessToken disimpan ke environment aktif");
-        }
     - type: tests
       code: |-
         test("envelope lengkap", function () {
@@ -66,25 +58,13 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Email berhasil diverifikasi",
+            "message": "Nomor berhasil diverifikasi",
             "data": {
-              "user": {
-                "id": "7c4e9a03-1b62-4d58-9e14-88f0a1b2c3d4",
-                "fullName": "Ruang Tumbuh",
-                "email": "halo@ruangtumbuh.id",
-                "phone": "+62 813 8899 2200",
-                "avatarUrl": null,
-                "roles": [
-                  "organizer"
-                ],
-                "createdAt": "2026-03-14T09:30:00+07:00",
-                "emailVerifiedAt": "2026-03-14T09:33:12+07:00"
-              },
-              "tokenType": "Bearer",
-              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-access-token",
-              "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token",
-              "expiresIn": 3600,
-              "expiresAt": "2026-03-14T10:33:12+07:00"
+              "purpose": "phone_verification",
+              "channel": "whatsapp",
+              "verifiedAt": "2026-03-14T09:33:12+07:00",
+              "verificationToken": "vt_8f2a1c9d4b6e0a37c5d1",
+              "verificationTokenExpiresAt": "2026-03-14T09:48:12+07:00"
             },
             "meta": null
           }
@@ -142,13 +122,13 @@ examples:
 docs: |
   # OTP Verify
 
-  Tukar kode dengan status terverifikasi. Menyimpan token baru, seperti Login.
+  Tukar kode dengan `verificationToken`, yang lalu dibawa Register Host.
 
   | | |
   | --- | --- |
   | **Method** | `POST` |
   | **Path** | `/auth/otp/verify` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Auth** | Tidak perlu token |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/auth/otp-verify.request.json`<br>`dto/shared/auth/otp-verify.response.json`<br>`dto/shared/auth/otp-invalid.response.json`<br>`dto/shared/auth/otp-expired.response.json` |
 
@@ -160,6 +140,7 @@ docs: |
   | --- | --- | --- | --- |
   | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
   | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+  | `destination` | string | ya |  |
   | `code` | string | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
@@ -168,28 +149,28 @@ docs: |
   ## Satu status, dua kode
 
   Kode salah dan kode kedaluwarsa sama-sama `422`, dibedakan `error.code`. Dari
-  sisi klien keduanya berarti hal yang sama — kode ini tidak bisa dipakai — dan
+  sisi klien keduanya berarti hal yang sama - kode ini tidak bisa dipakai - dan
   menambah satu status lagi ke kebijakan fallback demi satu endpoint lebih mahal
   daripada satu kode tambahan.
 
   `OTP_INVALID` membawa `error.attemptsRemaining`. Saat mencapai `0`, tampilan
   harus mengarahkan ke **OTP Request**, bukan membiarkan orang mengetik lagi.
 
-  ## Kenapa mengembalikan token
+  ## `verificationToken`
 
-  Verifikasi bisa mengubah apa yang boleh dilakukan akun, dan token yang dicetak
-  sebelum itu mungkin membawa klaim lama. Kalau backend memilih tidak mencetak
-  ulang, cukup hilangkan ketiga field token — konsol menyimpan apa yang datang
-  dan mempertahankan pasangan lama kalau tidak ada.
+  Sekali pakai, berumur pendek, dan dibawa ke **Register Host** sebagai bukti
+  bahwa nomor itu benar-benar milik pendaftar. Tanpa token yang sah, pendaftaran
+  harus ditolak - kalau tidak, seluruh langkah verifikasi ini hanya hiasan.
+
+  Kalau backend lebih suka menandai `destination` sebagai terverifikasi di sisi
+  server dan tidak mengembalikan token sama sekali, hilangkan field itu: frontend
+  mengirim `null` kalau tidak menerimanya, dan tidak ada yang lain berubah.
 
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
-  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
-  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
   | `422` | `shared/auth/otp-invalid.response.json` | `OTP_INVALID` kode salah (`error.attemptsRemaining`), `OTP_EXPIRED` kode kedaluwarsa. Bedakan lewat `error.code`, bukan status. |
-  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 

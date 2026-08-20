@@ -18,7 +18,8 @@ http:
         "whatsappNumber": "+62 813 8899 2200",
         "password": "RahasiaKu123",
         "passwordConfirmation": "RahasiaKu123",
-        "acceptedTermsAt": "2026-03-14T09:30:00+07:00"
+        "acceptedTermsAt": "2026-03-14T09:30:00+07:00",
+        "verificationToken": "vt_8f2a1c9d4b6e0a37c5d1"
       }
 
 runtime:
@@ -117,6 +118,7 @@ docs: |
   | `password` | string | ya |  |
   | `passwordConfirmation` | string | ya |  |
   | `acceptedTermsAt` | string | ya | ISO 8601 `+07:00` |
+  | `verificationToken` | string | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
