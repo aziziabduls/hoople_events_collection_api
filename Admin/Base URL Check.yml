@@ -1,0 +1,86 @@
+info:
+  name: Base URL Check
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {}
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        // Sengaja tanpa assertion: request ini memang dikirim dengan body kosong,
+        // jadi jawaban "gagal" dari server justru bukti endpoint-nya ada.
+        const status = res.getStatus();
+
+        test("baseUrl menemukan endpoint (bukan 404)", function () {
+          expect(
+            status,
+            "404 berarti path /auth/login tidak ada di baseUrl ini. " +
+              "Kalau baseUrl sekarang TANPA /v1, coba tambahkan; " +
+              "kalau sudah DENGAN /v1, coba hapus. Ubah di Environments, " +
+              "bukan di URL request."
+          ).to.not.equal(404);
+        });
+
+        test("server menolak body kosong, seperti seharusnya", function () {
+          expect(
+            [400, 401, 405, 422].includes(status),
+            "Status " + status + ". 400/401/405/422 = baseUrl benar. " +
+              "0 atau timeout = server belum jalan. " +
+              "200 = server menerima login tanpa email/password, laporkan ke backend."
+          ).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+
+docs: |
+  # Base URL Check
+
+  Jalankan ini **sekali** setiap kali ganti environment. Tujuannya satu:
+  memastikan `baseUrl` yang aktif benar-benar menunjuk ke API, sebelum Anda
+  membuang waktu menebak kenapa request lain gagal.
+
+  ## Cara kerjanya
+
+  Request ini mengirim `POST /auth/login` dengan body **kosong** — disengaja.
+  Server yang benar akan menolaknya, dan penolakan itulah buktinya:
+
+  | Status | Artinya |
+  | --- | --- |
+  | `400` / `422` | **baseUrl benar.** Endpoint ada, body-nya saja yang tidak valid. |
+  | `401` / `405` | **baseUrl benar.** Endpoint ada. |
+  | `404` | **baseUrl salah.** Lihat tabel prefix di bawah. |
+  | `0` / timeout | Server belum jalan, atau tunnel ngrok mati. Bukan soal baseUrl. |
+  | `200` | Server menerima login tanpa email dan password. Itu bug, laporkan. |
+
+  Hasilnya ada di tab **Tests**, lengkap dengan langkah perbaikannya.
+
+  ## Soal prefix `/v1`
+
+  Hanya **Staging** yang memakai `/v1` hari ini, dan prefix itu sudah termasuk
+  di nilai `baseUrl`-nya. Apakah server lokal juga menyajikannya belum pernah
+  terbukti — request inilah cara membuktikannya.
+
+  | Environment | `baseUrl` sekarang | Kalau kena `404` |
+  | --- | --- | --- |
+  | Local Host | `http://localhost:3000` | Ubah jadi `http://localhost:3000/v1` |
+  | Local | `https://driver-gush-blip.ngrok-free.dev` | Tambahkan `/v1` di belakangnya |
+  | Staging | `https://api-staging.hoople.id/v1` | Hapus `/v1`-nya |
+
+  Ubah **di Environments**, jangan di URL request — kalau prefix ditulis di
+  satu request, 26 request lain tetap salah dan hanya yang ini yang jalan.
+
+  Setelah lolos, sesuaikan `VITE_API_BASE_URL` di `.env.local` pada repositori
+  frontend dengan nilai yang sama persis. Frontend tidak menebak prefix; nilai
+  itu dipakai apa adanya.

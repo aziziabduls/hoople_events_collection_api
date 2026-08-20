@@ -28,11 +28,15 @@ docs: |
   ## Mulai dari mana
 
   1. Pilih environment: **Local Host**, **Local**, atau **Staging**.
-  2. Jalankan **Auth → Login**. Script `after-response`-nya menyimpan
+  2. Jalankan **Base URL Check**. Satu request, dan tab Tests-nya bilang apakah
+     `baseUrl` yang aktif benar - termasuk apakah environment itu perlu prefix
+     `/v1` atau tidak. Lakukan ini dulu; menebak prefix berarti 26 request lain
+     gagal dengan 404 yang terlihat seperti masalah backend.
+  3. Jalankan **Auth → Login**. Script `after-response`-nya menyimpan
      `accessToken` dan `refreshToken` ke environment yang sedang aktif.
-  3. Jalankan endpoint mana pun. Semuanya `auth: inherit` dan mengambil bearer
+  4. Jalankan endpoint mana pun. Semuanya `auth: inherit` dan mengambil bearer
      token dari folder ini — tidak ada yang perlu ditempel manual.
-  4. Kalau kena `401`, jalankan **Auth → Refresh**; script yang sama menimpa
+  5. Kalau kena `401`, jalankan **Auth → Refresh**; script yang sama menimpa
      token lama.
 
   Endpoint dengan path param membaca `{{experienceId}}` dan `{{sessionId}}` dari
@@ -45,6 +49,7 @@ docs: |
 
   | Folder | Request | Untuk layar |
   | --- | --- | --- |
+  | *(akar)* | `Base URL Check` | Memastikan `baseUrl` benar sebelum yang lain |
   | `Auth` | 8 | Daftar host, masuk, keluar, profil, reset sandi |
   | `Dashboard` | 1 | Layar pertama setelah masuk |
   | `Experiences` | 7 | Daftar experience + dua builder |
@@ -143,6 +148,8 @@ docs: |
 
   Setelah itu `git diff` seharusnya hanya berisi perubahan yang memang berasal
   dari `dto/`. Kalau ada yang lain, berarti seseorang menyunting `Admin/`
-  langsung. Berkas ini sendiri ditulis tangan dan tidak ikut ditimpa.
+  langsung. Berkas ini dan `Base URL Check.yml` ditulis tangan; generator hanya
+  menulis sepuluh folder di bawah ini dan tidak menghapus apa pun, jadi keduanya
+  aman.
 
   Selengkapnya di `dto/README.md`.
