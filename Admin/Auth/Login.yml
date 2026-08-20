@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/org/auth/login"
+  url: "{{baseUrl}}/org/auth/logins"
   headers:
     - name: Content-Type
       value: application/json
@@ -133,7 +133,11 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
+<<<<<<< HEAD
   | `Email` | string | ya |  |
+=======
+  | `email` | string | ya | email |
+>>>>>>> a7f46b4ce007915dae68d52fbc44cddc20a625e3
   | `password` | string | ya |  |
   | `rememberMe` | boolean | ya |  |
 
