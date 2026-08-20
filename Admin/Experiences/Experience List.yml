@@ -1,14 +1,34 @@
 info:
-  name: Event List
+  name: Experience List
   type: http
   seq: 1
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/events"
+  url: "{{baseUrl}}/org/experiences"
   auth: inherit
+  params:
+    - name: scope
+      value: "all"
+      type: query
+      description: "Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol."
+    - name: page
+      value: "1"
+      type: query
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+    - name: perPage
+      value: "10"
+      type: query
+      description: "Baris per halaman. Contoh dto memakai 10."
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -28,16 +48,6 @@ runtime:
           expect(meta).to.have.property("total");
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
-<<<<<<<< HEAD:Admin/Experiences/Event List.yml
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
-========
->>>>>>>> refs/remotes/origin/main:Admin/Experiences/Experience List.yml
 
 settings:
   encodeUrl: true
@@ -46,7 +56,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -237,11 +247,7 @@ examples:
             }
           }
 
-<<<<<<<< HEAD:Admin/Experiences/Event List.yml
-docs: |-
-========
 docs: |
->>>>>>>> refs/remotes/origin/main:Admin/Experiences/Experience List.yml
   # Experience List
 
   Daftar experience; `scope` menggerakkan keempat tab.
@@ -249,7 +255,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/organizer/experiences` |
+  | **Path** | `/org/experiences` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/experience-list.response.json` |

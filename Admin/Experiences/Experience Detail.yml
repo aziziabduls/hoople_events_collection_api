@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/organizer/experiences/{{experienceId}}"
+  url: "{{baseUrl}}/org/experiences/{{experienceId}}"
   auth: inherit
 
 runtime:
@@ -200,7 +200,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `GET` |
-  | **Path** | `/organizer/experiences/{{experienceId}}` |
+  | **Path** | `/org/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/experience-detail.response.json` |

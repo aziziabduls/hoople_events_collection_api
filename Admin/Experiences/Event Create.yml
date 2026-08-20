@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/organizer/experiences/events"
+  url: "{{baseUrl}}/org/experiences/events"
   auth: inherit
   headers:
     - name: Content-Type
@@ -174,7 +174,7 @@ docs: |
   | | |
   | --- | --- |
   | **Method** | `POST` |
-  | **Path** | `/organizer/experiences/events` |
+  | **Path** | `/org/experiences/events` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `201 Created` |
   | **Sumber** | `dto/organizer/event-create.request.json`<br>`dto/organizer/event-create.response.json` |
