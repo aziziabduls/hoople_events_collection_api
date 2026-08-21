@@ -104,6 +104,32 @@ docs: |
   diperbarui, bentuknya sama dengan **Experience Detail**. Mohon dikonfirmasi tim
   backend, lalu tambahkan `dto/organizer/experience-update.response.json`.
 
+  ## Field mana yang boleh diubah tergantung fase experience-nya
+
+  Konsol sudah menerapkan aturan ini di sisi builder (kunci di layar, bukan cuma
+  janji) - backend sebaiknya menegakkan hal yang sama di endpoint ini, supaya
+  seseorang yang hit langsung ke API (bukan lewat UI) tidak bisa melewatinya.
+
+  | Field | Draft | Published, belum mulai | Sedang berlangsung | Selesai / Cancelled |
+  | --- | --- | --- | --- | --- |
+  | `identity.*` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `kind`, `format` | Bebas | **Terkunci** (struktural) | **Terkunci** | **Terkunci** |
+  | `startsAt`, `endsAt`, `venue`/`onlineUrl` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `rundown` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `ticketTypes[]` — tiket yang belum ada penjualan | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `ticketTypes[].name`/`.price` — tiket yang **sudah terjual** | — | **Terkunci** (nama & harga saja - kuota masih boleh naik) | **Terkunci** | **Terkunci** |
+  | `publishSettings.*` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+
+  Alasannya: mengubah tanggal atau format sesudah orang mendaftar berdasarkan itu
+  adalah reschedule, bukan edit biasa; tiket yang sudah dibeli tidak boleh
+  berubah nama/harganya di bawah pembeli; dan sekali event selesai atau
+  dibatalkan, baris itu adalah catatan, bukan formulir. "Sedang berlangsung"
+  dihitung dari tanggal (`startsAt <= sekarang <= endsAt`), bukan dari status,
+  karena kontrak ini tidak punya status `ongoing` terpisah dari `published`.
+
+  Kalau backend menolak field yang terkunci, sebaiknya balas `422` yang
+  menyebut field mana yang ditolak - bukan menerima diam-diam atau `500`.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
