@@ -4,10 +4,10 @@ variables:
     value: http://10.10.24.40:3436
     description: Staging bersama. Satu-satunya yang memakai prefix /v1, dan prefix itu sudah termasuk di nilai ini.
   - name: accessToken
-    value: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3N2ViYWQ3YS0yZmY4LTQ3ZDctYjVhNy1jNjM2ODY4NWVlZWUiLCJpYXQiOjE3ODczMDY4MDcsImV4cCI6MTc4NzMxMDQwN30.l54VSHNlt9YIC4LdB50ErYXxooWZRPcNbDjqqCntfA8
     description: Bearer token. Diisi otomatis oleh Admin > Auth > Login.
   - name: refreshToken
-    value: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3N2ViYWQ3YS0yZmY4LTQ3ZDctYjVhNy1jNjM2ODY4NWVlZWUiLCJpYXQiOjE3ODczMDY4MDcsImV4cCI6MTc4NzkxMTYwN30.L8uimfdZ1aXS8aStVFiiOd1wexmxCrRKvEq7qPRhqpo
     description: Diisi otomatis oleh Login; dipakai body Auth > Refresh.
   - name: experienceId
     value: ""
