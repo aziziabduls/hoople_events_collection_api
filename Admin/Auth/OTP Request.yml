@@ -13,19 +13,12 @@ http:
     type: json
     data: |-
       {
-        "purpose": "phone_verification",
-        "channel": "whatsapp",
-        "destination": "+62 813 8899 2200"
+        "purpose": "email_verification",
+        "channel": "email",
+        "destination": "aziziabdul95@gmail.com"
       }
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -37,6 +30,13 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -45,7 +45,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -69,7 +69,7 @@ examples:
             },
             "meta": null
           }
-  - name: "Terlalu sering"
+  - name: Terlalu sering
     response:
       status: 429
       statusText: Too Many Requests
@@ -90,7 +90,7 @@ examples:
               "retryAfterSeconds": 47
             }
           }
-  - name: "Sudah terverifikasi"
+  - name: Sudah terverifikasi
     response:
       status: 409
       statusText: Conflict

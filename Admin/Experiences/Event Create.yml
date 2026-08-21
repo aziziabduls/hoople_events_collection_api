@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/org/experiences/events"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -16,7 +15,7 @@ http:
       {
         "kind": "event",
         "identity": {
-          "title": "UX in Practice",
+          "title": "UX in Practicessss",
           "category": "Business & Professional",
           "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
           "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
@@ -92,15 +91,11 @@ http:
           "scheduledAt": "2026-03-15T09:00:00+07:00"
         }
       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMjI1NTksImV4cCI6MTc4NzIyNjE1OX0.W_fI-wQiEHHT3plyaw6DkYr0v9r0MNkoCYxO5EZu-rk
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -112,6 +107,13 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -120,7 +122,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 201
       statusText: Created

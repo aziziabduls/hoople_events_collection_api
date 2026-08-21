@@ -13,20 +13,13 @@ http:
     type: json
     data: |-
       {
-        "purpose": "phone_verification",
-        "channel": "whatsapp",
-        "destination": "+62 813 8899 2200",
-        "code": "482915"
+        "purpose": "email_verification",
+        "channel": "email",
+        "destination": "aziziabdul95@gmail.com",
+        "code": "282313"
       }
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -38,6 +31,13 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -46,7 +46,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -68,7 +68,7 @@ examples:
             },
             "meta": null
           }
-  - name: "Kode salah"
+  - name: Kode salah
     response:
       status: 422
       statusText: Unprocessable Entity
@@ -93,7 +93,7 @@ examples:
               "attemptsRemaining": 3
             }
           }
-  - name: "Kode kedaluwarsa"
+  - name: Kode kedaluwarsa
     response:
       status: 422
       statusText: Unprocessable Entity
