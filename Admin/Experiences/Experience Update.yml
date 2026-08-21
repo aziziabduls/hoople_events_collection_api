@@ -96,6 +96,37 @@ docs: |
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
+  ## Contoh di panel Body itu ilustrasi, bukan daftar field yang dibolehkan
+
+  Body contoh cuma menunjukkan satu skenario ("ubah info dasar + harga
+  aktivitas") - **bukan berarti field lain dilarang.** Karena ini `PATCH`
+  parsial, field apa pun dari bentuk **Create** (`venue`, `startsAt`,
+  `endsAt`, `onlineUrl`, `format`, `rundown`, `ticketTypes`, `brand`, dst)
+  boleh dikirim di sini juga - kirim saja yang berubah, sisanya tidak perlu
+  disertakan. Contoh event yang mengganti tanggal dan alamat venue:
+
+  ```json
+  {
+    "startsAt": "2026-06-01T09:00:00+07:00",
+    "endsAt": "2026-06-01T16:00:00+07:00",
+    "venue": {
+      "name": "Balai Kartini",
+      "area": "Kuningan",
+      "city": "Jakarta Selatan",
+      "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
+      "latitude": -6.2331,
+      "longitude": 106.8283,
+      "notes": []
+    }
+  }
+  ```
+
+  Yang membatasi field mana yang **boleh** dikirim bukan bentuk JSON-nya, tapi
+  kebijakan fase di bagian "Field mana yang boleh diubah tergantung fase
+  experience-nya" di bawah ini - sekali event sudah published, `startsAt`/
+  `endsAt`/`venue` memang terkunci, tapi itu aturan bisnis atas endpoint yang
+  sama, bukan skema yang berbeda.
+
   ## Response
 
   `dto/` **tidak** mendefinisikan response untuk endpoint ini, jadi tidak ada
