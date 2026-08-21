@@ -268,14 +268,16 @@ docs: |
   | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
   | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
 
-  ## Dua sumbu status
+  ## `publishState` dan `lifecycle` bukan field API - itu tampilan konsol
 
-  Setiap experience membawa dua status yang berdiri sendiri:
-
-  - `publishState` — apakah peserta bisa melihatnya (`draft`, `published`, `cancelled`).
-  - `lifecycle` — di mana posisinya dalam hidupnya sendiri (`upcoming`, `ongoing`, `completed`, `cancelled`).
-
-  Jangan gabungkan keduanya jadi satu kolom; konsol menampilkan dua-duanya.
+  Ini sempat salah dibaca sebagai instruksi untuk backend mengirim dua field.
+  **Yang perlu dikirim backend cuma satu: `status`** (`draft` | `published` |
+  `cancelled`), persis seperti contoh JSON di bawah ini. Konsol yang memecahnya
+  jadi dua tampilan di layarnya sendiri - lihat `lifecycleOf()` di
+  `src/lib/adapt.ts`, yang menghitung "upcoming/ongoing/completed" dari
+  `status` dan `endsAt`. Kalau backend sudah terlanjur mengirim
+  `publishState`/`lifecycle` sebagai field asli, itu bukan yang diminta
+  dokumen ini - tolong konfirmasi mana yang benar sebelum diteruskan.
 
   ## Error yang mungkin
 
