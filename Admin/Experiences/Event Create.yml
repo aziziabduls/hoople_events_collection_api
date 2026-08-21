@@ -132,36 +132,93 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Event berhasil dibuat",
+            "message": "Event created successfully",
             "data": {
               "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-              "slug": "ux-in-practice",
-              "title": "UX in Practice",
               "kind": "event",
-              "status": "draft",
-              "visibility": "private",
-              "category": "Business & Professional",
-              "coverImageUrl": "https://cdn.hoople.id/covers/ux-in-practice.jpg",
+              "identity": {
+                "title": "UX in Practice",
+                "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
+                "category": "Business & Professional",
+                "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+              },
+              "brand": {
+                "hostBio": "Ruang belajar bahasa dan keterampilan di Menteng.",
+                "logoUrl": null,
+                "hostName": "Lingua Space",
+                "hostType": "Community",
+                "contactEmail": "halo@linguaspace.id",
+                "contactPhone": "+62 811 2233 4455"
+              },
+              "benefits": [
+                "Sertifikat kehadiran",
+                "Materi workshop",
+                "Makan siang"
+              ],
+              "format": "onsite",
+              "venue": {
+                "area": "Kuningan",
+                "city": "Jakarta Selatan",
+                "name": "Balai Kartini",
+                "notes": [],
+                "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
+                "latitude": -6.2331,
+                "longitude": 106.8283
+              },
+              "onlineUrl": null,
               "startsAt": "2026-05-09T09:00:00+07:00",
               "endsAt": "2026-05-09T16:00:00+07:00",
-              "note": "Belum dipublikasikan",
-              "venue": {
-                "name": "Balai Kartini",
-                "area": "Kuningan",
-                "city": "Jakarta Selatan"
+              "timezone": "Asia/Jakarta",
+              "rundown": [
+                {
+                  "time": "09:00",
+                  "label": "Registrasi"
+                },
+                {
+                  "time": "10:00",
+                  "label": "Sesi 1 - Riset pengguna"
+                },
+                {
+                  "time": "13:00",
+                  "label": "Sesi 2 - Wireframing"
+                },
+                {
+                  "time": "15:00",
+                  "label": "Usability testing"
+                }
+              ],
+              "ticketTypes": [
+                {
+                  "name": "Early Bird",
+                  "description": "Kuota terbatas",
+                  "price": {
+                    "amount": 95000,
+                    "currency": "IDR"
+                  },
+                  "quota": 40,
+                  "salesStartAt": "2026-03-15T00:00:00+07:00",
+                  "salesEndAt": "2026-04-10T23:59:00+07:00"
+                },
+                {
+                  "name": "Regular",
+                  "description": "Harga normal",
+                  "price": {
+                    "amount": 125000,
+                    "currency": "IDR"
+                  },
+                  "quota": 80,
+                  "salesStartAt": "2026-04-11T00:00:00+07:00",
+                  "salesEndAt": "2026-05-08T23:59:00+07:00"
+                }
+              ],
+              "publishSettings": {
+                "visibility": "public",
+                "publishMode": "scheduled",
+                "scheduledAt": "2026-03-15T09:00:00+07:00",
+                "allowWaitlist": true,
+                "showOnDiscovery": true
               },
-              "registeredCount": 0,
-              "capacity": 120,
-              "occupancyRate": 0,
-              "revenue": {
-                "amount": 0,
-                "currency": "IDR"
-              },
-              "sessionCount": null,
-              "createdAt": "2026-01-12T10:00:00+07:00",
-              "publishedAt": null,
-              "publicUrl": null,
-              "scheduledPublishAt": "2026-03-15T09:00:00+07:00"
+              "createdAt": "2026-03-14T10:00:00+07:00"
             },
             "meta": null
           }

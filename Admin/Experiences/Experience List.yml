@@ -68,182 +68,42 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Daftar experience berhasil diambil",
+            "message": "Experiences retrieved successfully",
             "data": [
               {
                 "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
-                "slug": "sunset-rooftop-jazz",
-                "title": "Sunset Rooftop Jazz",
                 "kind": "event",
-                "status": "published",
-                "visibility": "public",
-                "category": "Music",
-                "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg",
+                "identity": {
+                  "title": "Sunset Rooftop Jazz",
+                  "summary": "Live jazz di rooftop, matahari terbenam di belakang panggung.",
+                  "category": "Music",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/sunset-rooftop-jazz.jpg"
+                },
+                "publishState": "published",
+                "lifecycle": "completed",
                 "startsAt": "2026-03-28T17:30:00+07:00",
-                "endsAt": "2026-03-28T22:00:00+07:00",
-                "note": "Mulai 14 hari lagi",
-                "venue": {
-                  "name": "Strive Gym SCBD",
-                  "area": "SCBD",
-                  "city": "Jakarta Selatan"
-                },
-                "registeredCount": 300,
-                "capacity": 300,
-                "occupancyRate": 1,
-                "revenue": {
-                  "amount": 82500000,
-                  "currency": "IDR"
-                },
-                "sessionCount": null,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": "2026-01-14T09:00:00+07:00"
-              },
-              {
-                "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
-                "slug": "kelas-keramik-untuk-pemula",
-                "title": "Kelas Keramik untuk Pemula",
-                "kind": "activity",
-                "status": "published",
-                "visibility": "public",
-                "category": "Classes",
-                "coverImageUrl": "https://cdn.hoople.id/covers/kelas-keramik-untuk-pemula.jpg",
-                "startsAt": "2026-03-21T14:00:00+07:00",
-                "endsAt": "2026-03-21T16:00:00+07:00",
-                "note": "Sesi berikutnya Sabtu",
-                "venue": {
-                  "name": "Waktu Luang Studio",
-                  "area": "Kemang",
-                  "city": "Jakarta Selatan"
-                },
-                "registeredCount": 9,
-                "capacity": 12,
-                "occupancyRate": 0.75,
-                "revenue": {
-                  "amount": 2250000,
-                  "currency": "IDR"
-                },
-                "sessionCount": 24,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": "2026-01-14T09:00:00+07:00"
+                "endsAt": "2026-03-28T22:00:00+07:00"
               },
               {
                 "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
-                "slug": "morning-yoga-flow",
-                "title": "Morning Yoga Flow",
                 "kind": "activity",
-                "status": "ongoing",
-                "visibility": "public",
-                "category": "Yoga & Wellness",
-                "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg",
+                "identity": {
+                  "title": "Morning Yoga Flow",
+                  "summary": "Kelas yoga pagi, rutin tiap akhir pekan.",
+                  "category": "Yoga & Wellness",
+                  "coverImageUrl": "https://cdn.hoople.id/covers/morning-yoga-flow.jpg"
+                },
+                "publishState": "draft",
+                "lifecycle": "upcoming",
                 "startsAt": "2026-03-16T07:00:00+07:00",
-                "endsAt": "2026-03-16T08:15:00+07:00",
-                "note": "Berjalan rutin",
-                "venue": {
-                  "name": "Waktu Luang Studio",
-                  "area": "Kemang",
-                  "city": "Jakarta Selatan"
-                },
-                "registeredCount": 24,
-                "capacity": 30,
-                "occupancyRate": 0.8,
-                "revenue": {
-                  "amount": 8640000,
-                  "currency": "IDR"
-                },
-                "sessionCount": 96,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": "2026-01-14T09:00:00+07:00"
-              },
-              {
-                "id": "e1f2a3b4-3333-4c5d-9e6f-000000000203",
-                "slug": "pasar-kreatif-kemang",
-                "title": "Pasar Kreatif Kemang",
-                "kind": "event",
-                "status": "completed",
-                "visibility": "public",
-                "category": "Market",
-                "coverImageUrl": "https://cdn.hoople.id/covers/pasar-kreatif-kemang.jpg",
-                "startsAt": "2026-02-15T09:00:00+07:00",
-                "endsAt": "2026-02-15T18:00:00+07:00",
-                "note": "Selesai 27 hari lalu",
-                "venue": {
-                  "name": "Waktu Luang Studio",
-                  "area": "Kemang",
-                  "city": "Jakarta Selatan"
-                },
-                "registeredCount": 780,
-                "capacity": 2000,
-                "occupancyRate": 0.39,
-                "revenue": {
-                  "amount": 0,
-                  "currency": "IDR"
-                },
-                "sessionCount": null,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": "2026-01-05T09:00:00+07:00"
-              },
-              {
-                "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
-                "slug": "ux-in-practice",
-                "title": "UX in Practice",
-                "kind": "event",
-                "status": "draft",
-                "visibility": "private",
-                "category": "Business & Professional",
-                "coverImageUrl": "https://cdn.hoople.id/covers/ux-in-practice.jpg",
-                "startsAt": "2026-05-09T09:00:00+07:00",
-                "endsAt": "2026-05-09T16:00:00+07:00",
-                "note": "Belum dipublikasikan",
-                "venue": {
-                  "name": "Balai Kartini",
-                  "area": "Kuningan",
-                  "city": "Jakarta Selatan"
-                },
-                "registeredCount": 0,
-                "capacity": 120,
-                "occupancyRate": 0,
-                "revenue": {
-                  "amount": 0,
-                  "currency": "IDR"
-                },
-                "sessionCount": null,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": null
-              },
-              {
-                "id": "a1b2c3d4-3333-4a2b-8c3d-000000000103",
-                "slug": "latte-art-workshop",
-                "title": "Latte Art Workshop",
-                "kind": "activity",
-                "status": "cancelled",
-                "visibility": "public",
-                "category": "Food & Drink",
-                "coverImageUrl": "https://cdn.hoople.id/covers/latte-art-workshop.jpg",
-                "startsAt": "2026-03-19T10:00:00+07:00",
-                "endsAt": "2026-03-19T12:00:00+07:00",
-                "note": "Dibatalkan penyelenggara",
-                "venue": {
-                  "name": "GreenBite Kitchen",
-                  "area": "Pantai Indah Kapuk",
-                  "city": "Jakarta Utara"
-                },
-                "registeredCount": 6,
-                "capacity": 6,
-                "occupancyRate": 1,
-                "revenue": {
-                  "amount": 1110000,
-                  "currency": "IDR"
-                },
-                "sessionCount": 12,
-                "createdAt": "2026-01-12T10:00:00+07:00",
-                "publishedAt": "2026-01-14T09:00:00+07:00"
+                "endsAt": "2026-03-16T08:15:00+07:00"
               }
             ],
             "meta": {
               "page": 1,
               "perPage": 10,
-              "total": 24,
-              "totalPages": 3
+              "total": 2,
+              "totalPages": 1
             }
           }
 
