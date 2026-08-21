@@ -1,0 +1,17 @@
+name: SIT
+variables:
+  - name: baseUrl
+    value: http://10.10.24.40:3436
+    description: Staging bersama. Satu-satunya yang memakai prefix /v1, dan prefix itu sudah termasuk di nilai ini.
+  - name: accessToken
+    value: ""
+    description: Bearer token. Diisi otomatis oleh Admin > Auth > Login.
+  - name: refreshToken
+    value: ""
+    description: Diisi otomatis oleh Login; dipakai body Auth > Refresh.
+  - name: experienceId
+    value: ""
+    description: UUID experience untuk path param. Ambil dari Experience List.
+  - name: sessionId
+    value: ""
+    description: UUID sesi untuk path param / query. Ambil dari Session List.
