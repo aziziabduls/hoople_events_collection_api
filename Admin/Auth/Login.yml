@@ -13,7 +13,11 @@ http:
     type: json
     data: |-
       {
+<<<<<<< HEAD
         "email": "adriani.ajeng@gmail.com",
+=======
+        "email": "aziziabdul95@gmail.com",
+>>>>>>> b16b1db (simpan kerjaan saya sebelum merge dengan kevin)
         "password": "RahasiaKu123",
         "rememberMe": true
       }
