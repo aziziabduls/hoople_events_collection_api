@@ -21,7 +21,7 @@ http:
       description: Baris per halaman. Contoh dto memakai 10.
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMjI1NTksImV4cCI6MTc4NzIyNjE1OX0.W_fI-wQiEHHT3plyaw6DkYr0v9r0MNkoCYxO5EZu-rk
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODcyOTUxNDYsImV4cCI6MTc4NzI5ODc0Nn0.-Bb0vg-QoIsn7bHoddhU9pZUxA4wudynRQWr7fm8C58
 
 runtime:
   scripts:
