@@ -77,6 +77,23 @@ docs: |
   Keduanya diisi di environment, bukan ditulis langsung di URL, supaya
   pindah environment tidak berarti menyunting request.
 
+  ## Hidup, tapi cuma untuk draft
+
+  Dites langsung ke tunnel: menghapus event yang `publishState: "published"`
+  ditolak `409` - `"Cannot delete an event that is not in draft mode"`.
+
+  Karena **Event Create** selalu membuat event langsung `published` (lihat
+  catatan di request itu), event yang baru dibuat **tidak bisa langsung
+  dihapus**. Yang terbukti berhasil: kirim dulu **Experience Update** dengan
+  body `{ "status": "draft" }` (diterima `200` walau bukan salah satu field
+  bersarang yang terdokumentasi di request itu), baru kirim `DELETE` di sini -
+  balas `200` dan resource-nya benar-benar hilang: `GET` detail sesudahnya
+  balas `404`, dan baris itu tidak lagi muncul di **Experience List**.
+
+  Draft yang memang belum pernah dipublish seharusnya bisa langsung dihapus
+  tanpa langkah `status: draft` ini dulu - belum sempat diuji karena builder
+  selalu mem-publish saat submit pertama.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
