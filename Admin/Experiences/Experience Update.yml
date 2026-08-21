@@ -146,6 +146,114 @@ settings:
   followRedirects: true
   maxRedirects: 5
 
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Experience updated successfully",
+            "data": {
+              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+              "kind": "event",
+              "identity": {
+                "title": "UX in Practice (Updated)",
+                "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
+                "category": "Business & Professional",
+                "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+              },
+              "brand": {
+                "hostBio": "Ruang belajar bahasa dan keterampilan di Menteng.",
+                "logoUrl": null,
+                "hostName": "Lingua Space",
+                "hostType": "Community",
+                "contactEmail": "halo@linguaspace.id",
+                "contactPhone": "+62 811 2233 4455"
+              },
+              "benefits": [
+                "Sertifikat kehadiran",
+                "Materi workshop",
+                "Makan siang"
+              ],
+              "format": "onsite",
+              "venue": {
+                "area": "Kuningan",
+                "city": "Jakarta Selatan",
+                "name": "Balai Kartini",
+                "notes": [],
+                "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
+                "latitude": -6.2331,
+                "longitude": 106.8283
+              },
+              "onlineUrl": null,
+              "startsAt": "2026-05-09T09:00:00+07:00",
+              "endsAt": "2026-05-09T16:00:00+07:00",
+              "timezone": "Asia/Jakarta",
+              "rundown": [
+                {
+                  "time": "09:00",
+                  "label": "Registrasi"
+                },
+                {
+                  "time": "10:00",
+                  "label": "Sesi 1 — Riset pengguna"
+                },
+                {
+                  "time": "13:00",
+                  "label": "Sesi 2 — Wireframing"
+                },
+                {
+                  "time": "15:00",
+                  "label": "Usability testing"
+                }
+              ],
+              "publishState": "published",
+              "lifecycle": "upcoming",
+              "publishSettings": {
+                "visibility": "public",
+                "publishMode": "scheduled",
+                "scheduledAt": "2026-03-15T09:00:00+07:00",
+                "allowWaitlist": true,
+                "showOnDiscovery": true
+              },
+              "ticketTypes": [
+                {
+                  "id": "b1410697-042b-4527-be60-3997f1be5920",
+                  "name": "Early Bird",
+                  "description": "Kuota terbatas",
+                  "price": {
+                    "amount": 95000,
+                    "currency": "IDR"
+                  },
+                  "quota": 40,
+                  "salesStartAt": "2026-03-15T00:00:00+07:00",
+                  "salesEndAt": "2026-04-10T23:59:00+07:00"
+                },
+                {
+                  "id": "5822a302-2d60-494e-acbd-41f41b223cb3",
+                  "name": "Regular",
+                  "description": "Harga normal",
+                  "price": {
+                    "amount": 125000,
+                    "currency": "IDR"
+                  },
+                  "quota": 80,
+                  "salesStartAt": "2026-04-11T00:00:00+07:00",
+                  "salesEndAt": "2026-05-08T23:59:00+07:00"
+                }
+              ],
+              "createdAt": "2026-08-21T10:43:59.093+07:00"
+            },
+            "meta": null
+          }
+
 docs: |
   # Experience Update
 
@@ -157,7 +265,7 @@ docs: |
   | **Path** | `/org/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-update.request.json` |
+  | **Sumber** | `dto/organizer/experience-update.request.json`<br>`dto/organizer/experience-update.response.json` |
 
   ## Variabel yang dipakai
 
@@ -240,6 +348,24 @@ docs: |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Hidup, dikonfirmasi lewat pengujian langsung ke tunnel
+
+  `PATCH /org/experiences/{{experienceId}}` menjawab `200` - dites dengan
+  mengirim partial update (ganti `identity.title` saja), lalu dikonfirmasi
+  lewat **Experience Detail** bahwa perubahannya tersimpan. Bentuk respons di
+  panel Response mengikuti pengamatan itu - sama seperti Create/Detail
+  (`identity` bersarang, `publishState`/`lifecycle`, `ticketTypes[].id`).
+
+  Satu hal kecil yang ikut teramati: tiket yang `salesEndAt`-nya tidak pernah
+  diisi (dikirim `null`) kembali sebagai `"1970-01-01T07:00:00+07:00"` di
+  respons, bukan `null`. Bukan crash - tapi kalau field itu ditampilkan apa
+  adanya di UI, tiketnya akan terlihat sudah kedaluwarsa sejak 1970.
+
+  `ticketTypes[].price` di contoh Response ini dibungkus `{ amount, currency }`
+  mengikuti konvensi uang kami sendiri - backend yang sebenarnya masih
+  mengembalikannya sebagai integer polos di sini juga, pelanggaran konvensi
+  yang sama seperti di Create Event.
 
   ## Body di atas adalah contoh *lengkap*, bukan daftar field yang dibolehkan
 
@@ -326,14 +452,6 @@ docs: |
   experience-nya" di bawah ini - sekali event sudah published, `startsAt`/
   `endsAt`/`venue` memang terkunci, tapi itu aturan bisnis atas endpoint yang
   sama, bukan skema yang berbeda.
-
-  ## Response
-
-  `dto/` **tidak** mendefinisikan response untuk endpoint ini, jadi tidak ada
-  contoh yang ditempel di sini — mengarang satu hanya akan jadi kontrak palsu.
-  Yang paling konsisten dengan endpoint lain: kembalikan resource yang sudah
-  diperbarui, bentuknya sama dengan **Experience Detail**. Mohon dikonfirmasi tim
-  backend, lalu tambahkan `dto/organizer/experience-update.response.json`.
 
   ## Field mana yang boleh diubah tergantung fase experience-nya
 
