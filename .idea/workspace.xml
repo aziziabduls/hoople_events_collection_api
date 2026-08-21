@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4ac3f997-bef5-4e8d-9277-b893c36c80cb" name="Changes" comment="Add Experience Unpublish API definition and IDEA project configuration&#10;&#10;- Add HTTP request definition, tests, and documentation for the Experience Unpublish endpoint.&#10;- Initialize IDEA project settings, including module definitions, VCS mapping, and JDK 21 configuration.&#10;- Add device streaming cache containing a comprehensive list of persistent device selection data.&#10;- Configure `.gitignore` for the `.idea` directory to exclude workspace-specific files." />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="KevinBranch" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;aziziabduls&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/aziziabduls/hoople_events_collection_api.git&quot;,
+    &quot;accountId&quot;: &quot;82a686dc-8001-4e2d-b548-9334902456fc&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3IDLvE6RFzVsixhIBJXUDuuppZ9" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "dev-backend",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4ac3f997-bef5-4e8d-9277-b893c36c80cb" name="Changes" comment="" />
+      <created>1787294420969</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1787294420969</updated>
+    </task>
+    <task id="LOCAL-00001" summary="azz update">
+      <option name="closed" value="true" />
+      <created>1787294807653</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1787294807653</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update tokens and hardcode ID in Experience Detail&#10;&#10;- Update bearer tokens in Experience Detail and Experience List.&#10;- Replace dynamic `{{experienceId}}` with a specific UUID in Experience Detail URL.&#10;- Update `accessToken` and `refreshToken` in the Local environment file.&#10;- Reorder assertion blocks within the Experience Detail runtime configuration.">
+      <option name="closed" value="true" />
+      <created>1787299909362</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1787299909362</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update Experience List authentication and refresh local tokens&#10;&#10;- Changed authentication from inherit to explicit Bearer token in Experience List&#10;- Updated `accessToken` and `refreshToken` in the local environment configuration&#10;- Refactored `Experience List.yml` to clean up YAML quoting and reorder runtime assertions">
+      <option name="closed" value="true" />
+      <created>1787305994826</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1787305994826</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add SIT environment configuration&#10;&#10;Includes the base URL for the SIT environment and defines variables for authentication tokens, experience IDs, and session IDs.">
+      <option name="closed" value="true" />
+      <created>1787306602656</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1787306602656</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Replace AI Workshop with GBK Run 2026 in Event Create example&#10;&#10;Updated the event creation template to model a complex sports event (running race) instead of a workshop. This introduces several new data structures and refreshes authentication tokens.&#10;&#10;Key changes include:&#10;* **Event Metadata**: Updated identity, branding, and venue details to reflect a race event at Gelora Bung Karno.&#10;* **Race-Specific Schema**: Added new sections for `raceCategories`, `raceExperience` (including hydration/medical stations and timing systems), `racePack` collection details, and `awards`.&#10;* **Ticketing &amp; Capacity**: Replaced workshop tickets with category-based race entries (5K/10K) and updated capacity logic.&#10;* **Registration Flow**: Adjusted registration fields and custom questions to capture runner-specific data like T-shirt size and running club.&#10;* **Auth Tokens**: Refreshed `accessToken` and `refreshToken` across `Event Create.yml`, `Experience List.yml`, `Local.yml`, and `SIT.yml`.">
+      <option name="closed" value="true" />
+      <created>1787307512973</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1787307512973</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Experience Unpublish API definition and IDEA project configuration&#10;&#10;- Add HTTP request definition, tests, and documentation for the Experience Unpublish endpoint.&#10;- Initialize IDEA project settings, including module definitions, VCS mapping, and JDK 21 configuration.&#10;- Add device streaming cache containing a comprehensive list of persistent device selection data.&#10;- Configure `.gitignore` for the `.idea` directory to exclude workspace-specific files.">
+      <option name="closed" value="true" />
+      <created>1787307703120</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1787307703120</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="azz update" />
+    <MESSAGE value="Update tokens and hardcode ID in Experience Detail&#10;&#10;- Update bearer tokens in Experience Detail and Experience List.&#10;- Replace dynamic `{{experienceId}}` with a specific UUID in Experience Detail URL.&#10;- Update `accessToken` and `refreshToken` in the Local environment file.&#10;- Reorder assertion blocks within the Experience Detail runtime configuration." />
+    <MESSAGE value="Update Experience List authentication and refresh local tokens&#10;&#10;- Changed authentication from inherit to explicit Bearer token in Experience List&#10;- Updated `accessToken` and `refreshToken` in the local environment configuration&#10;- Refactored `Experience List.yml` to clean up YAML quoting and reorder runtime assertions" />
+    <MESSAGE value="Add SIT environment configuration&#10;&#10;Includes the base URL for the SIT environment and defines variables for authentication tokens, experience IDs, and session IDs." />
+    <MESSAGE value="Replace AI Workshop with GBK Run 2026 in Event Create example&#10;&#10;Updated the event creation template to model a complex sports event (running race) instead of a workshop. This introduces several new data structures and refreshes authentication tokens.&#10;&#10;Key changes include:&#10;* **Event Metadata**: Updated identity, branding, and venue details to reflect a race event at Gelora Bung Karno.&#10;* **Race-Specific Schema**: Added new sections for `raceCategories`, `raceExperience` (including hydration/medical stations and timing systems), `racePack` collection details, and `awards`.&#10;* **Ticketing &amp; Capacity**: Replaced workshop tickets with category-based race entries (5K/10K) and updated capacity logic.&#10;* **Registration Flow**: Adjusted registration fields and custom questions to capture runner-specific data like T-shirt size and running club.&#10;* **Auth Tokens**: Refreshed `accessToken` and `refreshToken` across `Event Create.yml`, `Experience List.yml`, `Local.yml`, and `SIT.yml`." />
+    <MESSAGE value="Add Experience Unpublish API definition and IDEA project configuration&#10;&#10;- Add HTTP request definition, tests, and documentation for the Experience Unpublish endpoint.&#10;- Initialize IDEA project settings, including module definitions, VCS mapping, and JDK 21 configuration.&#10;- Add device streaming cache containing a comprehensive list of persistent device selection data.&#10;- Configure `.gitignore` for the `.idea` directory to exclude workspace-specific files." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Experience Unpublish API definition and IDEA project configuration&#10;&#10;- Add HTTP request definition, tests, and documentation for the Experience Unpublish endpoint.&#10;- Initialize IDEA project settings, including module definitions, VCS mapping, and JDK 21 configuration.&#10;- Add device streaming cache containing a comprehensive list of persistent device selection data.&#10;- Configure `.gitignore` for the `.idea` directory to exclude workspace-specific files." />
+  </component>
+</project>

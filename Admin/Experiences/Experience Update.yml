@@ -5,8 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/{{experienceId}}"
-  auth: inherit
+  url: "{{baseUrl}}/org/experiences/35f8dc2c-eb7a-44fc-945c-e2b7691006d9"
   headers:
     - name: Content-Type
       value: application/json
@@ -14,28 +13,13 @@ http:
     type: json
     data: |-
       {
-        "identity": {
-          "title": "Kelas Keramik untuk Pemula (Batch 2)",
-          "category": "Classes",
-          "summary": "Belajar teknik pinch dan coil.",
-          "coverImageUrl": "https://cdn.hoople.id/covers/pottery.jpg"
-        },
-        "pricing": {
-          "basePrice": 275000,
-          "currency": "IDR",
-          "defaultCapacity": 12,
-          "minParticipants": 3
-        }
+        "status": "draft"
       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -47,12 +31,127 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Experience updated successfully",
+            "data": {
+              "id": "e1f2a3b4-5555-4c5d-9e6f-000000000205",
+              "kind": "event",
+              "identity": {
+                "title": "UX in Practice (Updated)",
+                "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
+                "category": "Business & Professional",
+                "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+              },
+              "brand": {
+                "hostBio": "Ruang belajar bahasa dan keterampilan di Menteng.",
+                "logoUrl": null,
+                "hostName": "Lingua Space",
+                "hostType": "Community",
+                "contactEmail": "halo@linguaspace.id",
+                "contactPhone": "+62 811 2233 4455"
+              },
+              "benefits": [
+                "Sertifikat kehadiran",
+                "Materi workshop",
+                "Makan siang"
+              ],
+              "format": "onsite",
+              "venue": {
+                "area": "Kuningan",
+                "city": "Jakarta Selatan",
+                "name": "Balai Kartini",
+                "notes": [],
+                "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
+                "latitude": -6.2331,
+                "longitude": 106.8283
+              },
+              "onlineUrl": null,
+              "startsAt": "2026-05-09T09:00:00+07:00",
+              "endsAt": "2026-05-09T16:00:00+07:00",
+              "timezone": "Asia/Jakarta",
+              "rundown": [
+                {
+                  "time": "09:00",
+                  "label": "Registrasi"
+                },
+                {
+                  "time": "10:00",
+                  "label": "Sesi 1 — Riset pengguna"
+                },
+                {
+                  "time": "13:00",
+                  "label": "Sesi 2 — Wireframing"
+                },
+                {
+                  "time": "15:00",
+                  "label": "Usability testing"
+                }
+              ],
+              "publishState": "published",
+              "lifecycle": "upcoming",
+              "publishSettings": {
+                "visibility": "public",
+                "publishMode": "scheduled",
+                "scheduledAt": "2026-03-15T09:00:00+07:00",
+                "allowWaitlist": true,
+                "showOnDiscovery": true
+              },
+              "ticketTypes": [
+                {
+                  "id": "b1410697-042b-4527-be60-3997f1be5920",
+                  "name": "Early Bird",
+                  "description": "Kuota terbatas",
+                  "price": {
+                    "amount": 95000,
+                    "currency": "IDR"
+                  },
+                  "quota": 40,
+                  "salesStartAt": "2026-03-15T00:00:00+07:00",
+                  "salesEndAt": "2026-04-10T23:59:00+07:00"
+                },
+                {
+                  "id": "5822a302-2d60-494e-acbd-41f41b223cb3",
+                  "name": "Regular",
+                  "description": "Harga normal",
+                  "price": {
+                    "amount": 125000,
+                    "currency": "IDR"
+                  },
+                  "quota": 80,
+                  "salesStartAt": "2026-04-11T00:00:00+07:00",
+                  "salesEndAt": "2026-05-08T23:59:00+07:00"
+                }
+              ],
+              "createdAt": "2026-08-21T10:43:59.093+07:00"
+            },
+            "meta": null
+          }
 
 docs: |
   # Experience Update
@@ -65,7 +164,7 @@ docs: |
   | **Path** | `/org/experiences/{{experienceId}}` |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
-  | **Sumber** | `dto/organizer/experience-update.request.json` |
+  | **Sumber** | `dto/organizer/experience-update.request.json`<br>`dto/organizer/experience-update.response.json` |
 
   ## Variabel yang dipakai
 
@@ -87,22 +186,197 @@ docs: |
   | `identity.category` | string | ya |  |
   | `identity.summary` | string | ya |  |
   | `identity.coverImageUrl` | string | ya | URL |
+  | `details` | object | ya |  |
+  | `details.difficulty` | string | ya | enum `difficulty`: `beginner`, `intermediate`, `advanced` |
+  | `details.language` | string | ya |  |
+  | `details.visibility` | string | ya | enum `visibility`: `public`, `unlisted`, `private` |
+  | `participantInfo` | object | ya |  |
+  | `participantInfo.whatToBring` | array | ya |  |
+  | `participantInfo.requirements` | array | ya |  |
+  | `venue` | object | ya |  |
+  | `venue.name` | string | ya |  |
+  | `venue.area` | string | ya |  |
+  | `venue.city` | string | ya |  |
+  | `venue.address` | string | ya |  |
+  | `venue.latitude` | number | ya |  |
+  | `venue.longitude` | number | ya |  |
+  | `venue.notes` | array | ya |  |
+  | `schedule` | object | ya |  |
+  | `schedule.startDate` | string | ya | tanggal `YYYY-MM-DD` |
+  | `schedule.endDate` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `schedule.noEndDate` | boolean | ya |  |
+  | `schedule.repeatWeekly` | boolean | ya |  |
+  | `schedule.operatingDays` | array | ya |  |
+  | `schedule.skippedDates` | array | ya |  |
+  | `schedule.pickedDates` | array | ya |  |
+  | `schedule.timezone` | string | ya |  |
+  | `sessions` | array | ya |  |
+  | `sessions[].name` | string | ya |  |
+  | `sessions[].startTime` | string | ya | jam `HH:mm` |
+  | `sessions[].endTime` | string | ya | jam `HH:mm` |
+  | `sessions[].weekdays` | array | ya |  |
+  | `sessions[].capacity` | integer | ya |  |
+  | `sessions[].price` | integer | ya | integer polos di request (objek uang hanya di response) |
+  | `sessions[].instructor` | string | ya |  |
+  | `sessions[].isActive` | boolean | ya |  |
   | `pricing` | object | ya |  |
   | `pricing.basePrice` | integer | ya | integer polos di request (objek uang hanya di response) |
   | `pricing.currency` | string | ya |  |
   | `pricing.defaultCapacity` | integer | ya |  |
   | `pricing.minParticipants` | integer | ya |  |
+  | `booking` | object | ya |  |
+  | `booking.opensBefore` | string | ya |  |
+  | `booking.closesBefore` | string | ya |  |
+  | `booking.confirmation` | string | ya | enum `bookingConfirmation`: `instant`, `manual` |
+  | `booking.cancellationPolicy` | string | ya |  |
+  | `booking.allowWaitlist` | boolean | ya |  |
+  | `instructors` | array | ya |  |
+  | `instructors[].name` | string | ya |  |
+  | `instructors[].role` | string | ya |  |
+  | `instructors[].bio` | string | ya |  |
+  | `instructors[].expertise` | array | ya |  |
+  | `instructors[].avatarUrl` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `gallery` | array | ya |  |
+  | `facilities` | array | ya |  |
+  | `equipment` | array | ya |  |
+  | `houseRules` | array | ya |  |
+  | `publish` | object | ya |  |
+  | `publish.mode` | string | ya | enum `publishMode`: `now`, `scheduled`, `draft` |
+  | `publish.scheduledAt` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
+  | `publish.showOnDiscovery` | boolean | ya |  |
 
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
-  ## Response
+  ## Hidup, dikonfirmasi lewat pengujian langsung ke tunnel
 
-  `dto/` **tidak** mendefinisikan response untuk endpoint ini, jadi tidak ada
-  contoh yang ditempel di sini — mengarang satu hanya akan jadi kontrak palsu.
-  Yang paling konsisten dengan endpoint lain: kembalikan resource yang sudah
-  diperbarui, bentuknya sama dengan **Experience Detail**. Mohon dikonfirmasi tim
-  backend, lalu tambahkan `dto/organizer/experience-update.response.json`.
+  `PATCH /org/experiences/{{experienceId}}` menjawab `200` - dites dengan
+  mengirim partial update (ganti `identity.title` saja), lalu dikonfirmasi
+  lewat **Experience Detail** bahwa perubahannya tersimpan. Bentuk respons di
+  panel Response mengikuti pengamatan itu - sama seperti Create/Detail
+  (`identity` bersarang, `publishState`/`lifecycle`, `ticketTypes[].id`).
+
+  Satu hal kecil yang ikut teramati: tiket yang `salesEndAt`-nya tidak pernah
+  diisi (dikirim `null`) kembali sebagai `"1970-01-01T07:00:00+07:00"` di
+  respons, bukan `null`. Bukan crash - tapi kalau field itu ditampilkan apa
+  adanya di UI, tiketnya akan terlihat sudah kedaluwarsa sejak 1970.
+
+  `ticketTypes[].price` di contoh Response ini dibungkus `{ amount, currency }`
+  mengikuti konvensi uang kami sendiri - backend yang sebenarnya masih
+  mengembalikannya sebagai integer polos di sini juga, pelanggaran konvensi
+  yang sama seperti di Create Event.
+
+  ## Body di atas adalah contoh *lengkap*, bukan daftar field yang dibolehkan
+
+  Contoh di panel Body sekarang berisi **semua field milik activity** (bentuk
+  `activity-create.request.json`, minus `kind` - yang itu terkunci, tidak
+  pernah bisa diubah lewat endpoint ini). Ini supaya backend bisa langsung uji
+  semua field sekaligus dalam satu kali kirim. Tapi karena ini `PATCH`
+  **parsial**, mengirim body selengkap ini bukan kewajiban - kirim cuma field
+  yang berubah, sisanya tidak perlu disertakan sama sekali (bandingkan dengan
+  contoh minimal di `dto/README.md`: cuma `identity` + `pricing`, keduanya sama
+  sahnya di endpoint yang sama).
+
+  Kalau yang diedit event (bukan activity), field-nya beda - ini contoh
+  lengkap untuk event, bentuk `event-create.request.json` minus `kind`:
+
+  ```json
+  {
+    "identity": {
+      "title": "UX in Practice (Updated)",
+      "category": "Business & Professional",
+      "summary": "Workshop sehari penuh: riset, wireframe, usability testing - kini dengan sesi tanya jawab.",
+      "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+    },
+    "brand": {
+      "hostName": "Lingua Space",
+      "hostType": "Community",
+      "hostBio": "Ruang belajar bahasa dan keterampilan di Menteng.",
+      "logoUrl": null,
+      "contactEmail": "halo@linguaspace.id",
+      "contactPhone": "+62 811 2233 4455"
+    },
+    "benefits": ["Sertifikat kehadiran", "Materi workshop", "Makan siang", "Sesi tanya jawab"],
+    "format": "onsite",
+    "venue": {
+      "name": "Balai Kartini",
+      "area": "Kuningan",
+      "city": "Jakarta Selatan",
+      "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
+      "latitude": -6.2331,
+      "longitude": 106.8283,
+      "notes": []
+    },
+    "onlineUrl": null,
+    "startsAt": "2026-06-01T09:00:00+07:00",
+    "endsAt": "2026-06-01T17:00:00+07:00",
+    "timezone": "Asia/Jakarta",
+    "rundown": [
+      { "time": "09:00", "label": "Registrasi" },
+      { "time": "10:00", "label": "Sesi 1 - Riset pengguna" },
+      { "time": "13:00", "label": "Sesi 2 - Wireframing" },
+      { "time": "15:00", "label": "Usability testing" },
+      { "time": "16:00", "label": "Tanya jawab" }
+    ],
+    "ticketTypes": [
+      {
+        "name": "Early Bird",
+        "description": "Kuota terbatas",
+        "price": 95000,
+        "quota": 40,
+        "salesStartAt": "2026-03-15T00:00:00+07:00",
+        "salesEndAt": "2026-04-10T23:59:00+07:00"
+      },
+      {
+        "name": "Regular",
+        "description": "Harga normal",
+        "price": 125000,
+        "quota": 80,
+        "salesStartAt": "2026-04-11T00:00:00+07:00",
+        "salesEndAt": "2026-05-08T23:59:00+07:00"
+      }
+    ],
+    "publishSettings": {
+      "visibility": "public",
+      "publishMode": "scheduled",
+      "scheduledAt": "2026-03-15T09:00:00+07:00",
+      "allowWaitlist": true,
+      "showOnDiscovery": true
+    }
+  }
+  ```
+
+  Yang membatasi field mana yang **boleh** berubah bukan bentuk JSON-nya, tapi
+  kebijakan fase di bagian "Field mana yang boleh diubah tergantung fase
+  experience-nya" di bawah ini - sekali event sudah published, `startsAt`/
+  `endsAt`/`venue` memang terkunci, tapi itu aturan bisnis atas endpoint yang
+  sama, bukan skema yang berbeda.
+
+  ## Field mana yang boleh diubah tergantung fase experience-nya
+
+  Konsol sudah menerapkan aturan ini di sisi builder (kunci di layar, bukan cuma
+  janji) - backend sebaiknya menegakkan hal yang sama di endpoint ini, supaya
+  seseorang yang hit langsung ke API (bukan lewat UI) tidak bisa melewatinya.
+
+  | Field | Draft | Published, belum mulai | Sedang berlangsung | Selesai / Cancelled |
+  | --- | --- | --- | --- | --- |
+  | `identity.*` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `kind`, `format` | Bebas | **Terkunci** (struktural) | **Terkunci** | **Terkunci** |
+  | `startsAt`, `endsAt`, `venue`/`onlineUrl` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `rundown` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `ticketTypes[]` — tiket yang belum ada penjualan | Bebas | Bebas | **Terkunci** | **Terkunci** |
+  | `ticketTypes[].name`/`.price` — tiket yang **sudah terjual** | — | **Terkunci** (nama & harga saja - kuota masih boleh naik) | **Terkunci** | **Terkunci** |
+  | `publishSettings.*` | Bebas | Bebas | **Terkunci** | **Terkunci** |
+
+  Alasannya: mengubah tanggal atau format sesudah orang mendaftar berdasarkan itu
+  adalah reschedule, bukan edit biasa; tiket yang sudah dibeli tidak boleh
+  berubah nama/harganya di bawah pembeli; dan sekali event selesai atau
+  dibatalkan, baris itu adalah catatan, bukan formulir. "Sedang berlangsung"
+  dihitung dari tanggal (`startsAt <= sekarang <= endsAt`), bukan dari status,
+  karena kontrak ini tidak punya status `ongoing` terpisah dari `published`.
+
+  Kalau backend menolak field yang terkunci, sebaiknya balas `422` yang
+  menyebut field mana yang ditolak - bukan menerima diam-diam atau `500`.
 
   ## Error yang mungkin
 

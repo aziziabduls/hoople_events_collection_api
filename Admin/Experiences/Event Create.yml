@@ -15,85 +15,513 @@ http:
       {
         "kind": "event",
         "identity": {
-          "title": "UX in Practicessss",
-          "category": "Business & Professional",
-          "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
-          "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+          "title": "GBK Run 2026",
+          "slug": "gbk-run-2026",
+          "category": "Sports & Fitness",
+          "summary": "Lari bersama di jantung Jakarta dengan pilihan jarak 5K dan 10K. Run together, feel the energy, own your pace.",
+          "description": "GBK Run 2026 adalah running event yang mengajak pelari dari berbagai level untuk menikmati pengalaman berlari di kawasan ikonik Gelora Bung Karno, Jakarta. Dengan pilihan kategori 5K untuk fun runners dan pemula serta 10K untuk pelari yang ingin menantang personal best, GBK Run menghadirkan race experience lengkap dengan race pack, jersey, finisher medal, hydration point, medical support, entertainment, dan community experience.",
+          "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-gbk-run.jpg",
+          "tags": [
+            "Running",
+            "5K",
+            "10K",
+            "Fun Run",
+            "Race",
+            "GBK",
+            "Jakarta",
+            "Sports",
+            "Fitness",
+            "Running Community"
+          ],
+          "language": "Bahasa Indonesia",
+          "level": "All Levels"
         },
+
         "brand": {
-          "hostName": "Lingua Space",
+          "hostName": "GBK Run Community",
           "hostType": "Community",
-          "hostBio": "Ruang belajar bahasa dan keterampilan di Menteng.",
-          "logoUrl": null,
-          "contactEmail": "halo@linguaspace.id",
-          "contactPhone": "+62 811 2233 4455"
+          "hostBio": "Komunitas pelari yang menghadirkan pengalaman olahraga, komunitas, dan gaya hidup aktif di Jakarta.",
+          "logoUrl": "https://cdn.hoople.id/uploads/tmp/gbk-run-logo.png",
+          "contactEmail": "hello@gbkrun.id",
+          "contactPhone": "+62 811 2233 4455",
+          "website": "https://gbkrun.id",
+          "socialMedia": {
+            "instagram": "@gbkrun.id",
+            "tiktok": "@gbkrun.id"
+          }
         },
+
         "benefits": [
-          "Sertifikat kehadiran",
-          "Materi workshop",
-          "Makan siang"
+          "Race jersey",
+          "Running BIB",
+          "Finisher medal",
+          "Goodie bag",
+          "Race timing",
+          "Refreshment",
+          "Hydration station",
+          "Medical support",
+          "Digital race certificate",
+          "Access to race village",
+          "Entertainment",
+          "Doorprize"
         ],
-        "format": "onsite",
-        "venue": {
-          "name": "Balai Kartini",
-          "area": "Kuningan",
-          "city": "Jakarta Selatan",
-          "address": "Jl. Gatot Subroto Kav. 37, Jakarta Selatan 12950",
-          "latitude": -6.2331,
-          "longitude": 106.8283,
-          "notes": []
+
+        "requirements": {
+          "minimumAge": 12,
+          "experienceRequired": false,
+          "recommendedPreparation": [
+            "Melakukan latihan lari secara rutin",
+            "Menggunakan running shoes yang nyaman",
+            "Menjaga hidrasi sebelum race",
+            "Tidur cukup sebelum race day"
+          ],
+          "notes": "Peserta wajib mengikuti seluruh peraturan keselamatan dan ketentuan race yang ditetapkan oleh panitia."
         },
+
+        "format": "onsite",
+
+        "venue": {
+          "name": "Gelora Bung Karno Sports Complex",
+          "area": "Senayan",
+          "city": "Jakarta Pusat",
+          "province": "DKI Jakarta",
+          "country": "Indonesia",
+          "address": "Jl. Pintu Satu Senayan, Gelora, Tanah Abang, Jakarta Pusat 10270",
+          "latitude": -6.2186,
+          "longitude": 106.8025,
+          "googleMapsUrl": "https://maps.google.com/?q=Gelora+Bung+Karno+Jakarta",
+          "parkingAvailable": true,
+          "publicTransportAvailable": true,
+          "accessibility": true,
+          "notes": [
+            "Peserta disarankan menggunakan transportasi umum.",
+            "Area parkir terbatas pada hari pelaksanaan.",
+            "Race village berada di area GBK.",
+            "Peserta wajib mengikuti petunjuk marshal selama race."
+          ]
+        },
+
         "onlineUrl": null,
-        "startsAt": "2026-05-09T09:00:00+07:00",
-        "endsAt": "2026-05-09T16:00:00+07:00",
+
+        "startsAt": "2026-10-18T05:00:00+07:00",
+        "endsAt": "2026-10-18T10:00:00+07:00",
         "timezone": "Asia/Jakarta",
+        "durationMinutes": 300,
+
+        "raceCategories": [
+          {
+            "id": "race_5k",
+            "name": "5K Fun Run",
+            "distance": "5K",
+            "distanceMeters": 5000,
+            "startTime": "05:30",
+            "cutOffTime": "06:45",
+            "cutOffMinutes": 75,
+            "minimumAge": 12,
+            "description": "Kategori 5K untuk pemula, casual runners, keluarga, dan peserta yang ingin menikmati pengalaman race bersama komunitas."
+          },
+          {
+            "id": "race_10k",
+            "name": "10K Race",
+            "distance": "10K",
+            "distanceMeters": 10000,
+            "startTime": "05:15",
+            "cutOffTime": "07:15",
+            "cutOffMinutes": 120,
+            "minimumAge": 15,
+            "description": "Kategori 10K untuk pelari yang ingin menguji endurance dan mengejar personal best."
+          }
+        ],
+
         "rundown": [
           {
+            "time": "03:30",
+            "endTime": "04:30",
+            "label": "Race Village Opens",
+            "description": "Race village, baggage drop, toilet, medical station, dan area peserta mulai beroperasi."
+          },
+          {
+            "time": "04:30",
+            "endTime": "05:00",
+            "label": "Runner Warm Up",
+            "description": "Pemanasan bersama instruktur dan persiapan menuju starting line."
+          },
+          {
+            "time": "05:00",
+            "endTime": "05:15",
+            "label": "10K Runner Assembly",
+            "description": "Peserta 10K menuju starting corral berdasarkan wave."
+          },
+          {
+            "time": "05:15",
+            "endTime": "07:15",
+            "label": "10K Race",
+            "description": "Peserta memulai race 10 kilometer dengan cut-off time 120 menit."
+          },
+          {
+            "time": "05:15",
+            "endTime": "05:30",
+            "label": "5K Runner Assembly",
+            "description": "Peserta 5K menuju starting corral."
+          },
+          {
+            "time": "05:30",
+            "endTime": "06:45",
+            "label": "5K Fun Run",
+            "description": "Peserta memulai kategori 5 kilometer."
+          },
+          {
+            "time": "06:00",
+            "endTime": "08:00",
+            "label": "Finish & Medal Collection",
+            "description": "Peserta yang menyelesaikan race mendapatkan finisher medal dan refreshment."
+          },
+          {
+            "time": "07:30",
+            "endTime": "08:00",
+            "label": "Winner Announcement",
+            "description": "Pengumuman pemenang kategori 5K dan 10K."
+          },
+          {
+            "time": "08:00",
+            "endTime": "08:30",
+            "label": "Community Session",
+            "description": "Fun activity dan sesi komunitas bersama running clubs."
+          },
+          {
+            "time": "08:30",
+            "endTime": "09:00",
+            "label": "Doorprize",
+            "description": "Pengundian hadiah untuk peserta."
+          },
+          {
             "time": "09:00",
-            "label": "Registrasi"
-          },
-          {
-            "time": "10:00",
-            "label": "Sesi 1 — Riset pengguna"
-          },
-          {
-            "time": "13:00",
-            "label": "Sesi 2 — Wireframing"
-          },
-          {
-            "time": "15:00",
-            "label": "Usability testing"
+            "endTime": "10:00",
+            "label": "Entertainment & Closing",
+            "description": "Entertainment, photo session, dan penutupan race village."
           }
         ],
+
+        "raceExperience": {
+          "startingCorral": true,
+          "waveStart": true,
+          "timingSystem": "electronic_chip",
+          "pacers": {
+            "enabled": true,
+            "availableFor": [
+              "10K"
+            ],
+            "targetTimes": [
+              "60 minutes",
+              "70 minutes",
+              "80 minutes",
+              "90 minutes"
+            ]
+          },
+          "hydrationStations": [
+            {
+              "location": "KM 2.5",
+              "services": [
+                "Water"
+              ]
+            },
+            {
+              "location": "KM 5",
+              "services": [
+                "Water",
+                "Electrolyte"
+              ]
+            },
+            {
+              "location": "KM 7.5",
+              "services": [
+                "Water"
+              ]
+            }
+          ],
+          "medicalStations": [
+            {
+              "location": "Starting Area"
+            },
+            {
+              "location": "KM 5"
+            },
+            {
+              "location": "Finish Area"
+            }
+          ],
+          "baggageDrop": {
+            "enabled": true,
+            "opensAt": "03:30",
+            "closesAt": "05:00"
+          }
+        },
+
         "ticketTypes": [
           {
-            "name": "Early Bird",
-            "description": "Kuota terbatas",
-            "price": 95000,
-            "quota": 40,
-            "salesStartAt": "2026-03-15T00:00:00+07:00",
-            "salesEndAt": "2026-04-10T23:59:00+07:00"
+            "id": "ticket_5k_early_bird",
+            "name": "5K Early Bird",
+            "category": "5K",
+            "description": "Harga khusus untuk pendaftar awal.",
+            "price": 175000,
+            "currency": "IDR",
+            "quota": 500,
+            "sold": 0,
+            "salesStartAt": "2026-07-01T10:00:00+07:00",
+            "salesEndAt": "2026-07-31T23:59:00+07:00",
+            "benefits": [
+              "Race BIB",
+              "Race Jersey",
+              "Finisher Medal",
+              "Goodie Bag",
+              "Refreshment",
+              "Race Timing"
+            ]
           },
           {
-            "name": "Regular",
-            "description": "Harga normal",
-            "price": 125000,
-            "quota": 80,
-            "salesStartAt": "2026-04-11T00:00:00+07:00",
-            "salesEndAt": "2026-05-08T23:59:00+07:00"
+            "id": "ticket_5k_regular",
+            "name": "5K Regular",
+            "category": "5K",
+            "description": "Tiket reguler kategori 5K.",
+            "price": 225000,
+            "currency": "IDR",
+            "quota": 1000,
+            "sold": 0,
+            "salesStartAt": "2026-08-01T00:00:00+07:00",
+            "salesEndAt": "2026-10-10T23:59:00+07:00",
+            "benefits": [
+              "Race BIB",
+              "Race Jersey",
+              "Finisher Medal",
+              "Goodie Bag",
+              "Refreshment",
+              "Race Timing"
+            ]
+          },
+          {
+            "id": "ticket_10k_early_bird",
+            "name": "10K Early Bird",
+            "category": "10K",
+            "description": "Harga khusus untuk pendaftar awal kategori 10K.",
+            "price": 250000,
+            "currency": "IDR",
+            "quota": 500,
+            "sold": 0,
+            "salesStartAt": "2026-07-01T10:00:00+07:00",
+            "salesEndAt": "2026-07-31T23:59:00+07:00",
+            "benefits": [
+              "Race BIB",
+              "Race Jersey",
+              "Finisher Medal",
+              "Goodie Bag",
+              "Refreshment",
+              "Race Timing"
+            ]
+          },
+          {
+            "id": "ticket_10k_regular",
+            "name": "10K Regular",
+            "category": "10K",
+            "description": "Tiket reguler kategori 10K.",
+            "price": 300000,
+            "currency": "IDR",
+            "quota": 1000,
+            "sold": 0,
+            "salesStartAt": "2026-08-01T00:00:00+07:00",
+            "salesEndAt": "2026-10-10T23:59:00+07:00",
+            "benefits": [
+              "Race BIB",
+              "Race Jersey",
+              "Finisher Medal",
+              "Goodie Bag",
+              "Refreshment",
+              "Race Timing",
+              "Access to Pacer"
+            ]
           }
         ],
+
+        "capacity": {
+          "total": 3000,
+          "registered": 0,
+          "available": 3000,
+          "waitlistEnabled": true,
+          "capacityByCategory": {
+            "5K": 1500,
+            "10K": 1500
+          }
+        },
+
+        "racePack": {
+          "collectionEnabled": true,
+          "collectionVenue": "GBK Indoor Tennis Stadium",
+          "collectionAddress": "Gelora Bung Karno Sports Complex, Senayan, Jakarta",
+          "collectionDates": [
+            {
+              "date": "2026-10-16",
+              "startTime": "10:00",
+              "endTime": "20:00"
+            },
+            {
+              "date": "2026-10-17",
+              "startTime": "10:00",
+              "endTime": "20:00"
+            }
+          ],
+          "items": [
+            "Race BIB",
+            "Race Jersey",
+            "Goodie Bag",
+            "Safety Pins",
+            "Race Guide"
+          ]
+        },
+
+        "registration": {
+          "requiredFields": [
+            "fullName",
+            "email",
+            "phoneNumber",
+            "dateOfBirth",
+            "gender",
+            "emergencyContactName",
+            "emergencyContactPhone"
+          ],
+          "optionalFields": [
+            "runningClub",
+            "company",
+            "tShirtSize"
+          ],
+          "questions": [
+            {
+              "id": "q_01",
+              "question": "Kategori lari yang ingin Anda ikuti?",
+              "type": "singleChoice",
+              "required": true,
+              "options": [
+                "5K",
+                "10K"
+              ]
+            },
+            {
+              "id": "q_02",
+              "question": "Apakah Anda tergabung dalam komunitas lari?",
+              "type": "singleChoice",
+              "required": false,
+              "options": [
+                "Ya",
+                "Tidak"
+              ]
+            },
+            {
+              "id": "q_03",
+              "question": "Berapa rata-rata jarak lari Anda setiap minggu?",
+              "type": "singleChoice",
+              "required": false,
+              "options": [
+                "Kurang dari 5 KM",
+                "5-10 KM",
+                "10-20 KM",
+                "20-40 KM",
+                "Lebih dari 40 KM"
+              ]
+            }
+          ]
+        },
+
+        "payment": {
+          "currency": "IDR",
+          "paymentMethods": [
+            "QRIS",
+            "Virtual Account",
+            "Credit Card",
+            "E-Wallet"
+          ],
+          "paymentGateway": "Midtrans",
+          "refundPolicy": "Pendaftaran tidak dapat direfund setelah race pack mulai diproduksi."
+        },
+
+        "checkIn": {
+          "method": "qr_code",
+          "opensAt": "2026-10-18T03:30:00+07:00",
+          "closesAt": "2026-10-18T05:30:00+07:00",
+          "lateCheckInAllowed": false
+        },
+
+        "certificate": {
+          "enabled": true,
+          "type": "digital",
+          "minimumAttendancePercentage": 100,
+          "deliveryMethod": "email"
+        },
+
+        "awards": {
+          "enabled": true,
+          "categories": [
+            {
+              "name": "5K Open Male",
+              "topRanks": 3
+            },
+            {
+              "name": "5K Open Female",
+              "topRanks": 3
+            },
+            {
+              "name": "10K Open Male",
+              "topRanks": 3
+            },
+            {
+              "name": "10K Open Female",
+              "topRanks": 3
+            }
+          ],
+          "awards": [
+            "Trophy",
+            "Cash Prize",
+            "Sponsor Prize"
+          ]
+        },
+
+        "community": {
+          "discussionEnabled": true,
+          "chatEnabled": true,
+          "networkingEnabled": true,
+          "runningClubEnabled": true,
+          "postEventDiscussionEnabled": true
+        },
+
         "publishSettings": {
           "visibility": "public",
           "showOnDiscovery": true,
           "allowWaitlist": true,
           "publishMode": "scheduled",
-          "scheduledAt": "2026-03-15T09:00:00+07:00"
-        }
+          "scheduledAt": "2026-07-01T10:00:00+07:00"
+        },
+
+        "seo": {
+          "metaTitle": "GBK Run 2026 — 5K & 10K Running Event Jakarta",
+          "metaDescription": "GBK Run 2026 menghadirkan pengalaman lari 5K dan 10K di kawasan Gelora Bung Karno Jakarta dengan race jersey, finisher medal, timing system, hydration station, dan race village.",
+          "keywords": [
+            "GBK Run",
+            "GBK Run 2026",
+            "Lari GBK",
+            "Lari Jakarta",
+            "Event Lari Jakarta",
+            "5K Jakarta",
+            "10K Jakarta",
+            "Fun Run Jakarta",
+            "Running Event Jakarta"
+          ]
+        },
+
+        "status": "scheduled",
+
+        "createdAt": "2026-06-15T10:00:00+07:00",
+        "updatedAt": "2026-06-15T10:00:00+07:00"
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMjI1NTksImV4cCI6MTc4NzIyNjE1OX0.W_fI-wQiEHHT3plyaw6DkYr0v9r0MNkoCYxO5EZu-rk
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
 
 runtime:
   scripts:
