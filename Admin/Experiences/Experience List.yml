@@ -6,24 +6,29 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/org/experiences"
+  auth: inherit
   params:
     - name: scope
-      value: all
+      value: "all"
       type: query
       description: "Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol."
     - name: page
       value: "1"
       type: query
-      description: Nomor halaman, mulai 1. Diturunkan dari `meta`.
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
     - name: perPage
       value: "10"
       type: query
-      description: Baris per halaman. Contoh dto memakai 10.
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmYzczNjg4NS1lMDM4LTRhMzQtOWQyZi1mNDFmNmM2NDMwMTIiLCJpYXQiOjE3ODcyMjI1NTksImV4cCI6MTc4NzIyNjE1OX0.W_fI-wQiEHHT3plyaw6DkYr0v9r0MNkoCYxO5EZu-rk
+      description: "Baris per halaman. Contoh dto memakai 10."
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -43,13 +48,6 @@ runtime:
           expect(meta).to.have.property("total");
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
 
 settings:
   encodeUrl: true
@@ -58,7 +56,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -130,16 +128,29 @@ docs: |
   | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
   | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
 
-  ## `publishState` dan `lifecycle` bukan field API - itu tampilan konsol
+  ## Bentuk nyata, dikonfirmasi lewat pengujian langsung ke tunnel
 
-  Ini sempat salah dibaca sebagai instruksi untuk backend mengirim dua field.
-  **Yang perlu dikirim backend cuma satu: `status`** (`draft` | `published` |
-  `cancelled`), persis seperti contoh JSON di bawah ini. Konsol yang memecahnya
-  jadi dua tampilan di layarnya sendiri - lihat `lifecycleOf()` di
-  `src/lib/adapt.ts`, yang menghitung "upcoming/ongoing/completed" dari
-  `status` dan `endsAt`. Kalau backend sudah terlanjur mengirim
-  `publishState`/`lifecycle` sebagai field asli, itu bukan yang diminta
-  dokumen ini - tolong konfirmasi mana yang benar sebelum diteruskan.
+  Contoh JSON di panel Body **bukan lagi bentuk yang benar** — itu peninggalan
+  draf awal kontrak. Endpoint ini sudah hidup dan diuji ke backend sungguhan;
+  bentuk aslinya:
+
+  - `identity` **bersarang**: `{ title, summary, category, coverImageUrl }` —
+    bukan field rata (`title`, `summary`, dst di level atas).
+  - `publishState` (`draft` | `published` | `cancelled`) dan `lifecycle`
+    (`upcoming` | `ongoing` | `completed` | `cancelled`) **memang field API
+    asli yang dikirim backend** — bukan kekeliruan, dan bukan sesuatu yang
+    perlu dipecah dari satu field `status`. Draf dokumen ini dulu sempat minta
+    backend hanya kirim `status` tunggal; itu sudah tidak berlaku. Konsol kini
+    membaca kedua field ini langsung (`publishStateFrom()`/`lifecycleFrom()`
+    di `src/lib/adapt.ts`), tidak lagi menghitung sendiri dari tanggal.
+  - `slug`, `venue`, `registeredCount`, `capacity`, `revenue`,
+    `sessionCount`, `createdAt`, `publishedAt` **belum dikirim sama sekali**
+    oleh endpoint ini. Konsol menampilkannya kosong/0, bukan menganggapnya
+    error — tapi kalau backend sudah bisa mengirimkannya, field-field ini akan
+    langsung terpakai tanpa perubahan kode.
+
+  Lihat `dto/README.md` bagian catatan status untuk detail lengkap semua
+  endpoint yang sudah diuji langsung.
 
   ## Error yang mungkin
 
