@@ -13,9 +13,9 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Abdul Azizi",
-        "email": "aziziabdul95@gmail.com",
-        "phone": "+6282299328390",
+        "fullName": "Kevin Nathanael",
+        "email": "kevin@ruangtumbuh.id",
+        "phone": "+62 813 8899 2200",
         "password": "RahasiaKu123",
         "passwordConfirmation": "RahasiaKu123",
         "interests": [],
@@ -23,6 +23,13 @@ http:
       }
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: after-response
       code: |-
@@ -42,13 +49,6 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
 
 settings:
   encodeUrl: true
@@ -57,7 +57,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 201
       statusText: Created

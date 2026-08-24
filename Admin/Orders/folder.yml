@@ -1,0 +1,17 @@
+info:
+  name: Orders
+  seq: 8
+
+docs: |
+  # Orders
+
+  Setiap order tiket, dilihat sebagai transaksi pembayaran alih-alih daftar
+  tamu — layar **Orders** konsol (`/organizer/orders`).
+
+  Tidak ada endpoint terpisah. Ini request yang sama dengan folder
+  **Registrations** (`GET /org/registrations`) — Orders hanya menyusun ulang
+  baris yang sama sebagai kuitansi pembeli: order ID (`ORD-` + id registrasi),
+  status bayar, metode pembayaran, dan rincian platform/gateway fee. Metode
+  pembayaran dan Platform Fee/Gateway Fee yang tampil di panel detail dihitung
+  di konsol, bukan field dari respons ini — kalau backend nanti punya
+  `/org/orders` sendiri dengan field-field itu, pindahkan folder ini ke situ.
