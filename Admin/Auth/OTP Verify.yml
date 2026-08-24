@@ -138,7 +138,7 @@ docs: |
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
+  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset`, `otp_login` |
   | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
   | `destination` | string | ya |  |
   | `code` | string | ya |  |

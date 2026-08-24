@@ -6,7 +6,6 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/home/recommended-for-you"
-  auth: none
 
 runtime:
   assertions:
@@ -16,6 +15,12 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
   - name: Sukses
@@ -210,6 +215,7 @@ docs: |-
   | `slug` | string | tidak | slug publik |
   | `title` | string | tidak | judul pengalaman |
   | `kind` | string | tidak | enum `experienceKind`: `activity`, `event` |
+  | `price` | integer | ya | start from dari harga tiket |
   | `host` | object | tidak | `{ id, name, slug }` |
   | `category` | string | tidak | kategori tampilan |
   | `summary` | string | tidak | ringkasan singkat |
@@ -232,9 +238,3 @@ docs: |-
   - **Instant** (`startsAt`, `endsAt`, `nextSessionAt`) ISO 8601 `+07:00`.
   - **Enum** lowercase.
   - **Field nullable** tetap dikirim `null`, jangan dihilangkan.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

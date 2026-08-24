@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/bookings"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -14,10 +13,10 @@ http:
     type: json
     data: |-
       {
-        "experienceId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+        "experienceId": "a68fa5e3-5ffc-46e6-ae6e-1c69ced1bb08",
         "kind": "activity",
         "sessionId": "11111111-0001-4aaa-8bbb-000000000001",
-        "ticketTypeId": null,
+        "ticketTypeId": "02a6fad3-350f-4d0d-abe8-319d6138ef0e",
         "quantity": 2,
         "buyer": {
           "fullName": "Adriani Ajeng",
@@ -45,6 +44,7 @@ http:
         },
         "notes": null
       }
+  auth: inherit
 
 runtime:
   assertions:
@@ -54,6 +54,12 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 
 examples:
   - name: Sukses
@@ -167,6 +173,7 @@ examples:
             },
             "meta": null
           }
+
 docs: |-
   # Booking Create
 
@@ -176,7 +183,7 @@ docs: |-
   | --- | --- |
   | **Method** | `POST` |
   | **Path** | `/bookings` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Auth** | Tidak perlu (publik) |
   | **Sukses** | `201 Created` |
   | **Sumber** | `dto/participant/bookings/booking-create.request.json`<br>`dto/participant/bookings/booking-create.response.json` |
 
@@ -310,9 +317,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

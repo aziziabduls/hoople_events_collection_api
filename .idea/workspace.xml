@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ac3f997-bef5-4e8d-9277-b893c36c80cb" name="Changes" comment="Update Experience API requests and refresh authentication tokens&#10;&#10;- Simplify the `Experience Update` request body to only include the `status: draft` field.&#10;- Replace the `{{experienceId}}` variable with a hardcoded resource ID in the update URL.&#10;- Switch `Experience Update` from inherited authentication to an explicit bearer token.&#10;- Refresh bearer tokens in both `Experience Detail` and `Experience Update` files.">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Admin/Auth/OTP Request.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Admin/Auth/OTP Request.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Admin/Auth/OTP Verify.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Admin/Auth/OTP Verify.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
