@@ -5,8 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/{{experienceId}}"
-  auth: inherit
+  url: "{{baseUrl}}/org/experiences/35f8dc2c-eb7a-44fc-945c-e2b7691006d9"
   headers:
     - name: Content-Type
       value: application/json
@@ -14,120 +13,13 @@ http:
     type: json
     data: |-
       {
-        "identity": {
-          "title": "Kelas Keramik untuk Pemula (Batch 2)",
-          "category": "Classes",
-          "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
-          "coverImageUrl": "https://cdn.hoople.id/covers/pottery.jpg"
-        },
-        "details": {
-          "difficulty": "beginner",
-          "language": "Bahasa Indonesia",
-          "visibility": "public"
-        },
-        "participantInfo": {
-          "whatToBring": [
-            "Pakaian yang boleh kotor"
-          ],
-          "requirements": [
-            "Usia 12 tahun ke atas"
-          ]
-        },
-        "venue": {
-          "name": "Waktu Luang Studio",
-          "area": "Kemang",
-          "city": "Jakarta Selatan",
-          "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
-          "latitude": -6.2607,
-          "longitude": 106.8138,
-          "notes": [
-            "5 menit dari Halte TransJakarta Kemang"
-          ]
-        },
-        "schedule": {
-          "startDate": "2026-07-01",
-          "endDate": null,
-          "noEndDate": true,
-          "repeatWeekly": true,
-          "operatingDays": [
-            "tue",
-            "thu",
-            "sat"
-          ],
-          "skippedDates": [],
-          "pickedDates": [],
-          "timezone": "Asia/Jakarta"
-        },
-        "sessions": [
-          {
-            "name": "Sesi Sabtu Siang (Batch 2)",
-            "startTime": "14:00",
-            "endTime": "16:00",
-            "weekdays": [
-              "sat"
-            ],
-            "capacity": 12,
-            "price": 275000,
-            "instructor": "Rani Putri",
-            "isActive": true
-          }
-        ],
-        "pricing": {
-          "basePrice": 275000,
-          "currency": "IDR",
-          "defaultCapacity": 12,
-          "minParticipants": 3
-        },
-        "booking": {
-          "opensBefore": "30d",
-          "closesBefore": "2h",
-          "confirmation": "instant",
-          "cancellationPolicy": "flexible",
-          "allowWaitlist": true
-        },
-        "instructors": [
-          {
-            "name": "Rani Putri",
-            "role": "Pottery Instructor",
-            "bio": "Delapan tahun mengajar keramik.",
-            "expertise": [
-              "Wheel throwing",
-              "Glazing"
-            ],
-            "avatarUrl": null
-          }
-        ],
-        "gallery": [
-          "https://cdn.hoople.id/uploads/tmp/g1.jpg"
-        ],
-        "facilities": [
-          "Ruang ber-AC",
-          "Loker",
-          "Wi-Fi"
-        ],
-        "equipment": [
-          "Tanah liat",
-          "Alat putar",
-          "Apron"
-        ],
-        "houseRules": [
-          "Datang 10 menit lebih awal"
-        ],
-        "publish": {
-          "mode": "now",
-          "scheduledAt": null,
-          "showOnDiscovery": true
-        }
+        "status": "draft"
       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -139,6 +31,13 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
@@ -147,7 +46,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK

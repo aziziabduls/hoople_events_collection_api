@@ -1,11 +1,8 @@
 name: Local
 variables:
   - name: baseUrl
-    value: https://driver-gush-blip.ngrok-free.dev
-    description: ""
+    value: http://localhost:3000
   - name: accessToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
-    description: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc1NTQwMDUsImV4cCI6MTc4NzU1NzYwNX0.3T8BymxClLxeH297hsSV25scg1hKaNDii8c7NUAh9RE
   - name: refreshToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzkxMTc5MH0.706wQenhlzJiEMLokcdPVRQKdGFrVG5Edg1_1N5-J7s
-    description: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc1NTQwMDUsImV4cCI6MTc4ODE1ODgwNX0.IT9m6ApcW6DxoczHOxkNmbr0SbNJNg1hU6ra5PQFvjE

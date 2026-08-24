@@ -3,6 +3,7 @@
 
 # Dependencies
 node_modules
+environments
 
 # OS files
 .DS_Store
