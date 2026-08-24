@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4ac3f997-bef5-4e8d-9277-b893c36c80cb" name="Changes" comment="Update API definitions for Bookings, Catalog, and OTP&#10;&#10;- Mark `Booking Create` as a public endpoint in documentation and update example IDs.&#10;- Change `Event Detail` URL from slug-based to ID-based.&#10;- Add `price` field to `Home Recommended For You` response documentation.&#10;- Add `otp_login` to the `otpPurpose` enum in OTP Request and Verify documentation.&#10;- Refresh local environment access and refresh tokens.&#10;- Reorganize `settings` block placement across several YAML files for consistency.">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="4ac3f997-bef5-4e8d-9277-b893c36c80cb" name="Changes" comment="Update API definitions for Bookings, Catalog, and OTP&#10;&#10;- Mark `Booking Create` as a public endpoint in documentation and update example IDs.&#10;- Change `Event Detail` URL from slug-based to ID-based.&#10;- Add `price` field to `Home Recommended For You` response documentation.&#10;- Add `otp_login` to the `otpPurpose` enum in OTP Request and Verify documentation.&#10;- Refresh local environment access and refresh tokens.&#10;- Reorganize `settings` block placement across several YAML files for consistency." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
