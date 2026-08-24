@@ -82,10 +82,13 @@ docs: |
   Dites langsung ke tunnel: menghapus event yang `publishState: "published"`
   ditolak `409` - `"Cannot delete an event that is not in draft mode"`.
 
-  Karena **Event Create** selalu membuat event langsung `published` (lihat
-  catatan di request itu), event yang baru dibuat **tidak bisa langsung
-  dihapus**. Yang terbukti berhasil: kirim dulu **Experience Update** dengan
-  body `{ "status": "draft" }` (diterima `200` walau bukan salah satu field
+  Kalau event dibuat tanpa mengirim `publishSettings.publishMode: "draft"`
+  secara benar, ia langsung jadi `published` dan tidak bisa langsung dihapus -
+  ini sempat disalahartikan sebagai backend yang mengabaikan niat draft,
+  padahal itu bug di konsol kami sendiri (`registrationStatus` tidak pernah
+  sampai ke `publishMode`, sudah diperbaiki). Untuk event yang sudah terlanjur
+  `published` dan mau dihapus: kirim dulu **Experience Update** dengan body
+  `{ "status": "draft" }` (diterima `200` walau bukan salah satu field
   bersarang yang terdokumentasi di request itu), baru kirim `DELETE` di sini -
   balas `200` dan resource-nya benar-benar hilang: `GET` detail sesudahnya
   balas `404`, dan baris itu tidak lagi muncul di **Experience List**.
