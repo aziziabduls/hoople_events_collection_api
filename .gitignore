@@ -4,6 +4,7 @@
 # Dependencies
 node_modules
 environments
+.idea
 
 # OS files
 .DS_Store
