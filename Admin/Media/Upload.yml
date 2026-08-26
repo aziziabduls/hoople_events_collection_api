@@ -93,6 +93,27 @@ docs: |
   Alurnya: unggah → dapat `url` → kirim `url` sebagai `coverImageUrl` /
   `gallery[]` saat submit builder.
 
+  ## Bug backend dikonfirmasi: `url` menunjuk ke `localhost:3000`
+
+  Dites dua arah 2026-08-26 - lewat form unggah sungguhan di browser (akun host
+  yang didaftarkan sungguhan di tunnel) dan lewat panggilan langsung ke request
+  ini - keduanya membalas persis:
+
+  ```json
+  { "success": true, "message": "File uploaded successfully", "data": { "url": "http://localhost:3000/uploads/file-....png" }, "meta": null }
+  ```
+
+  Itu alamat mesin backend sendiri, bukan domain publik seperti yang dicontohkan
+  `upload.response.json` (`https://cdn.hoople.id/...`). Browser siapa pun selain
+  mesin backend gagal memuatnya. Konsekuensinya diam-diam: konsol tidak menerima
+  error apa pun - panggilan ini menjawab `200`, jadi `ImageSlot` menukar
+  pratinjau lokalnya dengan URL yang salah itu tanpa toast peringatan, dan
+  gambarnya tampak kosong/rusak seolah unggahan tidak pernah terjadi. URL yang
+  salah itu juga lolos validasi `coverUrl()` di `payload.ts` (tetap diawali
+  `http://`) dan **ikut tersimpan** kalau builder di-submit. Perbaikan di sisi
+  backend: base URL upload perlu menunjuk ke domain publik yang bisa dijangkau,
+  bukan `localhost`.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |

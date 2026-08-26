@@ -176,35 +176,137 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Aktivitas berhasil dibuat",
+            "message": "Activity created successfully",
             "data": {
               "id": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
-              "slug": "kelas-keramik-untuk-pemula",
-              "title": "Kelas Keramik untuk Pemula",
               "kind": "activity",
-              "status": "published",
-              "visibility": "public",
-              "category": "Classes",
-              "coverImageUrl": "https://cdn.hoople.id/covers/kelas-keramik-untuk-pemula.jpg",
-              "startsAt": "2026-03-21T14:00:00+07:00",
-              "endsAt": "2026-03-21T16:00:00+07:00",
-              "note": "Sesi berikutnya Sabtu",
+              "identity": {
+                "title": "Kelas Keramik untuk Pemula",
+                "category": "Classes",
+                "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
+                "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-8f2a.jpg"
+              },
+              "details": {
+                "difficulty": "beginner",
+                "language": "Bahasa Indonesia",
+                "visibility": "public"
+              },
+              "participantInfo": {
+                "whatToBring": [
+                  "Pakaian yang boleh kotor"
+                ],
+                "requirements": [
+                  "Usia 12 tahun ke atas"
+                ]
+              },
               "venue": {
                 "name": "Waktu Luang Studio",
                 "area": "Kemang",
-                "city": "Jakarta Selatan"
+                "city": "Jakarta Selatan",
+                "address": "Jl. Kemang Raya No. 88, Bangka, Mampang Prapatan, Jakarta Selatan 12730",
+                "latitude": -6.2607,
+                "longitude": 106.8138,
+                "notes": [
+                  "5 menit dari Halte TransJakarta Kemang"
+                ]
               },
-              "registeredCount": 9,
-              "capacity": 12,
-              "occupancyRate": 0.75,
-              "revenue": {
-                "amount": 2250000,
-                "currency": "IDR"
+              "schedule": {
+                "startDate": "2026-03-01",
+                "endDate": null,
+                "noEndDate": true,
+                "repeatWeekly": true,
+                "operatingDays": [
+                  "mon",
+                  "wed",
+                  "fri",
+                  "sat"
+                ],
+                "skippedDates": [
+                  "2026-04-02"
+                ],
+                "pickedDates": [],
+                "timezone": "Asia/Jakarta"
               },
-              "sessionCount": 24,
-              "createdAt": "2026-01-12T10:00:00+07:00",
-              "publishedAt": "2026-03-14T09:30:00+07:00",
-              "publicUrl": "https://hoople.id/activities/kelas-keramik-untuk-pemula"
+              "sessions": [
+                {
+                  "name": "Sesi Sabtu Siang",
+                  "startTime": "14:00",
+                  "endTime": "16:00",
+                  "weekdays": [
+                    "sat"
+                  ],
+                  "capacity": 12,
+                  "price": {
+                    "amount": 250000,
+                    "currency": "IDR"
+                  },
+                  "instructor": "Rani Putri",
+                  "isActive": true
+                },
+                {
+                  "name": "Sesi Rabu Malam",
+                  "startTime": "18:30",
+                  "endTime": "20:30",
+                  "weekdays": [
+                    "wed"
+                  ],
+                  "capacity": 10,
+                  "price": {
+                    "amount": 275000,
+                    "currency": "IDR"
+                  },
+                  "instructor": "Kevin Ardiansyah",
+                  "isActive": true
+                }
+              ],
+              "pricing": {
+                "basePrice": {
+                  "amount": 250000,
+                  "currency": "IDR"
+                },
+                "currency": "IDR",
+                "defaultCapacity": 12,
+                "minParticipants": 3
+              },
+              "booking": {
+                "opensBefore": "30d",
+                "closesBefore": "2h",
+                "confirmation": "instant",
+                "cancellationPolicy": "flexible",
+                "allowWaitlist": true
+              },
+              "instructors": [
+                {
+                  "name": "Rani Putri",
+                  "role": "Pottery Instructor",
+                  "bio": "Delapan tahun mengajar keramik.",
+                  "expertise": [
+                    "Wheel throwing",
+                    "Glazing"
+                  ],
+                  "avatarUrl": null
+                }
+              ],
+              "gallery": [],
+              "facilities": [
+                "Ruang ber-AC",
+                "Loker",
+                "Wi-Fi"
+              ],
+              "equipment": [
+                "Tanah liat",
+                "Alat putar",
+                "Apron"
+              ],
+              "houseRules": [
+                "Datang 10 menit lebih awal"
+              ],
+              "publish": {
+                "mode": "draft",
+                "scheduledAt": null,
+                "showOnDiscovery": true
+              },
+              "createdAt": "2026-08-26T14:45:45.300+07:00"
             },
             "meta": null
           }
@@ -296,14 +398,37 @@ docs: |
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
-  ## Masih 404
+  ## Hidup di tunnel (`201`), masih 404 di SIT
 
-  Dites langsung ke tunnel dan ke SIT (`10.10.24.40:3436`) per 2026-08-26 -
-  keduanya menjawab `404`. `POST /org/experiences/events` (Event Create) sudah
-  hidup di kedua tempat itu; ini satu-satunya endpoint create-experience yang
-  belum. Konsol sudah siap begitu ini hidup - lihat "Bug konsol yang sudah
-  diperbaiki lebih dulu" di bawah untuk satu hal yang sempat luput justru
-  karena endpoint ini belum bisa diuji.
+  Dites 2026-08-26 lewat akun host uji coba yang didaftarkan sungguhan di
+  tunnel - bukan cuma dibaca kodenya. `SIT (10.10.24.40:3436)` belum menyusul.
+
+  Dua hal terbukti sekaligus: **`publish.mode: "draft"` benar-benar
+  dihormati** - `GET /org/experiences` sesudahnya membalas
+  `"publishState": "draft"` untuk baris yang baru dibuat, bukti ujung-ke-ujung
+  pertama untuk perbaikan "Save as Draft" (lihat bagian bawah) - sebelumnya
+  cuma terbukti sampai bentuk request-nya benar. Dan **empat field yang
+  selama ini dikirim `null` ternyata wajib**: percobaan pertama dengan bentuk
+  persis yang dikirim konsol (`venue.area`, `venue.city`, `venue.latitude`,
+  `venue.longitude` semuanya `null`, plus `identity.coverImageUrl: null`)
+  ditolak `422 VALIDATION_ERROR` yang menyebut kelimanya satu per satu.
+
+  Ini bukan kejutan dari backend - contoh di `activity-create.request.json`
+  **sudah lama** mengisi kelimanya (`area: "Kemang"`, `latitude: -6.2607`, dst).
+  Yang belum sinkron adalah `src/lib/payload.ts`: wizard aktivitas
+  (`StepVenue`) cuma mengumpulkan `venueName`/`address`/`meetingPoint`/
+  `parking` - tidak ada field kota, area, atau koordinat - jadi `payload.ts`
+  tidak punya apa pun untuk dikirim selain `null`. **Konsol tidak bisa
+  membuat aktivitas sungguhan sampai wizard menambah field-field itu, atau
+  backend melonggarkan validasinya untuk desain yang memang tidak
+  menanyakannya.** `coverImageUrl` sendiri bisa terisi begitu organizer
+  mengunggah cover - jadi cuma memblokir saat draf belum punya cover.
+
+  Ditemukan sekalian: `GET /org/experiences` membalas `sessions[].price`
+  sebagai integer polos, sedangkan `pricing.basePrice` dan `revenue` di
+  respons yang sama sudah benar `{ amount, currency }` - pelanggaran konvensi
+  uang baru, beda dari `ticketTypes[].price` milik event. Belum berdampak -
+  `adapt.ts` tidak membaca `sessions[].price` dari daftar experience.
 
   ## Alur gambar
 
@@ -330,11 +455,9 @@ docs: |
   sama (`registrationStatus` yang tidak pernah dipaksa `'draft'`) dan sudah
   diperbaiki; audit ini menemukan Activity belum ikut diperbaiki. Sekarang
   `saveDraft()` di `CreateActivity.tsx` mengirim salinan draft dengan
-  `publishWhen: 'draft'` dipaksa, persis pola perbaikan event. Dibuktikan
-  lewat request sungguhan (bukan cuma baca kode): body yang terkirim saat
-  menekan "Save as Draft" sekarang berisi `"publish":{"mode":"draft",...}` -
-  tidak bisa dibuktikan sampai `201`-nya sendiri karena endpoint ini masih
-  404, tapi bentuk request-nya sudah benar begitu backend hidup.
+  `publishWhen: 'draft'` dipaksa, persis pola perbaikan event. Sekarang
+  terbukti sampai balasan `201`-nya sendiri, bukan cuma bentuk request-nya -
+  lihat catatan di atas.
 
   ## Error yang mungkin
 
