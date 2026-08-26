@@ -6,20 +6,25 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/org/registrations"
+  auth: inherit
   params:
     - name: page
       value: "1"
       type: query
-      description: Nomor halaman, mulai 1. Diturunkan dari `meta`.
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
     - name: perPage
       value: "10"
       type: query
-      description: Baris per halaman. Contoh dto memakai 10.
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc1NjM0MTksImV4cCI6MTc4NzU2NzAxOX0.1XrFzeJ325TnWwCpaKPUw5M2zJ2YWZzh6zbAtDOq_mY
+      description: "Baris per halaman. Contoh dto memakai 10."
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -39,13 +44,6 @@ runtime:
           expect(meta).to.have.property("total");
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
 
 settings:
   encodeUrl: true
@@ -54,7 +52,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK
@@ -66,121 +64,141 @@ examples:
         data: |-
           {
             "success": true,
-            "message": "Daftar registrasi berhasil diambil",
+            "message": "Registration list retrieved successfully",
             "data": [
               {
-                "id": "reg-0001-4aaa-8bbb-000000000001",
-                "orderId": "ORD-20260314-0001",
-                "ticketCode": "HPL-8K2M-4QX7-1",
+                "id": "b9d1c2e3-0001-4a2b-8c3d-000000000010-0",
+                "bookingId": "b9d1c2e3-0001-4a2b-8c3d-000000000010",
+                "experience": {
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                  "title": "Sunset Rooftop Jazz",
+                  "kind": "event"
+                },
+                "ticketType": {
+                  "id": "02a6fad3-350f-4d0d-abe8-319d6138ef0e",
+                  "name": "Onsite Pass"
+                },
                 "participant": {
-                  "name": "Dewi Lestari",
+                  "fullName": "Dewi Lestari",
+                  "email": "dewi.lestari@gmail.com",
+                  "phone": "+62 813 9988 7766",
+                  "checkedInAt": null
+                },
+                "buyer": {
+                  "fullName": "Dewi Lestari",
                   "email": "dewi.lestari@gmail.com",
                   "phone": "+62 813 9988 7766"
                 },
-                "experienceId": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
-                "experienceTitle": "Sunset Rooftop Jazz",
-                "sessionId": "ses-0004-4aaa-8bbb-000000000004",
-                "quantity": 2,
-                "amount": {
-                  "amount": 550000,
-                  "currency": "IDR"
-                },
                 "status": "confirmed",
                 "paymentStatus": "paid",
-                "attendance": "not_checked_in",
-                "checkedInAt": null,
                 "createdAt": "2026-03-14T08:15:00+07:00"
               },
               {
-                "id": "reg-0002-4aaa-8bbb-000000000002",
-                "orderId": "ORD-20260313-0198",
-                "ticketCode": "HPL-2M9X-7KL3-1",
-                "participant": {
-                  "name": "Raka Mahendra",
-                  "email": "raka.mahendra@gmail.com",
-                  "phone": "+62 812 5544 3322"
+                "id": "b9d1c2e3-0001-4a2b-8c3d-000000000010-1",
+                "bookingId": "b9d1c2e3-0001-4a2b-8c3d-000000000010",
+                "experience": {
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                  "title": "Sunset Rooftop Jazz",
+                  "kind": "event"
                 },
-                "experienceId": "a1b2c3d4-2222-4a2b-8c3d-000000000102",
-                "experienceTitle": "Kelas Keramik untuk Pemula",
-                "sessionId": "ses-0002-4aaa-8bbb-000000000002",
-                "quantity": 1,
-                "amount": {
-                  "amount": 250000,
-                  "currency": "IDR"
+                "ticketType": {
+                  "id": "02a6fad3-350f-4d0d-abe8-319d6138ef0e",
+                  "name": "Onsite Pass"
+                },
+                "participant": {
+                  "fullName": "Raka Mahendra",
+                  "email": "raka.mahendra@gmail.com",
+                  "phone": "+62 812 5544 3322",
+                  "checkedInAt": null
+                },
+                "buyer": {
+                  "fullName": "Dewi Lestari",
+                  "email": "dewi.lestari@gmail.com",
+                  "phone": "+62 813 9988 7766"
                 },
                 "status": "pending",
                 "paymentStatus": "pending",
-                "attendance": "not_checked_in",
-                "checkedInAt": null,
                 "createdAt": "2026-03-13T19:42:00+07:00"
               },
               {
-                "id": "reg-0003-4aaa-8bbb-000000000003",
-                "orderId": "ORD-20260312-0155",
-                "ticketCode": "HPL-5R7T-2WQ8-1",
+                "id": "a1c4d5e6-0003-4a2b-8c3d-000000000030-0",
+                "bookingId": "a1c4d5e6-0003-4a2b-8c3d-000000000030",
+                "experience": {
+                  "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                  "title": "Morning Yoga Flow",
+                  "kind": "activity"
+                },
+                "ticketType": {
+                  "id": "8f3c1a2b-0009-4a2b-8c3d-000000000090",
+                  "name": "Single Session"
+                },
                 "participant": {
-                  "name": "Sinta Wijaya",
+                  "fullName": "Sinta Wijaya",
+                  "email": "sinta.wijaya@gmail.com",
+                  "phone": "+62 811 2233 4455",
+                  "checkedInAt": "2026-03-12T06:58:00+07:00"
+                },
+                "buyer": {
+                  "fullName": "Sinta Wijaya",
                   "email": "sinta.wijaya@gmail.com",
                   "phone": "+62 811 2233 4455"
                 },
-                "experienceId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
-                "experienceTitle": "Morning Yoga Flow",
-                "sessionId": "ses-0001-4aaa-8bbb-000000000001",
-                "quantity": 1,
-                "amount": {
-                  "amount": 120000,
-                  "currency": "IDR"
-                },
                 "status": "confirmed",
                 "paymentStatus": "paid",
-                "attendance": "checked_in",
-                "checkedInAt": "2026-03-12T06:58:00+07:00",
                 "createdAt": "2026-03-12T06:40:00+07:00"
               },
               {
-                "id": "reg-0004-4aaa-8bbb-000000000004",
-                "orderId": "ORD-20260310-0102",
-                "ticketCode": "HPL-9D4F-6YH2-1",
+                "id": "c7e8f9a0-0004-4a2b-8c3d-000000000040-0",
+                "bookingId": "c7e8f9a0-0004-4a2b-8c3d-000000000040",
+                "experience": {
+                  "id": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
+                  "title": "Healthy Cooking Class",
+                  "kind": "activity"
+                },
+                "ticketType": {
+                  "id": "3d2e1f0a-0008-4a2b-8c3d-000000000080",
+                  "name": "Single Session"
+                },
                 "participant": {
-                  "name": "Bagas Nugroho",
+                  "fullName": "Bagas Nugroho",
+                  "email": "bagas.nugroho@gmail.com",
+                  "phone": "+62 857 1122 3344",
+                  "checkedInAt": null
+                },
+                "buyer": {
+                  "fullName": "Bagas Nugroho",
                   "email": "bagas.nugroho@gmail.com",
                   "phone": "+62 857 1122 3344"
                 },
-                "experienceId": "a1b2c3d4-5555-4a2b-8c3d-000000000105",
-                "experienceTitle": "Healthy Cooking Class",
-                "sessionId": "ses-0005-4aaa-8bbb-000000000005",
-                "quantity": 3,
-                "amount": {
-                  "amount": 525000,
-                  "currency": "IDR"
-                },
                 "status": "confirmed",
                 "paymentStatus": "paid",
-                "attendance": "no_show",
-                "checkedInAt": null,
                 "createdAt": "2026-03-10T14:20:00+07:00"
               },
               {
-                "id": "reg-0005-4aaa-8bbb-000000000005",
-                "orderId": "ORD-20260308-0088",
-                "ticketCode": "HPL-3N8B-1VC5-1",
+                "id": "d5f6a7b8-0005-4a2b-8c3d-000000000050-0",
+                "bookingId": "d5f6a7b8-0005-4a2b-8c3d-000000000050",
+                "experience": {
+                  "id": "a1b2c3d4-3333-4a2b-8c3d-000000000103",
+                  "title": "Latte Art Workshop",
+                  "kind": "activity"
+                },
+                "ticketType": {
+                  "id": "5b4c3d2e-0007-4a2b-8c3d-000000000070",
+                  "name": "Single Session"
+                },
                 "participant": {
-                  "name": "Putri Handayani",
+                  "fullName": "Putri Handayani",
+                  "email": "putri.handayani@gmail.com",
+                  "phone": "+62 878 6655 4433",
+                  "checkedInAt": null
+                },
+                "buyer": {
+                  "fullName": "Putri Handayani",
                   "email": "putri.handayani@gmail.com",
                   "phone": "+62 878 6655 4433"
                 },
-                "experienceId": "a1b2c3d4-3333-4a2b-8c3d-000000000103",
-                "experienceTitle": "Latte Art Workshop",
-                "sessionId": "ses-0003-4aaa-8bbb-000000000003",
-                "quantity": 1,
-                "amount": {
-                  "amount": 185000,
-                  "currency": "IDR"
-                },
                 "status": "cancelled",
                 "paymentStatus": "refunded",
-                "attendance": "not_checked_in",
-                "checkedInAt": null,
                 "createdAt": "2026-03-08T11:05:00+07:00"
               }
             ],
