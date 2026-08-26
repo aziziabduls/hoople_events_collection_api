@@ -163,6 +163,13 @@ docs: |
   > ada di kontrak sejak awal. Email tetap opsional saat mendaftar; yang
   > diverifikasi adalah nomor, yang justru wajib.
 
+  ## Dipakai ulang untuk lupa-password
+
+  `purpose` juga menerima `"password_reset"` - itu jalur yang dipakai
+  **Password Forgot**, bukan endpoint terpisah. Contoh di atas memakai
+  `"phone_verification"` karena itu jalur pendaftaran, tapi bentuk request dan
+  response-nya identik untuk kedua `purpose`.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
