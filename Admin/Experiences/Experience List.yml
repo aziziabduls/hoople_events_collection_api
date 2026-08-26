@@ -6,29 +6,24 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/org/experiences"
-  auth: inherit
   params:
     - name: scope
-      value: "all"
+      value: all
       type: query
       description: "Salah satu: all, events, activities, drafts. Menggerakkan keempat tab konsol."
     - name: page
       value: "1"
       type: query
-      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+      description: Nomor halaman, mulai 1. Diturunkan dari `meta`.
     - name: perPage
       value: "10"
       type: query
-      description: "Baris per halaman. Contoh dto memakai 10."
+      description: Baris per halaman. Contoh dto memakai 10.
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MjY5OTUsImV4cCI6MTc4NzczMDU5NX0.d2FiAXPwWx6A0ZgBnUEa02mETjpcEzVCyGrTPZDCENc
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -48,15 +43,23 @@ runtime:
           expect(meta).to.have.property("total");
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK

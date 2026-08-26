@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/events/a68fa5e3-5ffc-46e6-ae6e-1c69ced1bb08"
+  url: "{{baseUrl}}/events/15a90489-a3a2-4312-8ad8-1a68aee39da8"
 
 runtime:
   assertions:
@@ -21,6 +21,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

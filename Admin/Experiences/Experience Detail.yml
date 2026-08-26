@@ -5,17 +5,12 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences/{{experienceId}}"
-  auth: inherit
+  url: "{{baseUrl}}/org/experiences/1dfe3550-c6b5-408e-a89e-e4a06eb15b30"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MjY5OTUsImV4cCI6MTc4NzczMDU5NX0.d2FiAXPwWx6A0ZgBnUEa02mETjpcEzVCyGrTPZDCENc
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -27,15 +22,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
