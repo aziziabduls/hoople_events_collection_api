@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences/50fe316e-afe0-40ac-9c37-4723a18117ff"
+  url: "{{baseUrl}}/org/experiences/1dfe3550-c6b5-408e-a89e-e4a06eb15b30"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MjY5OTUsImV4cCI6MTc4NzczMDU5NX0.d2FiAXPwWx6A0ZgBnUEa02mETjpcEzVCyGrTPZDCENc
 
 runtime:
   scripts:
@@ -35,6 +35,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

@@ -6,7 +6,9 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/bookings"
-  auth: inherit
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODc4MDkzMTAsImV4cCI6MTc4NzgxMjkxMH0.G7XTHuPAqnMRTtzwXmGoFimMcx2R1D4hgthkXM5s7ck
 
 runtime:
   assertions:
@@ -16,6 +18,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -403,6 +412,7 @@ examples:
               "totalPages": 2
             }
           }
+
 docs: |-
   # Booking List
 
@@ -530,9 +540,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

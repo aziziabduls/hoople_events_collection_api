@@ -1,0 +1,21 @@
+info:
+  name: Payments & Payout
+  seq: 9
+
+docs: |
+  # Payments & Payout
+
+  Uang masuk dan uang keluar: pencairan beserta potongannya, dan buku
+  transaksi di belakangnya — layar **Payments & Payout** konsol
+  (`/organizer/payments`).
+
+  Kedua tab layar itu (**Overview** dan **Payout History**) sama-sama dibaca
+  dari **Payout List** di bawah. "Payout Summary" (total gross, potongan, dan
+  net pencairan) adalah jumlah yang dihitung konsol dari baris-baris respons
+  ini, bukan endpoint agregat tersendiri — belum ada `summary` di
+  `dto/organizer/payout-list.response.json`. **Transaction List** mengisi
+  riwayat transaksi di baliknya.
+
+  > Folder ini sebelumnya bernama **Finance**. Kalau koleksi lama masih punya
+  > folder `Admin/Finance/`, hapus manual sesudah regenerasi — script ini
+  > hanya menulis, tidak pernah menghapus folder lama.

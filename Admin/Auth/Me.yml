@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/auth/me"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODcyODQ4OTgsImV4cCI6MTc4NzI4ODQ5OH0.Ouq0AsT0tfGu0M9Q79DMhh8fYP7vvcaNr3pyvRiDK_U
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MzIwOTAsImV4cCI6MTc4NzczNTY5MH0.olNPDghj-sczDPwXOABpBrB8NmQN5sF5dKczuipUIRY
 
 runtime:
   scripts:
@@ -35,6 +35,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

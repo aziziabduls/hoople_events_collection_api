@@ -6,11 +6,16 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/org/auth/logout"
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODcyODQ1OTMsImV4cCI6MTc4NzI4ODE5M30.lFjENK4Oa1nnaa4NfUNgxjjusKphjOCM7jUwk616CU8
+  auth: inherit
 
 runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -22,13 +27,6 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
 
 settings:
   encodeUrl: true
@@ -37,7 +35,7 @@ settings:
   maxRedirects: 5
 
 examples:
-  - name: Sukses
+  - name: "Sukses"
     response:
       status: 200
       statusText: OK

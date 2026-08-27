@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/org/experiences/activities"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -136,15 +135,11 @@ http:
           "showOnDiscovery": true
         }
       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MjY5OTUsImV4cCI6MTc4NzczMDU5NX0.d2FiAXPwWx6A0ZgBnUEa02mETjpcEzVCyGrTPZDCENc
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -156,15 +151,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 201
       statusText: Created
@@ -296,6 +299,15 @@ docs: |
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
+  ## Masih 404
+
+  Dites langsung ke tunnel dan ke SIT (`10.10.24.40:3436`) per 2026-08-26 -
+  keduanya menjawab `404`. `POST /org/experiences/events` (Event Create) sudah
+  hidup di kedua tempat itu; ini satu-satunya endpoint create-experience yang
+  belum. Konsol sudah siap begitu ini hidup - lihat "Bug konsol yang sudah
+  diperbaiki lebih dulu" di bawah untuk satu hal yang sempat luput justru
+  karena endpoint ini belum bisa diuji.
+
   ## Alur gambar
 
   Gambar diunggah lebih dulu lewat **Media → Upload**, yang mengembalikan `url`.
@@ -309,6 +321,23 @@ docs: |
   - `schedule` = konfigurasi jadwal builder (`operatingDays`, `repeatWeekly`, …),
     bukan baris tampilan katalog (itu `scheduleSummary`) dan bukan susunan acara
     (itu `rundown`, milik event).
+
+  ## Bug konsol yang sudah diperbaiki lebih dulu
+
+  `publish.mode` di sini punya tiga nilai sah - `now`, `later`, `draft` (lihat
+  `publishMode` di `dto/shared/common/enums.reference.json`). Tombol
+  **"Save as Draft"** di wizard aktivitas dulu tidak pernah mengirim `draft` -
+  `PublishWhen` di sisi konsol cuma punya `'now' | 'later'`, jadi menekan
+  "Save as Draft" tetap mengirim apa pun pilihan radio "publish now/later"
+  yang sedang aktif. Event builder sudah lebih dulu punya bug yang persis
+  sama (`registrationStatus` yang tidak pernah dipaksa `'draft'`) dan sudah
+  diperbaiki; audit ini menemukan Activity belum ikut diperbaiki. Sekarang
+  `saveDraft()` di `CreateActivity.tsx` mengirim salinan draft dengan
+  `publishWhen: 'draft'` dipaksa, persis pola perbaikan event. Dibuktikan
+  lewat request sungguhan (bukan cuma baca kode): body yang terkirim saat
+  menekan "Save as Draft" sekarang berisi `"publish":{"mode":"draft",...}` -
+  tidak bisa dibuktikan sampai `201`-nya sendiri karena endpoint ini masih
+  404, tapi bentuk request-nya sudah benar begitu backend hidup.
 
   ## Error yang mungkin
 

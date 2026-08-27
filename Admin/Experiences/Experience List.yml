@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences"
+  url: "{{baseUrl}}/org/experiences?scope=all&page=1&perPage=10"
   params:
     - name: scope
       value: all
@@ -21,7 +21,7 @@ http:
       description: Baris per halaman. Contoh dto memakai 10.
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODczMDY5OTAsImV4cCI6MTc4NzMxMDU5MH0.pexsjWvCSW92ut3YQ8j7QgU-fQn77FL_Dze-d74d9gs
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc3MzY3NTYsImV4cCI6MTc4Nzc0MDM1Nn0.7O8kpVhVrn8myMsKJV0aglCF96n_2c9awQUnPCMQhzY
 
 runtime:
   scripts:
@@ -56,6 +56,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

@@ -5,8 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/events/{slug}"
-  auth: none
+  url: "{{baseUrl}}/events/15a90489-a3a2-4312-8ad8-1a68aee39da8"
 
 runtime:
   assertions:
@@ -16,6 +15,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -169,6 +175,7 @@ examples:
             },
             "meta": null
           }
+
 docs: |-
   # Event Detail
 
@@ -288,9 +295,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

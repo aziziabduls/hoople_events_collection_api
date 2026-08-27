@@ -1,7 +1,7 @@
 info:
   name: Profile Update
   type: http
-  seq: 6
+  seq: 8
 
 http:
   method: PATCH
@@ -44,6 +44,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

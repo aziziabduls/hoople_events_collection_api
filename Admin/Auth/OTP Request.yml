@@ -13,9 +13,9 @@ http:
     type: json
     data: |-
       {
-        "purpose": "email_verification",
-        "channel": "email",
-        "destination": "aziziabdul95@gmail.com"
+        "purpose": "phone_verification",
+        "channel": "whatsapp",
+        "destination": "+62 813 8899 2200"
       }
 
 runtime:
@@ -43,6 +43,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -162,6 +163,13 @@ docs: |
   > dengan "Send by email instead" sebagai jalan kedua - karena itu `channel`
   > ada di kontrak sejak awal. Email tetap opsional saat mendaftar; yang
   > diverifikasi adalah nomor, yang justru wajib.
+
+  ## Dipakai ulang untuk lupa-password
+
+  `purpose` juga menerima `"password_reset"` - itu jalur yang dipakai
+  **Password Forgot**, bukan endpoint terpisah. Contoh di atas memakai
+  `"phone_verification"` karena itu jalur pendaftaran, tapi bentuk request dan
+  response-nya identik untuk kedua `purpose`.
 
   ## Error yang mungkin
 

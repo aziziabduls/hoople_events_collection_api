@@ -13,10 +13,10 @@ http:
     type: json
     data: |-
       {
-        "purpose": "email_verification",
+        "purpose": "password_reset",
         "channel": "email",
         "destination": "aziziabdul95@gmail.com",
-        "code": "282313"
+        "code": "540920"
       }
 
 runtime:
@@ -44,6 +44,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -165,6 +166,11 @@ docs: |
   Kalau backend lebih suka menandai `destination` sebagai terverifikasi di sisi
   server dan tidak mengembalikan token sama sekali, hilangkan field itu: frontend
   mengirim `null` kalau tidak menerimanya, dan tidak ada yang lain berubah.
+
+  ## Dipakai ulang untuk lupa-password
+
+  Dengan `purpose: "password_reset"`, `verificationToken` di sini adalah yang
+  sama yang dibawa **Password Reset** - bukan token baru yang berbeda bentuk.
 
   ## Error yang mungkin
 
