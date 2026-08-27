@@ -13,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "email": "adriani.ajeng@gmail.com",
+        "email": "aziziabdul95@gmail.com",
         "password": "RahasiaKu123",
         "rememberMe": true
       }
@@ -32,6 +32,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
