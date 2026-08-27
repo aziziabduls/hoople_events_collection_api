@@ -19,9 +19,9 @@ http:
         "ticketTypeId": "02a6fad3-350f-4d0d-abe8-319d6138ef0e",
         "quantity": 2,
         "buyer": {
-          "fullName": "Adriani Ajeng",
-          "email": "adriani.ajeng@gmail.com",
-          "phone": "+62 812 3456 7890"
+          "fullName": "Abdul Azizi",
+          "email": "aziziabdul95@gmail.com",
+          "phone": "+6282299328390"
         },
         "buyerIsParticipant": true,
         "participants": [
@@ -60,6 +60,7 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses

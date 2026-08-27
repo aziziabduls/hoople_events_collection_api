@@ -13,19 +13,12 @@ http:
     type: json
     data: |-
       {
-        "email": "adriani.ajeng@gmail.com",
+        "email": "aziziabdul95@gmail.com",
         "password": "RahasiaKu123",
         "rememberMe": true
       }
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: after-response
       code: |-
@@ -45,15 +38,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -89,7 +90,7 @@ examples:
             },
             "meta": null
           }
-  - name: "Kredensial salah"
+  - name: Kredensial salah
     response:
       status: 401
       statusText: Unauthorized
