@@ -1,0 +1,198 @@
+info:
+  name: Verify Login via OTP
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/otp/verify"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "purpose": "otp_login",
+        "channel": "email",
+        "destination": "aziziabdul95@gmail.com",
+        "code": "684081"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: Sukses
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Nomor berhasil diverifikasi",
+            "data": {
+              "purpose": "phone_verification",
+              "channel": "whatsapp",
+              "verifiedAt": "2026-03-14T09:33:12+07:00",
+              "verificationToken": "vt_8f2a1c9d4b6e0a37c5d1",
+              "verificationTokenExpiresAt": "2026-03-14T09:48:12+07:00"
+            },
+            "meta": null
+          }
+  - name: Kode salah
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Kode verifikasi salah",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_INVALID",
+              "errors": {
+                "code": [
+                  "Kode tidak cocok"
+                ]
+              },
+              "attemptsRemaining": 3
+            }
+          }
+  - name: Kode kedaluwarsa
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "Kode verifikasi sudah kedaluwarsa",
+            "data": null,
+            "meta": null,
+            "error": {
+              "code": "OTP_EXPIRED",
+              "errors": {
+                "code": [
+                  "Minta kode baru"
+                ]
+              },
+              "attemptsRemaining": 0
+            }
+          }
+
+docs: |
+  # OTP Verify
+
+  Tukar kode dengan `verificationToken`, yang lalu dibawa Register Host.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/auth/otp/verify` |
+  | **Auth** | Tidak perlu token |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/shared/auth/otp-verify.request.json`<br>`dto/shared/auth/otp-verify.response.json`<br>`dto/shared/auth/otp-invalid.response.json`<br>`dto/shared/auth/otp-expired.response.json` |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `purpose` | string | ya | enum `otpPurpose`: `email_verification`, `phone_verification`, `password_reset` |
+  | `channel` | string | ya | enum `otpChannel`: `email`, `whatsapp` |
+  | `destination` | string | ya |  |
+  | `code` | string | ya |  |
+
+  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
+  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+
+  ## Satu status, dua kode
+
+  Kode salah dan kode kedaluwarsa sama-sama `422`, dibedakan `error.code`. Dari
+  sisi klien keduanya berarti hal yang sama - kode ini tidak bisa dipakai - dan
+  menambah satu status lagi ke kebijakan fallback demi satu endpoint lebih mahal
+  daripada satu kode tambahan.
+
+  `OTP_INVALID` membawa `error.attemptsRemaining`. Saat mencapai `0`, tampilan
+  harus mengarahkan ke **OTP Request**, bukan membiarkan orang mengetik lagi.
+
+  ## `verificationToken`
+
+  Sekali pakai, berumur pendek, dan dibawa ke **Register Host** sebagai bukti
+  bahwa nomor itu benar-benar milik pendaftar. Tanpa token yang sah, pendaftaran
+  harus ditolak - kalau tidak, seluruh langkah verifikasi ini hanya hiasan.
+
+  Kalau backend lebih suka menandai `destination` sebagai terverifikasi di sisi
+  server dan tidak mengembalikan token sama sekali, hilangkan field itu: frontend
+  mengirim `null` kalau tidak menerimanya, dan tidak ada yang lain berubah.
+
+  ## Dipakai ulang untuk lupa-password
+
+  Dengan `purpose: "password_reset"`, `verificationToken` di sini adalah yang
+  sama yang dibawa **Password Reset** - bukan token baru yang berbeda bentuk.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `422` | `shared/auth/otp-invalid.response.json` | `OTP_INVALID` kode salah (`error.attemptsRemaining`), `OTP_EXPIRED` kode kedaluwarsa. Bedakan lewat `error.code`, bukan status. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
