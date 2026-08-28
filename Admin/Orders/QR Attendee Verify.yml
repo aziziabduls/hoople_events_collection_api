@@ -1,0 +1,24 @@
+info:
+  name: QR Attendee Verify
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/registrations/verify"
+  body:
+    type: json
+    data: |-
+      {
+        "ticketCode": "8a4d6bb8-cd17-4fcb-ac25-d91a041b9263-1"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODc4MTIwNjcsImV4cCI6MTc4NzgxNTY2N30.uowmOnBKWvViUhxQO2Ueb8SRWSTbyAbava9oTD6Sp8o
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
