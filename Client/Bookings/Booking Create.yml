@@ -15,28 +15,27 @@ http:
       {
         "experienceId": "a68fa5e3-5ffc-46e6-ae6e-1c69ced1bb08",
         "kind": "activity",
-        "sessionId": "11111111-0001-4aaa-8bbb-000000000001",
-        "ticketTypeId": "02a6fad3-350f-4d0d-abe8-319d6138ef0e",
+        "sessionId": "",
+        "ticketTypeId": "0bdfa579-115d-4ccd-ab77-eb40210bee5f",
         "quantity": 2,
         "buyer": {
           "fullName": "Abdul Azizi",
           "email": "aziziabdul95@gmail.com",
           "phone": "+6282299328390"
         },
-        "buyerIsParticipant": true,
         "participants": [
           {
-            "fullName": "Adriani Ajeng",
-            "email": "adriani.ajeng@gmail.com",
-            "phone": "+62 812 3456 7890"
+            "fullName": "Abdul Azizi",
+            "email": "aziziabdul95@gmail.com",
+            "phone": "+6282299328390"
           },
           {
-            "fullName": "Dewi Lestari",
-            "email": "dewi.lestari@gmail.com",
-            "phone": "+62 813 9988 7766"
+            "fullName": "Steven Franjaya",
+            "email": "stevenfrandom@gmail.com",
+            "phone": "+62811652588"
           }
         ],
-        "paymentMethodId": "pm-bca-va",
+        "paymentMethodId": "bca_va",
         "promoCode": null,
         "consent": {
           "media": true,

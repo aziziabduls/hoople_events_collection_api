@@ -13,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "email": "aziziabdul95@gmail.com",
+        "email": "kevin@ruangtumbuh.id",
         "password": "RahasiaKu123",
         "rememberMe": true
       }

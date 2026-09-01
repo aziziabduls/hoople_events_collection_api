@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/org/experiences/events"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -92,15 +91,11 @@ http:
           "scheduledAt": "2026-03-15T09:00:00+07:00"
         }
       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmMjU0ZmI3Ny05NzAwLTRkZTYtYjViNC05OGExOTZhYTM0NjYiLCJpYXQiOjE3ODc4ODU3ODMsImV4cCI6MTc4Nzg4OTM4M30.o1dBnvbuiL9PLZOTAFw2btlwyyeD3Nf8O_eh1MqYiRk
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -112,15 +107,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 201
       statusText: Created
