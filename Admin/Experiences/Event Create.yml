@@ -15,10 +15,11 @@ http:
       {
         "kind": "event",
         "identity": {
-          "title": "UX in Practice",
+          "title": "UX in Practice With Azz",
           "category": "Business & Professional",
           "summary": "Workshop sehari penuh: riset, wireframe, usability testing.",
-          "coverImageUrl": "https://cdn.hoople.id/uploads/tmp/cover-ux.jpg"
+          "coverImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg",
+          "thumbnailImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg"
         },
         "brand": {
           "hostName": "Lingua Space",
@@ -93,7 +94,7 @@ http:
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmMjU0ZmI3Ny05NzAwLTRkZTYtYjViNC05OGExOTZhYTM0NjYiLCJpYXQiOjE3ODc4ODU3ODMsImV4cCI6MTc4Nzg4OTM4M30.o1dBnvbuiL9PLZOTAFw2btlwyyeD3Nf8O_eh1MqYiRk
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODgzMjMzNDIsImV4cCI6MTc4ODMyNjk0Mn0.7s4cPEmBf3prpcP537TNl9z8TLhlgFuDwBpFTePN5rM
 
 runtime:
   scripts:

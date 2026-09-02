@@ -22,7 +22,7 @@ http:
         value: cover
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3N2ViYWQ3YS0yZmY4LTQ3ZDctYjVhNy1jNjM2ODY4NWVlZWUiLCJpYXQiOjE3ODc1NjgwMjYsImV4cCI6MTc4NzU3MTYyNn0.8_3soK6KPBBhtg8BuTJeL8vUhOfewSNjpiH9w83cl-I
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODgzMjMzNDIsImV4cCI6MTc4ODMyNjk0Mn0.7s4cPEmBf3prpcP537TNl9z8TLhlgFuDwBpFTePN5rM
 
 runtime:
   scripts:
