@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/org/subscription/plans"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODg0MjA1NzgsImV4cCI6MTc4ODQyNDE3OH0.TtCtKBaeHjxSdrPtIuG0T7RYbMcJT6sPziVDcPd5i8c
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
