@@ -18,20 +18,21 @@ http:
         "sessionId": "",
         "ticketTypeId": "0bdfa579-115d-4ccd-ab77-eb40210bee5f",
         "quantity": 2,
+        "totalAmount": 1300000,
         "buyer": {
           "fullName": "Abdul Azizi",
-          "email": "aziziabdul95@gmail.com",
+          "email": "aziziabdul@icloud.com",
           "phone": "+6282299328390"
         },
         "participants": [
           {
             "fullName": "Abdul Azizi",
-            "email": "aziziabdul95@gmail.com",
+            "email": "aziziabdul@icloud.com",
             "phone": "+6282299328390"
           },
           {
-            "fullName": "Steven Franjaya",
-            "email": "stevenfrandom@gmail.com",
+            "fullName": "Fahmi",
+            "email": "mfahmifauzan@gmail.com",
             "phone": "+62811652588"
           }
         ],

@@ -1,0 +1,22 @@
+info:
+  name: check-email
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/auth/check-email"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "aziziabdul95@gmail.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

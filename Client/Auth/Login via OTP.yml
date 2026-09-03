@@ -15,7 +15,7 @@ http:
       {
         "purpose": "otp_login",
         "channel": "email",
-        "destination": "aziziabdul95@gmail.com"
+        "destination": "aziziabdul@icloud.com"
       }
 
 runtime:
