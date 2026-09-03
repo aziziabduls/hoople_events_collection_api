@@ -1,0 +1,24 @@
+info:
+  name: Calculate
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/experiences/calculate-price"
+  body:
+    type: json
+    data: |-
+      {
+        "experienceId": "a68fa5e3-5ffc-46e6-ae6e-1c69ced1bb08",
+        "ticketTypeId": "0bdfa579-115d-4ccd-ab77-eb40210bee5f",
+        "quantity": 2
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
