@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/bookings"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNGIyM2Y5OC02ZWU2LTRmYjgtOWY5ZS01YzliMDdjNWE3ZjIiLCJpYXQiOjE3ODgxNzIxNjQsImV4cCI6MTc4ODE3NTc2NH0.xc3jOEVcVoNCC9To15nTi4wRHD-M085PSvGzx1No3CE
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODgzMzI5MTksImV4cCI6MTc4ODMzNjUxOX0.NBfGHPYigwBvkZaVkcngitn2SLErUFjDRmd-qJrZSaQ
 
 runtime:
   assertions:

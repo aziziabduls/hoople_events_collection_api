@@ -1,0 +1,25 @@
+info:
+  name: Upgrade Plans
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/subscription/upgrade"
+  body:
+    type: json
+    data: |-
+      {
+        "planId": "pro",
+        "durationMonths": 12
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODg0MjA1NzgsImV4cCI6MTc4ODQyNDE3OH0.TtCtKBaeHjxSdrPtIuG0T7RYbMcJT6sPziVDcPd5i8c
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
