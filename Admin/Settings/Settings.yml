@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/org/settings"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODg0MjA1NzgsImV4cCI6MTc4ODQyNDE3OH0.TtCtKBaeHjxSdrPtIuG0T7RYbMcJT6sPziVDcPd5i8c
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwYWZiNDc0NS1lMTNlLTRmZGEtOTA4OS1jNmRiODgxMmM4YjAiLCJpYXQiOjE3ODg0MjQ4NDksImV4cCI6MTc4ODQyODQ0OX0.GLYMwt0g3A-8AgDFM0Z7ax6szfAHeW4iusT-ZZ-n1_U
 
 runtime:
   scripts:

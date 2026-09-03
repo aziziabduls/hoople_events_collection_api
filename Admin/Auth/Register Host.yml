@@ -13,9 +13,9 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Kevin Nathanael",
-        "email": "kevin@ruangtumbuh.id",
-        "phone": "+62 813 8899 2200",
+        "fullName": "Abdul Azizi",
+        "email": "aziziabdul@icloud.com",
+        "phone": "+6282299328390",
         "password": "RahasiaKu123",
         "passwordConfirmation": "RahasiaKu123",
         "interests": [],
@@ -23,13 +23,6 @@ http:
       }
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: after-response
       code: |-
@@ -49,15 +42,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 201
       statusText: Created
