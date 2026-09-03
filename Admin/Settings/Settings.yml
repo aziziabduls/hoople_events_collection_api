@@ -6,16 +6,11 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/org/settings"
-  auth: inherit
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODg0MjA1NzgsImV4cCI6MTc4ODQyNDE3OH0.TtCtKBaeHjxSdrPtIuG0T7RYbMcJT6sPziVDcPd5i8c
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -27,15 +22,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
