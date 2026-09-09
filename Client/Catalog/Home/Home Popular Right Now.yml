@@ -1,7 +1,7 @@
 info:
   name: Home Popular Right Now
   type: http
-  seq: 13
+  seq: 4
 
 http:
   method: GET
