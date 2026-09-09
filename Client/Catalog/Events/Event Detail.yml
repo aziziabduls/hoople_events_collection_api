@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/events/pk6p8z2nnu"
+  url: "{{baseUrl}}/events/google-dev-flutter-indonesia"
 
 runtime:
   assertions:
