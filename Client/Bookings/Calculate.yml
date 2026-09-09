@@ -12,7 +12,7 @@ http:
       {
         "experienceId": "a68fa5e3-5ffc-46e6-ae6e-1c69ced1bb08",
         "ticketTypeId": "0bdfa579-115d-4ccd-ab77-eb40210bee5f",
-        "quantity": 2
+        "quantity": 5
       }
   auth: inherit
 
