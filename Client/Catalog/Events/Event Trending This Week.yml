@@ -1,12 +1,11 @@
 info:
   name: Event Trending This Week
   type: http
-  seq: 18
+  seq: 4
 
 http:
   method: GET
   url: "{{baseUrl}}/events/trending-this-week"
-  auth: none
 
 runtime:
   assertions:
@@ -16,6 +15,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -182,9 +188,3 @@ docs: |-
 
   - **Nama field** camelCase.
   - **Enum** lowercase.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

@@ -6,7 +6,6 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/home/popular-right-now"
-  auth: none
 
 runtime:
   assertions:
@@ -16,6 +15,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -225,9 +231,3 @@ docs: |-
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount, currency }`.
   - **Enum** lowercase.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

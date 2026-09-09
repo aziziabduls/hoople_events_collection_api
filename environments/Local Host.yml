@@ -4,7 +4,7 @@ variables:
     value: https://driver-gush-blip.ngrok-free.dev
     description: Server lokal di mesin sendiri. Belum memakai prefix versi — kalau backend lokal menyajikan /v1, tambahkan di sini.
   - name: accessToken
-    value: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODg0MzAyNjEsImV4cCI6MTc4ODQzMzg2MX0.EE-Pcs7gXEOar68ILQrSabDmefBT2gpuRp8WttBvwLo
     description: Bearer token. Diisi otomatis oleh Admin > Auth > Login.
   - name: refreshToken
     value: ""

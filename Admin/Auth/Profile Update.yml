@@ -5,8 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/auth/me"
-  auth: inherit
+  url: "{{baseUrl}}/org/auth/me"
   headers:
     - name: Content-Type
       value: application/json
@@ -29,15 +28,9 @@ http:
           "push": false
         }
       }
+  auth: inherit
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -49,15 +42,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
