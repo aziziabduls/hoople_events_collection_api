@@ -1,12 +1,11 @@
 info:
   name: Event Popular Right Now
   type: http
-  seq: 19
+  seq: 5
 
 http:
   method: GET
   url: "{{baseUrl}}/events/popular-right-now"
-  auth: none
 
 runtime:
   assertions:
@@ -16,6 +15,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -185,9 +191,3 @@ docs: |-
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount, currency }`.
   - **Enum** lowercase.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

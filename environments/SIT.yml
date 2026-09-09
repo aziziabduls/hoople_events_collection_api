@@ -4,10 +4,10 @@ variables:
     value: https://dev-api-event.hoople.co.id
     description: Staging bersama. Satu-satunya yang memakai prefix /v1, dan prefix itu sudah termasuk di nilai ini.
   - name: accessToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODg0MzAyNjEsImV4cCI6MTc4ODQzMzg2MX0.EE-Pcs7gXEOar68ILQrSabDmefBT2gpuRp8WttBvwLo
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjc0YzRhMS1iNTY4LTQ3YmMtOTM1NS02MTkwMjAyZGQ3YzgiLCJpYXQiOjE3ODg4NTgzNDgsImV4cCI6MTc4ODg2MTk0OH0.Xzhg8RJ-W3gF_ee9-741KqX35rfAbh63MqJGU9oX0cc
     description: Bearer token. Diisi otomatis oleh Admin > Auth > Login.
   - name: refreshToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODg0MzAyNjEsImV4cCI6MTc4OTAzNTA2MX0.UfcTsDsvV_3pTWLtGTvUDzKuuBql0T5-78-mSpUHzw0
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjc0YzRhMS1iNTY4LTQ3YmMtOTM1NS02MTkwMjAyZGQ3YzgiLCJpYXQiOjE3ODg4NTgzNDgsImV4cCI6MTc4OTQ2MzE0OH0.2q9I7BdI2oPSZLmXkXST_eJk4q4t8YxgAtF2EsDMRHs
     description: Diisi otomatis oleh Login; dipakai body Auth > Refresh.
   - name: experienceId
     value: ""
