@@ -1,7 +1,7 @@
 info:
   name: Home Recommended For You
   type: http
-  seq: 11
+  seq: 2
 
 http:
   method: GET
