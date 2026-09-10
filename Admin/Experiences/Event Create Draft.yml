@@ -1,7 +1,7 @@
 info:
-  name: Event Create
+  name: Event Create Draft
   type: http
-  seq: 4
+  seq: 10
 
 http:
   method: POST
@@ -14,113 +14,23 @@ http:
     data: |-
       {
         "kind": "event",
+        "format": "onsite",
         "identity": {
-          "title": "Google Dev Flutter Indonesia",
-          "category": "Technology",
-          "summary": "Meetup developer sehari penuh membahas Flutter, Dart, arsitektur aplikasi, state management, hingga best practice membangun aplikasi production-ready.",
-          "coverImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg",
-          "thumbnailImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg"
+          "title": "Konser Musik Draft (Belum Final)",
+          "category": "Concert"
         },
-         "gallery": [
+        "gallery": [
           "https://dev-api.hoople.co.id/uploads/1725965000-photo1.jpg",
           "https://dev-api.hoople.co.id/uploads/1725965001-photo2.jpg",
           "https://dev-api.hoople.co.id/uploads/1725965002-photo3.jpg"
         ],
-        "brand": {
-          "hostName": "Google Developer Groups Jakarta",
-          "hostType": "Community",
-          "hostBio": "Komunitas developer yang berbagi ilmu, networking, dan pengalaman seputar teknologi Google dan software development.",
-          "logoUrl": null,
-          "contactEmail": "jakarta@gdg.community",
-          "contactPhone": "+62 812 3456 7890"
-        },
-        "benefits": [
-          "Sertifikat kehadiran",
-          "Networking dengan Flutter developer",
-          "Hands-on coding session",
-          "Materi dan sample project"
-        ],
-        "format": "onsite",
-        "venue": {
-          "name": "Google Indonesia",
-          "area": "SCBD",
-          "city": "Jakarta Selatan",
-          "address": "Pacific Century Place Tower, Jl. Jend. Sudirman Kav. 52-53, Jakarta Selatan",
-          "latitude": -6.2247,
-          "longitude": 106.8107,
-          "notes": [
-            "Peserta wajib membawa laptop",
-            "Registrasi ulang dimulai 30 menit sebelum acara"
-          ]
-        },
-        "onlineUrl": null,
-        "startsAt": "2026-10-17T09:00:00+07:00",
-        "endsAt": "2026-10-17T17:00:00+07:00",
-        "timezone": "Asia/Jakarta",
-        "rundown": [
-          {
-            "time": "09:00",
-            "label": "Registrasi & Networking"
-          },
-          {
-            "time": "09:30",
-            "label": "Opening — Flutter & Google Developer Ecosystem"
-          },
-          {
-            "time": "10:00",
-            "label": "Session 1 — Flutter & Dart Modern Development"
-          },
-          {
-            "time": "11:15",
-            "label": "Session 2 — Building Production-Ready Flutter Apps"
-          },
-          {
-            "time": "12:30",
-            "label": "Lunch & Networking"
-          },
-          {
-            "time": "13:30",
-            "label": "Session 3 — State Management & Clean Architecture"
-          },
-          {
-            "time": "15:00",
-            "label": "Hands-on Lab — Build a Flutter App"
-          },
-          {
-            "time": "16:30",
-            "label": "Q&A, Community Sharing & Closing"
-          }
-        ],
-        "ticketTypes": [
-          {
-            "name": "Early Bird",
-            "description": "Harga spesial untuk pendaftar awal",
-            "price": 75000,
-            "quota": 50,
-            "salesStartAt": "2026-09-15T00:00:00+07:00",
-            "salesEndAt": "2026-09-30T23:59:00+07:00"
-          },
-          {
-            "name": "Regular",
-            "description": "Tiket reguler",
-            "price": 125000,
-            "quota": 100,
-            "salesStartAt": "2026-10-01T00:00:00+07:00",
-            "salesEndAt": "2026-10-16T23:59:00+07:00"
-          }
-        ],
-        
         "publishSettings": {
-          "visibility": "public",
-          "showOnDiscovery": true,
-          "allowWaitlist": true,
-          "publishMode": "scheduled",
-          "scheduledAt": "2026-09-10T09:00:00+07:00"
+          "publishMode": "draft"
         }
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwYWZiNDc0NS1lMTNlLTRmZGEtOTA4OS1jNmRiODgxMmM4YjAiLCJpYXQiOjE3ODg0MjQ4NDksImV4cCI6MTc4ODQyODQ0OX0.GLYMwt0g3A-8AgDFM0Z7ax6szfAHeW4iusT-ZZ-n1_U
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODkwMTA5MjEsImV4cCI6MTc4OTAxNDUyMX0.YYcvjqD-ipJRyzNgcSkRpRfm0jzrMUkazktn1gljZmY
 
 runtime:
   scripts:

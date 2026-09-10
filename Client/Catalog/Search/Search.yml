@@ -5,21 +5,17 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/search?q=yoga&category=wellness&city=Jakarta%20Selatan"
-  auth: none
+  url: "{{baseUrl}}/search?q=flutter&category=technology&city=Jakarta"
   params:
     - name: q
-      value: yoga
+      value: flutter
       type: query
-      description: Kata kunci pencarian.
     - name: category
-      value: wellness
+      value: technology
       type: query
-      description: Slug kategori, lihat GET /categories.
     - name: city
-      value: Jakarta Selatan
+      value: Jakarta
       type: query
-      description: Nama kota, cocok persis.
 
 runtime:
   assertions:
@@ -29,6 +25,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -125,6 +128,7 @@ examples:
               "totalPages": 2
             }
           }
+
 docs: |-
   # Search
 
@@ -245,9 +249,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
