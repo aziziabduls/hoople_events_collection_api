@@ -5,8 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/org/check-in/scan"
-  auth: inherit
+  url: "{{baseUrl}}/org/registrations/check-in"
   headers:
     - name: Content-Type
       value: application/json
@@ -14,19 +13,13 @@ http:
     type: json
     data: |-
       {
-        "ticketCode": "HPL-8K2M-4QX7-1",
-        "sessionId": "ses-0001-4aaa-8bbb-000000000001",
-        "scannedAt": "2026-03-16T06:52:00+07:00"
+        "qrData": "5846a170-7222-4926-bef2-345cc89111a4"
       }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -38,15 +31,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -78,7 +79,7 @@ examples:
             },
             "meta": null
           }
-  - name: "Tiket sudah dipakai"
+  - name: Tiket sudah dipakai
     response:
       status: 409
       statusText: Conflict
