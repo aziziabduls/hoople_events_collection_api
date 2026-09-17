@@ -13,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "qrData": "5846a170-7222-4926-bef2-345cc89111a4"
+        "qrData": "e8c29786-aa24-4396-a765-d148ce6df051"
       }
   auth:
     type: bearer
