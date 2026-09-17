@@ -15,8 +15,7 @@ http:
     - name: perPage
       value: "10"
       type: query
-      description: "Baris per halaman. Contoh dto memakai 10."
-
+      description: "Baris per halaman. Konsol meminta 100 dan menyaring sendiri."
 runtime:
   assertions:
     - expression: res.status
@@ -45,6 +44,33 @@ runtime:
           expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
         });
 
+        test("tiap baris punya field yang dibaca layar", function () {
+          const rows = res.getBody().data;
+          if (!rows.length) return;
+          const row = rows[0];
+          ["id", "reference", "experienceTitle", "status", "gross", "platformFee",
+           "gatewayFee", "net"].forEach(function (key) {
+            expect(row, key).to.have.property(key);
+          });
+          expect(["scheduled", "paid", "on_hold", "failed"]).to.include(row.status);
+        });
+
+        test("net = gross - gatewayFee - refunds + adjustment", function () {
+          const rows = res.getBody().data;
+          rows.forEach(function (row) {
+            const money = function (value) { return value && typeof value.amount === "number" ? value.amount : 0; };
+            const expected = money(row.gross) - money(row.gatewayFee) - money(row.refunds) + money(row.adjustment);
+            expect(money(row.net), row.reference).to.equal(expected);
+          });
+        });
+
+        test("status yang butuh penjelasan membawanya", function () {
+          res.getBody().data.forEach(function (row) {
+            if (row.status === "paid") expect(row.paidAt, row.reference).to.not.equal(null);
+            if (row.status === "on_hold") expect(row.holdReason, row.reference).to.not.equal(null);
+          });
+        });
+
 settings:
   encodeUrl: true
   timeout: 0
@@ -70,6 +96,8 @@ examples:
                 "id": "po-0001-4aaa-8bbb-000000000001",
                 "reference": "PO-260719-01",
                 "experienceTitle": "Sunset Rooftop Jazz",
+                "experienceKind": "offline",
+                "eventEndsAt": "2026-03-19T22:00:00+07:00",
                 "status": "scheduled",
                 "settledOn": "2026-03-20",
                 "gross": {
@@ -84,18 +112,29 @@ examples:
                   "amount": 421200,
                   "currency": "IDR"
                 },
+                "refunds": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "adjustment": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
                 "net": {
-                  "amount": 22276800,
+                  "amount": 22978800,
                   "currency": "IDR"
                 },
                 "bankAccount": "BCA ****7890",
                 "paidAt": null,
-                "holdReason": null
+                "holdReason": null,
+                "ticketsSold": 156
               },
               {
                 "id": "po-0002-4aaa-8bbb-000000000002",
                 "reference": "PO-260718-02",
                 "experienceTitle": "Kelas Keramik untuk Pemula",
+                "experienceKind": "offline",
+                "eventEndsAt": "2026-03-20T22:00:00+07:00",
                 "status": "scheduled",
                 "settledOn": "2026-03-21",
                 "gross": {
@@ -110,18 +149,29 @@ examples:
                   "amount": 54000,
                   "currency": "IDR"
                 },
+                "refunds": {
+                  "amount": 250000,
+                  "currency": "IDR"
+                },
+                "adjustment": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
                 "net": {
-                  "amount": 2856000,
+                  "amount": 2696000,
                   "currency": "IDR"
                 },
                 "bankAccount": "BCA ****7890",
                 "paidAt": null,
-                "holdReason": null
+                "holdReason": null,
+                "ticketsSold": 12
               },
               {
                 "id": "po-0003-4aaa-8bbb-000000000003",
                 "reference": "PO-260706-03",
                 "experienceTitle": "Healthy Cooking Class",
+                "experienceKind": "hybrid",
+                "eventEndsAt": "2026-03-05T22:00:00+07:00",
                 "status": "paid",
                 "settledOn": "2026-03-06",
                 "gross": {
@@ -136,18 +186,29 @@ examples:
                   "amount": 43200,
                   "currency": "IDR"
                 },
+                "refunds": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "adjustment": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
                 "net": {
-                  "amount": 2284800,
+                  "amount": 2356800,
                   "currency": "IDR"
                 },
                 "bankAccount": "BCA ****7890",
                 "paidAt": "2026-03-06T14:02:00+07:00",
-                "holdReason": null
+                "holdReason": null,
+                "ticketsSold": 190
               },
               {
                 "id": "po-0004-4aaa-8bbb-000000000004",
                 "reference": "PO-260628-04",
                 "experienceTitle": "Jakarta Coffee Week 2026",
+                "experienceKind": "online",
+                "eventEndsAt": "2026-02-27T22:00:00+07:00",
                 "status": "paid",
                 "settledOn": "2026-02-28",
                 "gross": {
@@ -162,18 +223,29 @@ examples:
                   "amount": 513000,
                   "currency": "IDR"
                 },
+                "refunds": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "adjustment": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
                 "net": {
-                  "amount": 27132000,
+                  "amount": 27987000,
                   "currency": "IDR"
                 },
                 "bankAccount": "BCA ****7890",
                 "paidAt": "2026-02-28T10:31:00+07:00",
-                "holdReason": null
+                "holdReason": null,
+                "ticketsSold": 63
               },
               {
                 "id": "po-0005-4aaa-8bbb-000000000005",
                 "reference": "PO-260601-06",
                 "experienceTitle": "Latte Art Workshop",
+                "experienceKind": "offline",
+                "eventEndsAt": null,
                 "status": "on_hold",
                 "settledOn": null,
                 "gross": {
@@ -188,13 +260,22 @@ examples:
                   "amount": 170100,
                   "currency": "IDR"
                 },
+                "refunds": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "adjustment": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
                 "net": {
-                  "amount": 8996400,
+                  "amount": 9279900,
                   "currency": "IDR"
                 },
                 "bankAccount": "BCA ****7890",
                 "paidAt": null,
-                "holdReason": "Menunggu verifikasi rekening"
+                "holdReason": "Menunggu verifikasi rekening",
+                "ticketsSold": 161
               }
             ],
             "meta": {
@@ -208,7 +289,9 @@ examples:
 docs: |
   # Payout List
 
-  Pencairan + rincian potongan.
+  Satu baris per pencairan. **Ini endpoint terpenting di folder ini** — dua tab
+  konsol (Overview dan Payout History) dan seluruh angka ringkasnya berasal
+  dari sini.
 
   | | |
   | --- | --- |
@@ -217,19 +300,65 @@ docs: |
   | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/payout-list.response.json` |
+  | **Status** | Belum hidup di deployment mana pun per 2026-09-17 (404). |
 
   ## Query parameter
 
-  | Parameter | Contoh | Catatan |
-  | --- | --- | --- |
-  | `page` | `1` | Nomor halaman, mulai 1. Diturunkan dari `meta`. |
-  | `perPage` | `10` | Baris per halaman. Contoh dto memakai 10. |
+  | Parameter | Contoh | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `page` | `1` | tidak | Mulai 1. |
+  | `perPage` | `100` | tidak | Konsol meminta 100 sekali lalu menyaring sendiri di browser. Kalau workspace bisa punya ratusan pencairan, kabari — konsol akan pindah ke paginasi server. |
+  | `status` | `paid` | tidak | Salah satu dari empat status. |
+  | `from` / `to` | `2026-03-01` | tidak | Rentang **tanggal selesai event** (`eventEndsAt`), bukan tanggal cair. |
+  | `q` | `jazz` | tidak | Cari pada nama event. |
 
-  ## Fee
+  Keempat yang opsional itu saat ini dikerjakan konsol sendiri. Kalau backend
+  mengimplementasikannya, konsol akan mengirimnya dan hasilnya tetap sama —
+  tidak ada perubahan layar yang diperlukan.
 
-  3% platform + 1,8% gateway, dihitung terhadap `gross`. Satu baris contoh
-  berstatus `on_hold` lengkap dengan `holdReason`, supaya UI tidak berasumsi
-  pencairan selalu mulus.
+  ## Field per baris
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `id` | UUID | ya | Kunci baris; dipakai `GET /org/payouts/:id`. |
+  | `reference` | string | ya | "Payout ID" di drawer, mis. `PO-260719-01`. |
+  | `experienceTitle` | string | ya | Kolom Event. |
+  | `experienceKind` | `offline \| online \| hybrid` | tidak | Baris kedua kolom Event ("Offline Event"). |
+  | `eventEndsAt` | instant | tidak | Kolom "Event End Date" **dan** dasar filter tanggal. Tanpa ini kolomnya "-" dan rentang tanggal tidak menyaring baris tersebut. |
+  | `status` | enum | ya | Pil status, tile, dan timeline. |
+  | `settledOn` | `YYYY-MM-DD` \| null | ya | Tanggal cair yang dijadwalkan. |
+  | `paidAt` | instant \| null | ya | Kapan benar-benar cair. Wajib terisi kalau `status = paid`. |
+  | `gross` | money | ya | "Gross Revenue". |
+  | `platformFee` | money | ya | Fee Hoople yang **dibayar peserta**, ditampilkan sebagai informasi, tidak dikurangkan. |
+  | `gatewayFee` | money | ya | "Payment Processing Fee (Your Cost)" — dikurangkan. |
+  | `refunds` | money | tidak | Refund yang disetujui; dikurangkan. Default 0. |
+  | `adjustment` | money | tidak | Koreksi manual admin; **ditambahkan** (boleh negatif). Default 0. |
+  | `net` | money | ya | Angka hijau di tabel dan dasar semua total. |
+  | `ticketsSold` | integer | tidak | "Tickets Sold" di drawer. |
+  | `bankAccount` | string | tidak | Ringkas, mis. `BCA ****7890`. Drawer memakai rekening dari `GET /org/settings` kalau ini kosong. |
+  | `holdReason` | string \| null | ya | Wajib terisi kalau `status = on_hold`; ditampilkan apa adanya. |
+
+  Yang bertanda "tidak" boleh absen — konsol membacanya kalau ada dan memakai
+  nol/kosong kalau tidak. Yang bertanda "ya" kalau hilang membuat barisnya
+  tampil tidak lengkap, bukan error.
+
+  ## Aturan uang
+
+  ```
+  net = gross − gatewayFee − refunds + adjustment
+  ```
+
+  `platformFee` tidak ikut dikurangi (dibayar peserta), **kecuali**
+  `fee.feeBearer = "organizer"` di `GET /org/settings` — saat itu backend yang
+  memotong dan `net` yang dikirim sudah bersih. Test di request ini memeriksa
+  rumus tersebut baris per baris, jadi kalau organizer menanggung fee dan
+  angkanya berbeda, test itu akan gagal dan itu memang sinyal yang diinginkan.
+
+  ## Baris kosong
+
+  Workspace baru menjawab `data: []` dengan `meta.total: 0`. Itu ditangani —
+  layar menampilkan "No payouts yet", bukan angka demo. Jangan kirim baris
+  contoh untuk workspace yang belum punya pencairan.
 
   ## Error yang mungkin
 
@@ -243,17 +372,16 @@ docs: |
 
   ```json
   { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+    "error": { "code": "VALIDATION_ERROR", "errors": { "from": ["…"] } } }
   ```
 
   ## Konvensi yang berlaku
 
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Instant** (`createdAt`, `paidAt`, `eventEndsAt`) ISO 8601 `+07:00`; tanggal polos `YYYY-MM-DD`.
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
   - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.

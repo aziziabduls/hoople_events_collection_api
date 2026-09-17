@@ -1,0 +1,228 @@
+info:
+  name: Payout Summary
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/org/payouts/summary"
+  auth: inherit
+  params:
+    - name: from
+      value: "2026-01-01"
+      type: query
+      description: "Awal periode, `YYYY-MM-DD`. Difilter pada tanggal selesai event."
+    - name: to
+      value: "2026-12-31"
+      type: query
+      description: "Akhir periode, `YYYY-MM-DD`."
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("data");
+        });
+
+        test("periode dikembalikan apa adanya", function () {
+          const data = res.getBody().data;
+          expect(data).to.have.property("period");
+          expect(data.period).to.have.property("from");
+          expect(data.period).to.have.property("to");
+        });
+
+        test("empat status hadir semua", function () {
+          const status = res.getBody().data.status;
+          ["paid", "scheduled", "onHold", "failed"].forEach(function (key) {
+            expect(status, key).to.have.property(key);
+            expect(status[key]).to.have.property("count");
+            expect(status[key]).to.have.property("amount");
+          });
+        });
+
+        test("netPayout = gross - refunds - gatewayFee + adjustment", function () {
+          const data = res.getBody().data;
+          const money = function (value) { return value && typeof value.amount === "number" ? value.amount : 0; };
+          const expected = money(data.gross) - money(data.refunds) - money(data.gatewayFee) + money(data.adjustment);
+          expect(money(data.netPayout)).to.equal(expected);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Ringkasan pencairan berhasil diambil",
+            "data": {
+              "period": {
+                "from": "2026-01-01",
+                "to": "2026-12-31"
+              },
+              "payoutCount": 18,
+              "netPayout": {
+                "amount": 182088500,
+                "currency": "IDR"
+              },
+              "gross": {
+                "amount": 186750000,
+                "currency": "IDR"
+              },
+              "platformFee": {
+                "amount": 5602500,
+                "currency": "IDR"
+              },
+              "gatewayFee": {
+                "amount": 3361500,
+                "currency": "IDR"
+              },
+              "refunds": {
+                "amount": 1300000,
+                "currency": "IDR"
+              },
+              "adjustment": {
+                "amount": 0,
+                "currency": "IDR"
+              },
+              "status": {
+                "paid": {
+                  "count": 8,
+                  "amount": {
+                    "amount": 147283800,
+                    "currency": "IDR"
+                  }
+                },
+                "scheduled": {
+                  "count": 2,
+                  "amount": {
+                    "amount": 25674800,
+                    "currency": "IDR"
+                  }
+                },
+                "onHold": {
+                  "count": 1,
+                  "amount": {
+                    "amount": 9129900,
+                    "currency": "IDR"
+                  }
+                },
+                "failed": {
+                  "count": 1,
+                  "amount": {
+                    "amount": 8788900,
+                    "currency": "IDR"
+                  }
+                }
+              }
+            },
+            "meta": null
+          }
+
+docs: |
+  # Payout Summary
+
+  Total satu periode, untuk halaman **`/organizer/payments/summary`** — halaman
+  tersendiri yang dibuka tombol "See Details →" pada kartu Net Payout.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/org/payouts/summary` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/payout-summary.response.json` |
+  | **Status** | Belum ada. Sampai ada, konsol menjumlah sendiri dari Payout List. |
+
+  ## Kenapa endpoint sendiri, padahal bisa dijumlah di klien
+
+  Karena penjumlahan klien hanya seakurat baris yang sempat terambil. Begitu
+  satu workspace punya lebih banyak pencairan daripada satu halaman, total
+  yang ditampilkan jadi total halaman itu — bukan total periode. Endpoint ini
+  yang membuat angkanya benar tanpa menarik seluruh riwayat ke browser.
+
+  Selama endpoint ini 404, konsol tetap menghitung sendiri; tidak ada layar
+  kosong.
+
+  ## Isi halaman, bagian per bagian
+
+  | Bagian di layar | Field |
+  | --- | --- |
+  | Angka besar "Total Net Payout" | `netPayout` |
+  | Baris kecil di bawahnya | `payoutCount`, `period` |
+  | **Payout Status Summary** (4 tile) | `status.paid`, `status.scheduled`, `status.onHold`, `status.failed` — masing-masing `{ count, amount }` |
+  | **Financial Breakdown** (5 baris) | `gross`, `platformFee`, `gatewayFee`, `refunds`, `adjustment` |
+  | **Net Payout Calculation** | field yang sama, dijumlah ulang di layar |
+
+  ## Satu aturan yang tidak boleh dilanggar
+
+  **Semua angka rincian dihitung tanpa pencairan berstatus `failed`.**
+
+  Alasannya konkret: kalau gross ikut menghitung event yang transfernya gagal,
+  kotak "Net Payout Calculation" berakhir pada angka yang berbeda dari angka
+  besar di atasnya, dan pembaca tidak punya cara tahu mana yang benar. Uang
+  yang gagal ditransfer dilaporkan terpisah di `status.failed` — itu saja.
+
+  Jadi: `gross`, `platformFee`, `gatewayFee`, `refunds`, `adjustment`, dan
+  `netPayout` semuanya atas pencairan `paid + scheduled + on_hold`, sedangkan
+  `status.failed` berdiri sendiri. `payoutCount` menghitung **seluruh**
+  pencairan pada periode itu, termasuk yang gagal.
+
+  ## Periode
+
+  `from` dan `to` menyaring pada **tanggal selesai event** (`eventEndsAt`),
+  sama seperti filter di tabel riwayat — bukan tanggal cair. Kalau keduanya
+  tidak dikirim, jawab untuk seluruh riwayat workspace dan kembalikan rentang
+  sebenarnya di `period`, karena halamannya menampilkan rentang itu.
+
+  Kembalikan `period` apa adanya: layar menampilkannya ("1 Mar 2026 – 25 Jul
+  2026"), jadi backend dan layar harus menyebut periode yang sama.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "from": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `eventEndsAt`) ISO 8601 `+07:00`; tanggal polos `YYYY-MM-DD`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
