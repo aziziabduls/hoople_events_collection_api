@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences/01d7dbd8-a7b7-4cae-a2e9-34cb46292e57"
+  url: "{{baseUrl}}/org/experiences/3928cb00-bee8-476d-8b5f-6e751763faba"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwYWZiNDc0NS1lMTNlLTRmZGEtOTA4OS1jNmRiODgxMmM4YjAiLCJpYXQiOjE3ODg0MjQ4NDksImV4cCI6MTc4ODQyODQ0OX0.GLYMwt0g3A-8AgDFM0Z7ax6szfAHeW4iusT-ZZ-n1_U
+    token: "{{accessToken}}"
 
 runtime:
   scripts:

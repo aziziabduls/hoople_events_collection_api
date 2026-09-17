@@ -19,18 +19,13 @@ http:
           "title": "Konser Musik Draft (Belum Final)",
           "category": "Concert"
         },
-        "gallery": [
-          "https://dev-api.hoople.co.id/uploads/1725965000-photo1.jpg",
-          "https://dev-api.hoople.co.id/uploads/1725965001-photo2.jpg",
-          "https://dev-api.hoople.co.id/uploads/1725965002-photo3.jpg"
-        ],
         "publishSettings": {
           "publishMode": "draft"
         }
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODkwMTA5MjEsImV4cCI6MTc4OTAxNDUyMX0.YYcvjqD-ipJRyzNgcSkRpRfm0jzrMUkazktn1gljZmY
+    token: "{{accessToken}}"
 
 runtime:
   scripts:

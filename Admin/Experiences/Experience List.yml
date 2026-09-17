@@ -18,7 +18,7 @@ http:
       type: query
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODg0MjM0MTEsImV4cCI6MTc4ODQyNzAxMX0.k71UmMButylnDUqyzUrQGcNvwBZp49rCmnB3TIoLFbg
+    token: "{{accessToken}}"
 
 runtime:
   scripts:
