@@ -5,17 +5,97 @@ info:
 docs: |
   # Payments & Payout
 
-  Uang masuk dan uang keluar: pencairan beserta potongannya, dan buku
-  transaksi di belakangnya — layar **Payments & Payout** konsol
-  (`/organizer/payments`).
+  Uang yang masuk dan uang yang cair: satu daftar pencairan dibaca empat
+  layar, ditambah satu formulir rekening + pajak. Catatan ini ditulis
+  2026-09-17 sesudah layarnya selesai dibangun, jadi **isinya adalah apa yang
+  benar-benar dibaca konsol hari ini**, bukan rencana.
 
-  Kedua tab layar itu (**Overview** dan **Payout History**) sama-sama dibaca
-  dari **Payout List** di bawah. "Payout Summary" (total gross, potongan, dan
-  net pencairan) adalah jumlah yang dihitung konsol dari baris-baris respons
-  ini, bukan endpoint agregat tersendiri — belum ada `summary` di
-  `dto/organizer/payout-list.response.json`. **Transaction List** mengisi
-  riwayat transaksi di baliknya.
+  Konsol: `/organizer/payments` (tiga tab) dan `/organizer/payments/summary`
+  (halaman sendiri).
 
-  > Folder ini sebelumnya bernama **Finance**. Kalau koleksi lama masih punya
-  > folder `Admin/Finance/`, hapus manual sesudah regenerasi — script ini
-  > hanya menulis, tidak pernah menghapus folder lama.
+  ## Peta layar → endpoint
+
+  | Layar | Yang ditampilkan | Endpoint |
+  | --- | --- | --- |
+  | **Overview** (tab 1) | Net payout, rekening tujuan, 5 baris riwayat pertama | `GET /org/payouts` + `GET /org/settings` |
+  | **Payout History** (tab 2) | 3 tile ringkas, filter, seluruh baris, 10 per halaman | `GET /org/payouts` |
+  | **Payout Detail** (drawer dari kanan) | Satu pencairan: rincian, tujuan, timeline 4 langkah | `GET /org/payouts/:id` |
+  | **Payout Information** (tab 3) | Rekening bank, NPWP, status verifikasi | `GET /org/settings` + `PATCH /org/settings` + `POST /org/media/upload` |
+  | **Payout Summary** (halaman `/payments/summary`) | Total satu periode: net, status, rincian keuangan | `GET /org/payouts/summary` |
+
+  Yang **tidak** butuh endpoint, supaya tidak dikerjakan dua kali:
+
+  - **Export CSV** pada toolbar riwayat dibuat di browser dari baris yang
+    sedang tersaring. Tidak perlu `GET /org/payouts/export`.
+  - **Paginasi, pencarian nama event, filter status, dan rentang tanggal**
+    bisa dijalankan di klien selama daftar pencairan satu workspace masih
+    puluhan baris. Kalau backend menyediakan query parameternya (lihat
+    **Payout List**), konsol akan mengirimnya — keduanya aman.
+  - **Tab Settlement Details dan Invoices sudah dihapus** dari konsol, jadi
+    `GET /org/transactions` tidak dibaca layar mana pun sekarang. Requestnya
+    ditinggal di folder ini karena buku besarnya tetap berguna, tapi jangan
+    jadikan prioritas.
+
+  ## Urutan mengerjakannya
+
+  1. `GET /org/payouts` — begitu ini hidup, Overview dan Payout History
+     langsung berisi. Ini yang paling berdampak.
+  2. `GET /org/payouts/:id` — drawer detail. Kalau belum ada, konsol bisa
+     memakai baris dari daftar; yang hilang hanya `timeline` dan `bankAccount`
+     versi panjang.
+  3. `GET /org/payouts/summary` — halaman ringkasan. Kalau belum ada, konsol
+     menjumlah sendiri dari daftar; yang tidak bisa dihitung sendiri hanyalah
+     periode yang barisnya tidak ikut terambil.
+  4. `PATCH /org/settings` dengan `bankAccount.branchName` + `taxInfo` —
+     formulir Payout Information. Lihat folder **Settings**.
+
+  ## Aturan uang yang dipakai konsol
+
+  ```
+  net = gross − gatewayFee − refunds + adjustment
+  ```
+
+  `platformFee` **tidak** ikut dikurangi: 3% itu dibayar peserta di atas harga
+  tiket saat checkout, dan layar mengatakannya begitu. Pengecualiannya kalau
+  organizer memilih menanggung sendiri (`fee.feeBearer = "organizer"` di
+  `GET /org/settings`) — saat itu backend yang memotong dan `net` yang dikirim
+  sudah bersih.
+
+  Kalau angka yang dikirim backend berbeda dengan rumus di atas, **yang dikirim
+  backend yang dipakai**. Konsol tidak pernah menghitung ulang `net` per baris;
+  ia hanya menjumlah.
+
+  ## Status pencairan
+
+  | Wire | Layar | Arti |
+  | --- | --- | --- |
+  | `scheduled` | Scheduled | Sudah dihitung, menunggu tanggal cair |
+  | `paid` | Paid | Sudah masuk rekening; `paidAt` wajib terisi |
+  | `on_hold` | Held | Ditahan; `holdReason` wajib terisi |
+  | `failed` | Failed | Transfer gagal; uangnya tidak dihitung ke net |
+
+  Keempatnya dipakai: tile "Failed" di halaman Summary dan pil merah di tabel
+  berasal dari status ini. Jangan kirim status di luar keempatnya tanpa memberi
+  tahu — yang tidak dikenal ditampilkan apa adanya.
+
+  ## Dua tanggal, dua kegunaan
+
+  - **`eventEndsAt`** — hari event selesai. Ini yang muncul di kolom "Event End
+    Date", dan **ini yang difilter** oleh rentang tanggal di toolbar. H+1
+    dihitung dari sini.
+  - **`settledOn` / `paidAt`** — kapan uangnya dijadwalkan atau benar-benar
+    cair. Kolom "Payout Date" memakai `paidAt` kalau ada, `settledOn` kalau
+    belum.
+
+  ## Yang belum ada dan sudah diminta
+
+  - `GET /org/payouts/:id/receipt.pdf` dan `GET /org/payouts/summary.pdf` — dua
+    tombol "Download (PDF)" di konsol sekarang jujur bilang belum tersedia.
+    Bentuknya bebas (redirect ke storage juga boleh), asal
+    `Content-Type: application/pdf`.
+  - `POST /org/media/upload` menerima `application/pdf` — dokumen NPWP
+    diunggah lewat rute yang sama. Batas yang dijanjikan layar 5 MB.
+
+  > Folder ini pernah bernama **Finance**. Kalau checkout lama masih punya
+  > `Admin/Finance/`, hapus manual — generator hanya menulis, tidak pernah
+  > menghapus folder lama.

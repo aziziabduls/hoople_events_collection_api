@@ -16,33 +16,57 @@ http:
       {
         "workspace": {
           "name": "Waktu Luang",
+          "slug": "waktu-luang",
           "category": "Community & Lifestyle",
           "description": "Kelas kreatif akhir pekan di Jakarta Selatan.",
+          "email": "halo@waktuluang.id",
+          "phone": "+62 812 3456 7890",
           "contactEmail": "halo@waktuluang.id",
           "contactPhone": "+62 812 3456 7890",
-          "socials": {
-            "website": "https://waktuluang.id",
-            "instagram": "@waktuluang",
-            "youtube": null
-          }
+          "website": "https://waktuluang.id",
+          "address": null
         },
-        "payout": {
-          "bankName": "BCA",
+        "bankAccount": {
+          "bankCode": "BCA",
           "accountNumber": "1234567890",
-          "accountHolder": "Adriani Ajeng",
-          "payoutSchedule": "weekly"
+          "accountHolderName": "Adriani Ajeng",
+          "branchName": "KCP Setiabudi"
         },
-        "fees": {
-          "absorbedByOrganizer": false
+        "bankAccounts": [
+          {
+            "id": "9f1c2b7e-4a3d-4c88-9c21-6f2e1b0a7d45",
+            "bankCode": "BCA",
+            "accountNumber": "1234567890",
+            "accountHolderName": "Adriani Ajeng",
+            "isPrimary": true,
+            "branchName": "KCP Setiabudi"
+          },
+          {
+            "bankCode": "MANDIRI",
+            "accountNumber": "9876543210",
+            "accountHolderName": "Adriani Ajeng",
+            "isPrimary": false,
+            "branchName": "KCP Sudirman"
+          }
+        ],
+        "fee": {
+          "feeBearer": "organizer"
+        },
+        "taxInfo": {
+          "npwpNumber": "12.345.678.9-012.000",
+          "npwpDocumentUrl": "https://cdn.hoople.id/tax/npwp-waktu-luang.pdf",
+          "npwpDocumentName": "NPWP_WaktuLuang.pdf"
         },
         "notifications": {
-          "newRegistration": true,
-          "paymentReceived": true,
-          "payoutSettled": true,
-          "weeklyDigest": true
+          "email": {
+            "newBooking": true,
+            "paymentSuccess": true,
+            "payoutSuccess": true,
+            "eventReminder": true,
+            "marketingNewsletter": true
+          }
         }
       }
-
 runtime:
   assertions:
     - expression: res.status
@@ -72,7 +96,9 @@ settings:
 docs: |
   # Settings Update
 
-  Simpan pengaturan.
+  Simpan pengaturan. **Hidup dan terbukti menyimpan** per 2026-09-03 di tunnel;
+  masih `404` di `dev-api-event` dan SIT — selama itu tombol simpan di konsol
+  melaporkan kegagalannya apa adanya.
 
   | | |
   | --- | --- |
@@ -82,47 +108,67 @@ docs: |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/settings-update.request.json` |
 
-  ## Request body
+  ## Tiga field yang wajib menyertai blok `workspace`
 
-  `application/json`
+  Validator menolak seluruh panggilan kalau blok `workspace` dikirim tanpa
+  `category`, `contactEmail` dan `contactPhone` — walau tidak ada satu pun layar
+  yang masih menampilkan ketiganya (Category sudah menjadi Bio, dan dua kontak
+  itu menduplikasi `email`/`phone`). Jadi konsol **menyalin ketiganya kembali**
+  dari hasil `GET` terakhir setiap kali menyimpan, termasuk saat yang berubah
+  cuma rekening bank. Kalau validator bisa dilonggarkan, kabari — salinan itu
+  akan dihapus.
 
-  | Field | Tipe | Wajib | Catatan |
-  | --- | --- | --- | --- |
-  | `workspace` | object | ya |  |
-  | `workspace.name` | string | ya |  |
-  | `workspace.category` | string | ya |  |
-  | `workspace.description` | string | ya |  |
-  | `workspace.contactEmail` | string | ya | email |
-  | `workspace.contactPhone` | string | ya |  |
-  | `workspace.socials` | object | ya |  |
-  | `workspace.socials.website` | string | ya | URL |
-  | `workspace.socials.instagram` | string | ya |  |
-  | `workspace.socials.youtube` | — | tidak | selalu `null` di contoh — tipe ditentukan backend |
-  | `payout` | object | ya |  |
-  | `payout.bankName` | string | ya |  |
-  | `payout.accountNumber` | string | ya |  |
-  | `payout.accountHolder` | string | ya |  |
-  | `payout.payoutSchedule` | string | ya | enum `payoutSchedule`: `daily`, `weekly`, `monthly` |
-  | `fees` | object | ya |  |
-  | `fees.absorbedByOrganizer` | boolean | ya |  |
-  | `notifications` | object | ya |  |
-  | `notifications.newRegistration` | boolean | ya |  |
-  | `notifications.paymentReceived` | boolean | ya |  |
-  | `notifications.payoutSettled` | boolean | ya |  |
-  | `notifications.weeklyDigest` | boolean | ya |  |
+  ## Yang dikirim tab Payout Information
 
-  > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
-  > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
+  Satu `PATCH` berisi empat blok sekaligus:
 
-  > **`payout.payoutSchedule`, bukan `payout.schedule`.** `schedule` sudah
-  > berarti konfigurasi jadwal di builder, jadi irama pencairan diberi nama
-  > sendiri. Versi lama koleksi ini masih memakai `schedule` — itu salah.
+  ```json
+  {
+    "workspace": { "…salinan dari GET…" },
+    "fee": { "feeBearer": "buyer" },
+    "bankAccount": {
+      "bankCode": "BCA",
+      "bankName": "Bank Central Asia",
+      "accountNumber": "1234567890",
+      "accountHolderName": "Waktu Luang Komunitas",
+      "branchName": "KCP Setiabudi"
+    },
+    "bankAccounts": [ { "…rekening yang sama, isPrimary: true…" } ],
+    "taxInfo": {
+      "npwpNumber": "12.345.678.9-012.000",
+      "npwpDocumentUrl": "https://cdn.hoople.id/tax/npwp-waktu-luang.pdf",
+      "npwpDocumentName": "NPWP_WaktuLuang.pdf"
+    }
+  }
+  ```
 
-  ## Response
+  | Field | Status | Catatan |
+  | --- | --- | --- |
+  | `bankAccount.branchName` | **baru, diminta** | Nama cabang, mis. `KCP Setiabudi`. Kosong boleh. |
+  | `taxInfo.npwpNumber` | **baru, diminta** | Format `00.000.000.0-000.000`, 15 digit. Konsol memformat sendiri saat diketik dan menolak yang kurang dari 15 digit. |
+  | `taxInfo.npwpDocumentUrl` | **baru, diminta** | URL hasil `POST /org/media/upload`. `null` kalau belum ada. |
+  | `taxInfo.npwpDocumentName` | **baru, diminta** | Nama berkas aslinya, untuk ditampilkan. |
+  | `bankAccounts[]` | opsional | Diabaikan kalau backend hanya menyimpan satu rekening. |
+  | `fee.feeBearer` | sudah ada | `buyer` (default) atau `organizer`. Kalau `organizer`, backend yang memotong platform fee dan `net` di `/org/payouts` sudah bersih. |
 
-  Sama seperti Experience Update, `dto/` belum mendefinisikan response-nya.
-  Kembalikan objek settings yang sudah diperbarui (bentuk **Settings**) dan
-  tambahkan `dto/organizer/settings-update.response.json`.
+  Yang wajib dijawab balik: apa pun yang disimpan harus ikut muncul di
+  `GET /org/settings` berikutnya. Konsol membaca ulang sesudah menyimpan dan
+  mengisi formulirnya dari jawaban itu — field yang diterima tapi tidak
+  dikembalikan akan terlihat seperti gagal tersimpan.
+
+  ## Dokumen NPWP
+
+  Diunggah lewat `POST /org/media/upload` yang sama dengan gambar, sebagai
+  `multipart/form-data` dengan field `file`. **Tolong terima
+  `application/pdf` di sana** — sekarang rute itu baru diuji dengan gambar.
+  Batas yang dijanjikan layar 5 MB. Kalau lebih enak dipisah, sediakan
+  `POST /org/settings/tax-document` dan kabari.
+
+  ## `verifikasi`
+
+  Layar tidak pernah memverifikasi apa pun sendiri. Setelah `PATCH` sukses ia
+  hanya mengatakan "terkirim untuk verifikasi". Yang menentukan status adalah
+  `taxInfo.status` dan `bankAccount.isVerified` pada `GET` berikutnya.
 
   ## Error yang mungkin
 
@@ -130,24 +176,14 @@ docs: |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
-  | `422` | `shared/common/error-validation.response.json` | Validasi gagal; pesan per field ada di `error.errors`. |
+  | `422` | `shared/common/error-validation.response.json` | Body tidak lolos validasi. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
 
   ## Konvensi yang berlaku
 
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.

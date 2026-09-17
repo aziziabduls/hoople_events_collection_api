@@ -55,52 +55,104 @@ examples:
               "workspace": {
                 "id": "c0ffee11-aaaa-4bbb-8ccc-000000000402",
                 "name": "Waktu Luang",
-                "category": "Community & Lifestyle",
-                "handle": "waktu-luang",
-                "logoUrl": null,
+                "slug": "waktu-luang",
                 "description": "Kelas kreatif akhir pekan di Jakarta Selatan.",
-                "city": "Jakarta Selatan",
-                "contactEmail": "halo@waktuluang.id",
-                "contactPhone": "+62 812 3456 7890",
-                "socials": {
-                  "website": "https://waktuluang.id",
-                  "instagram": "@waktuluang",
-                  "youtube": null
+                "logoUrl": null,
+                "brandColor": "#3B82F6",
+                "website": "https://waktuluang.id",
+                "email": "halo@waktuluang.id",
+                "phone": "+62 812 3456 7890",
+                "address": null,
+                "createdAt": "2026-03-14T09:30:00+07:00",
+                "updatedAt": "2026-03-14T09:30:00+07:00"
+              },
+              "bankAccount": {
+                "bankCode": "BCA",
+                "bankName": "Bank Central Asia",
+                "accountNumber": "1234567890",
+                "accountHolderName": "Adriani Ajeng",
+                "branchName": "KCP Setiabudi",
+                "isVerified": true,
+                "status": "active"
+              },
+              "bankAccounts": [
+                {
+                  "id": "9f1c2b7e-4a3d-4c88-9c21-6f2e1b0a7d45",
+                  "bankCode": "BCA",
+                  "bankName": "Bank Central Asia",
+                  "accountNumber": "1234567890",
+                  "accountHolderName": "Adriani Ajeng",
+                  "branchName": "KCP Setiabudi",
+                  "isVerified": true,
+                  "isPrimary": true,
+                  "status": "active"
+                },
+                {
+                  "id": "2d84f6a1-77b9-42e0-8c53-1ab4d90e5c37",
+                  "bankCode": "MANDIRI",
+                  "bankName": "Bank Mandiri",
+                  "accountNumber": "9876543210",
+                  "accountHolderName": "Adriani Ajeng",
+                  "branchName": "KCP Sudirman",
+                  "isVerified": false,
+                  "isPrimary": false,
+                  "status": "active"
                 }
+              ],
+              "fee": {
+                "platformFeeRate": 0.05,
+                "platformFeeFixed": {
+                  "amount": 0,
+                  "currency": "IDR"
+                },
+                "gatewayFeeRate": 0.015,
+                "gatewayFeeFixed": {
+                  "amount": 2500,
+                  "currency": "IDR"
+                },
+                "feeBearer": "buyer"
               },
-              "owner": {
-                "id": "3f8a1c22-9d41-4b7e-8f0a-11c2d3e4f501",
-                "name": "Adriani Ajeng",
-                "role": "owner",
-                "email": "adriani.ajeng@gmail.com"
+              "taxInfo": {
+                "npwpNumber": "12.345.678.9-012.000",
+                "npwpDocumentUrl": "https://cdn.hoople.id/tax/npwp-waktu-luang.pdf",
+                "npwpDocumentName": "NPWP_WaktuLuang.pdf",
+                "status": "verified",
+                "submittedAt": "2026-03-14T09:30:00+07:00",
+                "reviewedAt": "2026-03-15T11:02:00+07:00",
+                "rejectionReason": null
               },
-              "payout": {
-                "bankName": "BCA",
-                "accountNumber": "****7890",
-                "accountHolder": "Adriani Ajeng",
-                "payoutSchedule": "weekly",
-                "nextPayoutAt": "2026-03-20T00:00:00+07:00",
-                "isVerified": true
-              },
-              "fees": {
-                "platformFeeRate": 0.03,
-                "gatewayFeeRate": 0.018,
-                "absorbedByOrganizer": false
-              },
-              "plan": {
-                "id": "plan-starter",
-                "name": "Starter",
-                "renewsAt": null,
-                "activeExperienceLimit": 3,
-                "activeExperienceUsed": 3,
-                "teamSeatLimit": 1,
-                "teamSeatUsed": 1
+              "subscription": {
+                "planId": "free",
+                "planName": "Free Plan",
+                "status": "active",
+                "maxEvents": 100,
+                "maxAttendeesPerEvent": 1000,
+                "features": [
+                  "basic_events",
+                  "basic_activity",
+                  "qr_checkin"
+                ],
+                "expiresAt": null
               },
               "notifications": {
-                "newRegistration": true,
-                "paymentReceived": true,
-                "payoutSettled": true,
-                "weeklyDigest": false
+                "email": {
+                  "newBooking": true,
+                  "paymentSuccess": true,
+                  "payoutSuccess": true,
+                  "eventReminder": true,
+                  "marketingNewsletter": false
+                },
+                "whatsapp": {
+                  "newBooking": true,
+                  "paymentSuccess": false,
+                  "payoutSuccess": true,
+                  "urgentAlerts": true
+                },
+                "push": {
+                  "newBooking": true,
+                  "checkInAlerts": true,
+                  "systemUpdates": true
+                }
               }
             },
             "meta": null
@@ -109,7 +161,8 @@ examples:
 docs: |
   # Settings
 
-  Workspace, rekening, fee, paket, notifikasi.
+  Workspace, rekening payout, pajak, fee, paket, notifikasi. **Sudah hidup di
+  tunnel per 2026-09-03** (masih 404 di `dev-api-event` dan SIT).
 
   | | |
   | --- | --- |
@@ -119,29 +172,69 @@ docs: |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/organizer/settings.response.json` |
 
+  ## Contoh di atas sudah disamakan dengan yang benar-benar dijawab server
+
+  Contoh lama di koleksi ini memakai bentuk kontrak awal (`handle`, `socials`,
+  `payout`, `fees`, `plan`, blok `owner`). Yang dijawab server hidup berbeda,
+  dan **konsol sudah mengikuti yang hidup**:
+
+  | Dulu di kontrak | Yang dijawab server |
+  | --- | --- |
+  | `workspace.handle` | `workspace.slug` |
+  | `workspace.contactEmail` / `contactPhone` | `workspace.email` / `phone` (dua yang lama tetap diminta balik saat `PATCH`) |
+  | `payout` | `bankAccount` |
+  | `fees` | `fee` |
+  | `plan` | `subscription` |
+  | `notifications` datar | `notifications` bertingkat per kanal (`email`, `whatsapp`, `push`) |
+  | `owner` | **tidak ada sama sekali** — nama orang diambil konsol dari respons login |
+
+  Blok `owner` yang hilang itu pernah membuat konsol melempar `TypeError` dan
+  diam-diam menampilkan workspace contoh. Jangan menambahkannya kembali tanpa
+  memberi tahu; kalau memang mau ada, kabari supaya konsol membacanya.
+
+  ## Yang dipakai layar Payments & Payout
+
+  Tab **Payout Information** (`/organizer/payments`, tab ketiga) mengisi
+  formulirnya dari tiga blok berikut:
+
+  | Blok | Field | Dipakai untuk |
+  | --- | --- | --- |
+  | `bankAccount` | `bankCode`, `bankName`, `accountNumber`, `accountHolderName`, **`branchName`**, `isVerified` | Kartu 1 "Bank Account Details" |
+  | `taxInfo` | **`npwpNumber`, `npwpDocumentUrl`, `npwpDocumentName`, `status`, `submittedAt`, `reviewedAt`, `rejectionReason`** | Kartu 2 "Tax Information (NPWP)" dan kolom "Verification Status" |
+  | `fee` | `feeBearer` (`buyer` \| `organizer`) | Pilihan "I absorb the fees" di kartu 3 |
+
+  `branchName` dan seluruh blok `taxInfo` **belum ada di server** — keduanya
+  ditambahkan pada contoh ini sebagai permintaan. Selama `taxInfo.status`
+  belum ada, kolom "Verification Status" diturunkan dari
+  `bankAccount.isVerified` saja, jadi "Verified" di sana berarti rekeningnya
+  yang terverifikasi, bukan pajaknya.
+
+  `taxInfo.status`: `not_submitted | under_review | verified | rejected` —
+  empat langkah yang persis ditampilkan di kolom kanan layar itu.
+
+  ## `bankAccounts` (jamak)
+
+  Konsol membaca `bankAccounts[]` kalau dikirim dan `bankAccount` kalau tidak.
+  Sejak layar dibangun ulang 2026-09-17 **formulirnya hanya mengelola satu
+  rekening**, jadi kalau backend lebih mudah mengirim satu saja, kirim
+  `bankAccount` dan lupakan yang jamak. Kirim **nomor rekening yang sudah
+  disamarkan** kalau kebijakan keamanan menghendaki; layar tidak pernah
+  menampilkannya utuh.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/common/error-validation.response.json` | Body tidak lolos validasi. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
-
-  Semua error memakai envelope yang sama ditambah blok `error`:
-
-  ```json
-  { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
-  ```
 
   ## Konvensi yang berlaku
 
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
   - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md`.
