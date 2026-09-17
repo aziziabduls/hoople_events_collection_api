@@ -84,6 +84,16 @@ docs: |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/media/upload.response.json` |
 
+  ## Permintaan baru 2026-09-17: terima `application/pdf`
+
+  Tab **Payout Information** di layar Payments & Payout mengunggah dokumen NPWP
+  lewat rute ini juga - `.pdf`, `.jpg` atau `.png`, batas 5 MB, dengan
+  `purpose: "tax_document"`. Sekarang rute ini baru diuji dengan gambar, jadi
+  tolong pastikan PDF diterima (atau sediakan
+  `POST /org/settings/tax-document` dan kabari, konsol tinggal menukar satu
+  baris). Selama PDF ditolak, layar menampilkan alasan dari server apa adanya
+  dan tidak menyimpan nama berkasnya.
+
   ## Ini satu-satunya endpoint non-JSON
 
   Body-nya `multipart/form-data`. Field berkasnya bernama `file`, dengan

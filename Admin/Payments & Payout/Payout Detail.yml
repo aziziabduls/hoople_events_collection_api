@@ -1,0 +1,239 @@
+info:
+  name: Payout Detail
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/org/payouts/po-0001-4aaa-8bbb-000000000001"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("data");
+        });
+
+        test("detail membawa rincian yang dibaca drawer", function () {
+          const payout = res.getBody().data;
+          ["id", "reference", "experienceTitle", "status", "gross", "platformFee",
+           "gatewayFee", "net"].forEach(function (key) {
+            expect(payout, key).to.have.property(key);
+          });
+        });
+
+        test("timeline urut dan berlabel", function () {
+          const steps = res.getBody().data.timeline;
+          if (!steps) return;
+          expect(steps).to.be.an("array");
+          steps.forEach(function (step) {
+            expect(step).to.have.property("step");
+            expect(step).to.have.property("state");
+            expect(["done", "current", "pending", "failed"]).to.include(step.state);
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Detail pencairan berhasil diambil",
+            "data": {
+              "id": "po-0001-4aaa-8bbb-000000000001",
+              "reference": "PO-260719-01",
+              "experienceId": "c0ffee11-aaaa-4bbb-8ccc-000000000101",
+              "experienceTitle": "Sunset Rooftop Jazz",
+              "experienceKind": "offline",
+              "eventEndsAt": "2026-03-19T22:00:00+07:00",
+              "status": "scheduled",
+              "settledOn": "2026-03-20",
+              "paidAt": null,
+              "ticketsSold": 156,
+              "gross": {
+                "amount": 23400000,
+                "currency": "IDR"
+              },
+              "platformFee": {
+                "amount": 702000,
+                "currency": "IDR"
+              },
+              "gatewayFee": {
+                "amount": 421200,
+                "currency": "IDR"
+              },
+              "refunds": {
+                "amount": 0,
+                "currency": "IDR"
+              },
+              "adjustment": {
+                "amount": 0,
+                "currency": "IDR"
+              },
+              "net": {
+                "amount": 22978800,
+                "currency": "IDR"
+              },
+              "bankAccount": {
+                "bankName": "Bank Central Asia",
+                "accountNumberMasked": "**** **** **** 7890",
+                "accountHolderName": "Adriani Ajeng",
+                "isVerified": true
+              },
+              "holdReason": null,
+              "timeline": [
+                {
+                  "step": "event_completed",
+                  "label": "Event marked as completed",
+                  "at": "2026-03-19T22:00:00+07:00",
+                  "state": "done"
+                },
+                {
+                  "step": "settlement_calculated",
+                  "label": "Settlement calculated",
+                  "at": "2026-03-19T23:10:00+07:00",
+                  "state": "done"
+                },
+                {
+                  "step": "payout_processed",
+                  "label": "Ready for payout",
+                  "at": "2026-03-20T09:00:00+07:00",
+                  "state": "current"
+                },
+                {
+                  "step": "paid",
+                  "label": "Paid to your account",
+                  "at": null,
+                  "state": "pending"
+                }
+              ]
+            },
+            "meta": null
+          }
+
+docs: |
+  # Payout Detail
+
+  Satu pencairan, untuk **drawer "Payout Detail"** yang muncul dari kanan
+  ketika "View Detail" ditekan di tab Payout History.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/org/payouts/:id` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/payout-detail.response.json` |
+  | **Path param** | `:id` - salin `id` dari salah satu baris **Payout List** ke URL. |
+  | **Status** | Belum ada. Sampai ada, drawer memakai baris dari Payout List. |
+
+  ## Isi drawer, bagian per bagian
+
+  | Bagian di layar | Field |
+  | --- | --- |
+  | Judul + pil status | `experienceTitle`, `experienceKind`, `eventEndsAt`, `status` |
+  | Payout ID / Payout Date | `reference`, `paidAt` (atau `settledOn` kalau belum cair) |
+  | **Revenue Summary** | `ticketsSold`, `gross` |
+  | **Fee Information** | `platformFee` + kalimat tetap "dibayar peserta, tidak dipotong" |
+  | **Your Cost** | `gatewayFee`, `refunds`, `adjustment` |
+  | **Net Payout (To You)** | `net` + satu kalimat yang mengikuti `status` |
+  | **Payout Destination** | `bankAccount` (objek, lihat di bawah) |
+  | **Timeline** | `timeline[]` |
+
+  ## `bankAccount` di sini adalah objek, bukan string
+
+  Di Payout List `bankAccount` boleh string ringkas (`"BCA ****7890"`). Di
+  detail, drawer menampilkan kartu bank lengkap, jadi kirim objek:
+
+  ```json
+  "bankAccount": {
+    "bankName": "Bank Central Asia",
+    "accountNumberMasked": "**** **** **** 1234",
+    "accountHolderName": "Adriani Ajeng",
+    "isVerified": true
+  }
+  ```
+
+  Kirim **nomor yang sudah disamarkan**, bukan nomor penuh — layar tidak
+  pernah menampilkannya utuh dan tidak ada gunanya nomor itu melewati
+  jaringan. Kalau field ini tidak dikirim, drawer memakai rekening dari
+  `GET /org/settings`.
+
+  ## `timeline` — empat langkah
+
+  Konsol sudah bisa menyusun empat langkah ini sendiri dari `status`,
+  `eventEndsAt`, `settledOn` dan `paidAt`. Kirim `timeline` hanya kalau
+  backend tahu lebih banyak (mis. kapan review manual dimulai). Bentuknya:
+
+  ```json
+  { "step": "paid", "label": "Paid to your account",
+    "at": "2026-03-06T14:02:00+07:00", "state": "done" }
+  ```
+
+  | `step` | Arti |
+  | --- | --- |
+  | `event_completed` | Event ditandai selesai |
+  | `settlement_calculated` | Perhitungan potongan selesai |
+  | `payout_processed` | Dana diproses / siap cair / ditahan |
+  | `paid` | Masuk rekening, atau gagal |
+
+  `state`: `done | current | pending | failed`. `at` boleh `null` untuk
+  langkah yang belum terjadi.
+
+  ## `404`
+
+  Kalau `id` tidak ada, atau pencairannya milik workspace lain, jawab `404`
+  dengan envelope error biasa — jangan `200` dengan `data: null`. Konsol
+  membedakan "tidak ketemu" dari "server bermasalah" dan mengatakannya berbeda.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "VALIDATION_ERROR", "errors": { "from": ["…"] } } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
+  - **Instant** (`createdAt`, `paidAt`, `eventEndsAt`) ISO 8601 `+07:00`; tanggal polos `YYYY-MM-DD`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md`.
