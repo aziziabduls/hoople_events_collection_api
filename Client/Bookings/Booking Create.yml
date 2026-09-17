@@ -13,32 +13,27 @@ http:
     type: json
     data: |-
       {
-        "experienceId": "ecfec8b1-fa75-4daa-8a0e-3ac4a3facfd3",
+        "experienceId": "f6a347ca-5876-43ae-b6ae-b7a3c7e05446",
         "kind": "event",
         "sessionId": "",
-        "ticketTypeId": "9c3434d3-2f54-45d7-a815-e2047fa97d79",
-        "quantity": 3,
-        "totalAmount": 375000,
+        "ticketTypeId": "29c83d8a-ce2f-43c9-bd3d-026d00b5ec07",
+        "quantity": 2,
+        "totalAmount": 200000,
         "buyer": {
-          "fullName": "Barra",
-          "email": "barramaibrahim@gmail.com",
+          "fullName": "Azizi",
+          "email": "aziziabdul95@gmail.com",
           "phone": "+6282299328390"
         },
         "participants": [
           {
-            "fullName": "Barra",
-            "email": "barramaibrahim@gmail.com",
+            "fullName": "Azizi",
+            "email": "aziziabdul95@gmail.com",
             "phone": "+6282299328390"
           },
           {
-            "fullName": "Azizi",
-            "email": "aziziabdul95@gmail.com",
-            "phone": "+62811652588"
-          },
-          {
-            "fullName": "Gio",
-            "email": "giorgiomoroder95@gmail.com",
-            "phone": "+62811652589"
+            "fullName": "Kevin",
+            "email": "kevincool1306@gmail.com",
+            "phone": "+6282299328336"
           }
         ],
         "paymentMethodId": "bca_va",
