@@ -9,13 +9,13 @@ http:
   auth: inherit
   params:
     - name: from
-      value: "2026-01-01"
+      value: "2026-06-22"
       type: query
-      description: "Awal periode, `YYYY-MM-DD`."
+      description: "Awal periode, `YYYY-MM-DD`, inklusif. Opsional - tanpa ini berarti sejak awal."
     - name: to
-      value: "2026-03-14"
+      value: "2026-07-19"
       type: query
-      description: "Akhir periode, `YYYY-MM-DD`."
+      description: "Akhir periode, `YYYY-MM-DD`, inklusif. Opsional - tanpa ini berarti sampai hari ini."
 
 runtime:
   assertions:
@@ -35,6 +35,75 @@ runtime:
           expect(body).to.have.property("message");
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
+        });
+
+        test("period mengulang rentang yang benar-benar dipakai", function () {
+          const period = res.getBody().data.period;
+          expect(period.from).to.match(/^\d{4}-\d{2}-\d{2}$/);
+          expect(period.to).to.match(/^\d{4}-\d{2}-\d{2}$/);
+          expect(period.from <= period.to, "from <= to").to.equal(true);
+          expect(period).to.have.property("event");
+        });
+
+        test("summary membawa angka yang dibaca kelima kartu", function () {
+          const s = res.getBody().data.summary;
+          ["registrations", "paidTickets", "unpaidTickets", "attended", "paidNoShow",
+           "refundedTickets", "platformFeeRate", "gatewayFeeRate"].forEach(function (key) {
+            expect(s, key).to.have.property(key).that.is.a("number");
+          });
+          ["grossRevenue", "platformFee", "gatewayFee", "refunds"].forEach(function (key) {
+            expect(s[key], key).to.have.property("amount").that.is.a("number");
+            expect(s[key], key).to.have.property("currency", "IDR");
+          });
+          expect(s.paidTickets + s.unpaidTickets, "paid + unpaid = registrations").to.equal(s.registrations);
+        });
+
+        test("registrationStatus, kalau ada, berjumlah = registrations", function () {
+          const s = res.getBody().data.summary;
+          if (!s.registrationStatus) return;
+          const r = s.registrationStatus;
+          expect(r.confirmed + r.pending + r.cancelled).to.equal(s.registrations);
+        });
+
+        test("rate dan angka 'previous' dalam skala yang benar", function () {
+          const s = res.getBody().data.summary;
+          ["previousPaidRate", "previousAttendanceRate"].forEach(function (key) {
+            if (s[key] == null) return;
+            expect(s[key], key).to.be.within(0, 1);
+          });
+          expect(s.platformFeeRate).to.be.within(0, 1);
+          expect(s.gatewayFeeRate).to.be.within(0, 1);
+        });
+
+        test("daily: satu baris per hari, urut, di dalam periode, jumlahnya = registrations", function () {
+          const data = res.getBody().data;
+          const days = data.daily;
+          expect(days).to.be.an("array");
+          let sum = 0;
+          days.forEach(function (day, i) {
+            expect(day.date, "date").to.match(/^\d{4}-\d{2}-\d{2}$/);
+            expect(day.date >= data.period.from && day.date <= data.period.to, day.date + " di dalam periode").to.equal(true);
+            if (i > 0) expect(day.date > days[i - 1].date, day.date + " urut naik").to.equal(true);
+            expect(day.registrations, day.date).to.be.a("number");
+            expect(day.revenue, day.date).to.have.property("amount");
+            if (day.attendees != null) expect(day.attendees, day.date + " attendees <= registrations").to.be.at.most(day.registrations);
+            sum += day.registrations;
+          });
+          expect(sum, "jumlah daily[].registrations").to.equal(data.summary.registrations);
+        });
+
+        test("events: field yang dibaca tabel Event Performance dan Popular Experiences", function () {
+          res.getBody().data.events.forEach(function (row) {
+            ["id", "title", "date", "filled", "capacity", "paidRate", "attendanceRate", "netRevenue", "health"].forEach(function (key) {
+              expect(row, row.title + "." + key).to.have.property(key);
+            });
+            expect(row.date, row.title).to.match(/^\d{4}-\d{2}-\d{2}$/);
+            expect(["needs_promo", "healthy", "almost_full"], row.title).to.include(row.health);
+            expect(row.paidRate, row.title + " paidRate").to.be.within(0, 1);
+            expect(row.attendanceRate, row.title + " attendanceRate").to.be.within(0, 1);
+            expect(row.netRevenue, row.title).to.have.property("amount");
+            if (row.attended != null) expect(row.attended, row.title + " attended <= filled").to.be.at.most(row.filled);
+          });
         });
 
 settings:
@@ -59,163 +128,588 @@ examples:
             "message": "Analitik berhasil dimuat",
             "data": {
               "period": {
-                "from": "2025-10-01T00:00:00+07:00",
-                "to": "2026-03-14T23:59:59+07:00",
-                "label": "6 bulan terakhir"
+                "from": "2026-06-22",
+                "to": "2026-07-19",
+                "event": null
               },
+              "generatedAt": "2026-07-20T09:58:00+07:00",
               "summary": {
-                "totalRegistrations": 1248,
-                "totalRevenue": {
-                  "amount": 128450000,
+                "registrations": 464,
+                "previousRegistrations": 389,
+                "paidTickets": 401,
+                "unpaidTickets": 63,
+                "previousPaidRate": 0.843,
+                "grossRevenue": {
+                  "amount": 96280000,
                   "currency": "IDR"
                 },
-                "averageTicketPrice": {
-                  "amount": 102928,
+                "platformFee": {
+                  "amount": 2888400,
                   "currency": "IDR"
                 },
-                "checkInRate": 0.82,
-                "cancellationRate": 0.04,
-                "repeatParticipantRate": 0.37
+                "platformFeeRate": 0.03,
+                "gatewayFee": {
+                  "amount": 1733040,
+                  "currency": "IDR"
+                },
+                "gatewayFeeRate": 0.018,
+                "refunds": {
+                  "amount": 1240000,
+                  "currency": "IDR"
+                },
+                "refundedTickets": 6,
+                "previousNetRevenue": {
+                  "amount": 76843060,
+                  "currency": "IDR"
+                },
+                "attended": 315,
+                "previousAttended": 281,
+                "paidNoShow": 86,
+                "previousAttendanceRate": 0.819,
+                "registrationStatus": {
+                  "confirmed": 401,
+                  "pending": 44,
+                  "cancelled": 19
+                },
+                "profileViews": 1248,
+                "previousProfileViews": 1058,
+                "seatsFilled": 358,
+                "seatsTotal": 505,
+                "sessions": 11,
+                "previousOccupancy": 0.68,
+                "noShowNote": "Terbanyak di sesi 19.00 hari kerja - 2,4x sesi akhir pekan.",
+                "trends": {
+                  "paidRate": [
+                    82,
+                    80,
+                    85,
+                    83,
+                    87,
+                    85,
+                    89,
+                    91
+                  ],
+                  "attendance": [
+                    92,
+                    89,
+                    91,
+                    86,
+                    88,
+                    83,
+                    85,
+                    80
+                  ],
+                  "occupancy": [
+                    78,
+                    81,
+                    80,
+                    84,
+                    86,
+                    88,
+                    87,
+                    92
+                  ]
+                }
               },
-              "monthly": [
+              "daily": [
                 {
-                  "period": "2025-10",
-                  "registrations": 118,
+                  "date": "2026-06-22",
+                  "registrations": 9,
+                  "attendees": 7,
                   "revenue": {
-                    "amount": 14200000,
+                    "amount": 1867500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 8,
+                  "previousRevenue": {
+                    "amount": 1660000,
                     "currency": "IDR"
                   }
                 },
                 {
-                  "period": "2025-11",
-                  "registrations": 142,
+                  "date": "2026-06-23",
+                  "registrations": 12,
+                  "attendees": 8,
                   "revenue": {
-                    "amount": 17800000,
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 10,
+                  "previousRevenue": {
+                    "amount": 2075000,
                     "currency": "IDR"
                   }
                 },
                 {
-                  "period": "2025-12",
-                  "registrations": 196,
+                  "date": "2026-06-24",
+                  "registrations": 8,
+                  "attendees": 6,
                   "revenue": {
-                    "amount": 24100000,
+                    "amount": 1660000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 9,
+                  "previousRevenue": {
+                    "amount": 1867500,
                     "currency": "IDR"
                   }
                 },
                 {
-                  "period": "2026-01",
-                  "registrations": 174,
+                  "date": "2026-06-25",
+                  "registrations": 14,
+                  "attendees": 10,
                   "revenue": {
-                    "amount": 21500000,
+                    "amount": 2905000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 11,
+                  "previousRevenue": {
+                    "amount": 2282500,
                     "currency": "IDR"
                   }
                 },
                 {
-                  "period": "2026-02",
-                  "registrations": 228,
+                  "date": "2026-06-26",
+                  "registrations": 11,
+                  "attendees": 8,
                   "revenue": {
-                    "amount": 26900000,
+                    "amount": 2282500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 9,
+                  "previousRevenue": {
+                    "amount": 1867500,
                     "currency": "IDR"
                   }
                 },
                 {
-                  "period": "2026-03",
-                  "registrations": 264,
+                  "date": "2026-06-27",
+                  "registrations": 16,
+                  "attendees": 11,
                   "revenue": {
-                    "amount": 31950000,
+                    "amount": 3320000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 13,
+                  "previousRevenue": {
+                    "amount": 2697500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-06-28",
+                  "registrations": 21,
+                  "attendees": 13,
+                  "revenue": {
+                    "amount": 4357500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 17,
+                  "previousRevenue": {
+                    "amount": 3527500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-06-29",
+                  "registrations": 13,
+                  "attendees": 9,
+                  "revenue": {
+                    "amount": 2697500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 11,
+                  "previousRevenue": {
+                    "amount": 2282500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-06-30",
+                  "registrations": 10,
+                  "attendees": 7,
+                  "revenue": {
+                    "amount": 2075000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 9,
+                  "previousRevenue": {
+                    "amount": 1867500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-01",
+                  "registrations": 15,
+                  "attendees": 10,
+                  "revenue": {
+                    "amount": 3112500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 12,
+                  "previousRevenue": {
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-02",
+                  "registrations": 12,
+                  "attendees": 9,
+                  "revenue": {
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 11,
+                  "previousRevenue": {
+                    "amount": 2282500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-03",
+                  "registrations": 18,
+                  "attendees": 12,
+                  "revenue": {
+                    "amount": 3735000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 15,
+                  "previousRevenue": {
+                    "amount": 3112500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-04",
+                  "registrations": 24,
+                  "attendees": 15,
+                  "revenue": {
+                    "amount": 4980000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 19,
+                  "previousRevenue": {
+                    "amount": 3942500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-05",
+                  "registrations": 19,
+                  "attendees": 13,
+                  "revenue": {
+                    "amount": 3942500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 16,
+                  "previousRevenue": {
+                    "amount": 3320000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-06",
+                  "registrations": 14,
+                  "attendees": 10,
+                  "revenue": {
+                    "amount": 2905000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 12,
+                  "previousRevenue": {
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-07",
+                  "registrations": 11,
+                  "attendees": 8,
+                  "revenue": {
+                    "amount": 2282500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 10,
+                  "previousRevenue": {
+                    "amount": 2075000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-08",
+                  "registrations": 17,
+                  "attendees": 12,
+                  "revenue": {
+                    "amount": 3527500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 14,
+                  "previousRevenue": {
+                    "amount": 2905000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-09",
+                  "registrations": 13,
+                  "attendees": 9,
+                  "revenue": {
+                    "amount": 2697500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 12,
+                  "previousRevenue": {
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-10",
+                  "registrations": 20,
+                  "attendees": 13,
+                  "revenue": {
+                    "amount": 4150000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 16,
+                  "previousRevenue": {
+                    "amount": 3320000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-11",
+                  "registrations": 26,
+                  "attendees": 16,
+                  "revenue": {
+                    "amount": 5395000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 21,
+                  "previousRevenue": {
+                    "amount": 4357500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-12",
+                  "registrations": 22,
+                  "attendees": 15,
+                  "revenue": {
+                    "amount": 4565000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 18,
+                  "previousRevenue": {
+                    "amount": 3735000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-13",
+                  "registrations": 16,
+                  "attendees": 11,
+                  "revenue": {
+                    "amount": 3320000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 14,
+                  "previousRevenue": {
+                    "amount": 2905000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-14",
+                  "registrations": 13,
+                  "attendees": 9,
+                  "revenue": {
+                    "amount": 2697500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 12,
+                  "previousRevenue": {
+                    "amount": 2490000,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-15",
+                  "registrations": 18,
+                  "attendees": 12,
+                  "revenue": {
+                    "amount": 3735000,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 15,
+                  "previousRevenue": {
+                    "amount": 3112500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-16",
+                  "registrations": 15,
+                  "attendees": 10,
+                  "revenue": {
+                    "amount": 3112500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 13,
+                  "previousRevenue": {
+                    "amount": 2697500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-17",
+                  "registrations": 23,
+                  "attendees": 16,
+                  "revenue": {
+                    "amount": 4772500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 19,
+                  "previousRevenue": {
+                    "amount": 3942500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-18",
+                  "registrations": 29,
+                  "attendees": 19,
+                  "revenue": {
+                    "amount": 6017500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 23,
+                  "previousRevenue": {
+                    "amount": 4772500,
+                    "currency": "IDR"
+                  }
+                },
+                {
+                  "date": "2026-07-19",
+                  "registrations": 25,
+                  "attendees": 17,
+                  "revenue": {
+                    "amount": 5187500,
+                    "currency": "IDR"
+                  },
+                  "previousRegistrations": 20,
+                  "previousRevenue": {
+                    "amount": 4150000,
                     "currency": "IDR"
                   }
                 }
               ],
-              "topExperiences": [
+              "events": [
                 {
-                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
-                  "title": "Sunset Rooftop Jazz",
-                  "kind": "event",
-                  "registrations": 300,
-                  "revenue": {
-                    "amount": 82500000,
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000301",
+                  "title": "Design Thinking Masterclass",
+                  "when": "28 Jul · 13.00 · Kolaborasi Space",
+                  "date": "2026-07-28",
+                  "startTime": "13:00",
+                  "endTime": "17:00",
+                  "venue": "Kolaborasi Space, Jakarta",
+                  "format": "onsite",
+                  "coverImageUrl": null,
+                  "filled": 38,
+                  "attended": 0,
+                  "capacity": 75,
+                  "paidRate": 0.81,
+                  "attendanceRate": 0.74,
+                  "netRevenue": {
+                    "amount": 18100000,
                     "currency": "IDR"
                   },
-                  "occupancyRate": 1
+                  "health": "needs_promo"
                 },
                 {
-                  "id": "e1f2a3b4-1111-4c5d-9e6f-000000000201",
-                  "title": "Jakarta Coffee Week 2026",
-                  "kind": "event",
-                  "registrations": 312,
-                  "revenue": {
-                    "amount": 46800000,
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000302",
+                  "title": "Latte Art Workshop",
+                  "when": "2 Agu · 15.00 · Kios Kopi Senja",
+                  "date": "2026-08-02",
+                  "startTime": "15:00",
+                  "endTime": "17:30",
+                  "venue": "Kios Kopi Senja, Bandung",
+                  "format": "onsite",
+                  "coverImageUrl": null,
+                  "filled": 22,
+                  "attended": 0,
+                  "capacity": 40,
+                  "paidRate": 0.79,
+                  "attendanceRate": 0.69,
+                  "netRevenue": {
+                    "amount": 4200000,
                     "currency": "IDR"
                   },
-                  "occupancyRate": 0.78
+                  "health": "needs_promo"
                 },
                 {
-                  "id": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
-                  "title": "Morning Yoga Flow",
-                  "kind": "activity",
-                  "registrations": 288,
-                  "revenue": {
-                    "amount": 34560000,
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000303",
+                  "title": "Morning Yoga Class",
+                  "when": "Rutin · Sen-Jum · 07.00",
+                  "date": "2026-07-13",
+                  "startTime": "07:00",
+                  "endTime": "08:00",
+                  "venue": "Taman Menteng, Jakarta",
+                  "format": "onsite",
+                  "coverImageUrl": null,
+                  "filled": 86,
+                  "attended": 78,
+                  "capacity": 120,
+                  "paidRate": 0.92,
+                  "attendanceRate": 0.91,
+                  "netRevenue": {
+                    "amount": 12300000,
                     "currency": "IDR"
                   },
-                  "occupancyRate": 0.8
-                }
-              ],
-              "trafficSources": [
-                {
-                  "source": "Pencarian Hoople",
-                  "visits": 4820,
-                  "share": 0.42
+                  "health": "healthy"
                 },
                 {
-                  "source": "Instagram",
-                  "visits": 3140,
-                  "share": 0.27
-                },
-                {
-                  "source": "Tautan langsung",
-                  "visits": 2050,
-                  "share": 0.18
-                },
-                {
-                  "source": "WhatsApp",
-                  "visits": 1490,
-                  "share": 0.13
-                }
-              ],
-              "categoryBreakdown": [
-                {
-                  "category": "Music",
-                  "registrations": 412,
-                  "revenue": {
-                    "amount": 58200000,
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000304",
+                  "title": "Pottery Workshop",
+                  "when": "24 Jul · 10.00 · Studio Tanah",
+                  "date": "2026-07-24",
+                  "startTime": "10:00",
+                  "endTime": "13:00",
+                  "venue": "Studio Tanah, Yogyakarta",
+                  "format": "onsite",
+                  "coverImageUrl": null,
+                  "filled": 64,
+                  "attended": 56,
+                  "capacity": 80,
+                  "paidRate": 0.85,
+                  "attendanceRate": 0.88,
+                  "netRevenue": {
+                    "amount": 15200000,
                     "currency": "IDR"
-                  }
+                  },
+                  "health": "healthy"
                 },
                 {
-                  "category": "Classes",
-                  "registrations": 386,
-                  "revenue": {
-                    "amount": 34100000,
+                  "id": "e1f2a3b4-2222-4c5d-9e6f-000000000305",
+                  "title": "Indie Music Night",
+                  "when": "19 Jul · 19.00 · Rooftop Cikini",
+                  "date": "2026-07-19",
+                  "startTime": "19:00",
+                  "endTime": "22:30",
+                  "venue": "Rooftop Cikini, Jakarta",
+                  "format": "onsite",
+                  "coverImageUrl": null,
+                  "filled": 148,
+                  "attended": 121,
+                  "capacity": 160,
+                  "paidRate": 0.88,
+                  "attendanceRate": 0.82,
+                  "netRevenue": {
+                    "amount": 30800000,
                     "currency": "IDR"
-                  }
-                },
-                {
-                  "category": "Yoga & Wellness",
-                  "registrations": 288,
-                  "revenue": {
-                    "amount": 24150000,
-                    "currency": "IDR"
-                  }
-                },
-                {
-                  "category": "Food & Drink",
-                  "registrations": 162,
-                  "revenue": {
-                    "amount": 12000000,
-                    "currency": "IDR"
-                  }
+                  },
+                  "health": "almost_full"
                 }
               ]
             },
@@ -225,26 +719,137 @@ examples:
 docs: |
   # Analytics
 
-  Ringkasan, tren bulanan, top experience, sumber trafik.
+  Satu periode, angka-angka di baliknya. **Hanya tab Overview yang membaca
+  endpoint ini**; tiga tab lain dan halaman per event dihitung konsol dari
+  `GET /org/registrations` (lihat dokumen folder). Sampai endpoint ini hidup,
+  Overview di akun asli masih menampilkan data demo - satu-satunya layar
+  konsol yang begitu.
 
   | | |
   | --- | --- |
   | **Method** | `GET` |
   | **Path** | `/org/analytics` |
-  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` |
-  | **Sukses** | `200 OK` |
+  | **Auth** | Wajib - `Authorization: Bearer <accessToken>` |
+  | **Sukses** | `200 OK`, `meta: null` |
   | **Sumber** | `dto/organizer/analytics.response.json` |
+  | **Status** | Belum hidup di deployment mana pun per 2026-09-21 (404). |
+
+  Prinsipnya: **backend mengirim angka, konsol yang menyusun kalimat,
+  persentase dan delta.** Tidak ada field berupa kalimat yang dibaca.
 
   ## Query parameter
 
-  | Parameter | Contoh | Catatan |
-  | --- | --- | --- |
-  | `from` | `2026-01-01` | Awal periode, `YYYY-MM-DD`. |
-  | `to` | `2026-03-14` | Akhir periode, `YYYY-MM-DD`. |
+  | Parameter | Contoh | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `from` | `2026-06-22` | tidak | Awal periode, inklusif. Tanpa ini: sejak data pertama. |
+  | `to` | `2026-07-19` | tidak | Akhir periode, inklusif. Tanpa ini: sampai hari ini. |
+  | `event` | UUID | tidak | Kalau ada, semua angka (summary, daily, events) hanya untuk experience itu; `events[]` berisi satu baris. |
 
-  > `summary` di sini sengaja **tidak** sama dengan `summary` di analitik konsol
-  > lain. Keduanya berarti "ringkasan analitik konsol ini" dan metriknya memang
-  > berlainan. Jangan bikin satu tipe `Summary` global.
+  **Ketiganya opsional dan boleh datang sendiri-sendiri.** Konsol membuka
+  halaman tanpa parameter sama sekali - permintaan pertama tidak membawa
+  `from`/`to`, dan backend memakai periode default-nya (disarankan 28 hari
+  terakhir sampai hari ini). Rentang yang belum lengkap juga wajar: pemilih
+  tanggal mengirim `from` saja di antara dua kliknya.
+
+  ## `period` - wajib mengulang apa yang dipakai
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `from` | `YYYY-MM-DD` | ya | Awal periode yang **benar-benar dipakai** - kalau backend yang memilih default, tulis di sini. |
+  | `to` | `YYYY-MM-DD` | ya | Akhir periode yang dipakai. |
+  | `event` | UUID \| null | ya | Filter event yang dipakai, `null` kalau tidak ada. |
+
+  Konsol membaca `period`, bukan URL-nya, untuk menuliskan periode di
+  toolbar dan menghitung **periode sebelumnya** = rentang sepanjang sama yang
+  berakhir sehari sebelum `from`. Semua field `previous*` di bawah harus
+  dihitung atas rentang itu, supaya "vs last period" di layar dan periode yang
+  tertulis di sebelahnya cocok.
+
+  ## `summary` - lima kartu Overview dan tiga breakdown
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `registrations` | integer | ya | Kartu **Total Registrations**; satu tiket = satu registrasi. Harus = jumlah `daily[].registrations`. |
+  | `previousRegistrations` | integer \| null | tidak | Delta kartu Total Registrations. `null` = delta tidak digambar. |
+  | `paidTickets` / `unpaidTickets` | integer | ya | Tiket `confirmed` vs yang bukan. `paid + unpaid = registrations`. |
+  | `previousPaidRate` | 0-1 \| null | tidak | Belum digambar; disediakan untuk sparkline. |
+  | `grossRevenue` | money | ya | Bruto penjualan periode ini. |
+  | `platformFee` / `platformFeeRate` | money / 0-1 | ya | Fee Hoople yang terkumpul + tarifnya. |
+  | `gatewayFee` / `gatewayFeeRate` | money / 0-1 | ya | Fee gateway pembayaran + tarifnya. |
+  | `refunds` / `refundedTickets` | money / integer | ya | Refund yang disetujui dalam periode. |
+  | `previousNetRevenue` | money \| null | tidak | Delta kartu **Net Revenue**. |
+  | `attended` | integer | ya | Kartu **Total Participants** = orang yang check-in; donat Attendance Overview. |
+  | `previousAttended` | integer \| null | tidak | Delta kartu Total Participants. |
+  | `paidNoShow` | integer | ya | Tiket terbayar yang tidak check-in di event yang sudah lewat. |
+  | `previousAttendanceRate` | 0-1 \| null | tidak | Delta kartu **Attendance Rate**. |
+  | `registrationStatus` | `{ confirmed, pending, cancelled }` \| null | tidak | Donat **Registration Status**; jumlahnya = `registrations`. Tanpa ini semua dianggap confirmed. |
+  | `profileViews` / `previousProfileViews` | integer \| null | tidak | Kartu **Profile Views** = pengunjung unik halaman profil publik organizer dalam periode. Tanpa ini kartunya 0 - butuh penghitung di sisi publik. |
+  | `seatsFilled` / `seatsTotal` / `sessions` / `previousOccupancy` / `noShowNote` / `trends` | - | tidak | **Tidak digambar layar mana pun sejak 2026-09-17.** Masih ada di contoh; boleh 0 / `null` / dihilangkan. |
+
+  Rumus yang dihitung konsol dari field di atas - jangan kirim hasilnya:
+
+  ```
+  Net Revenue      = grossRevenue − platformFee − gatewayFee − refunds
+  Attendance Rate  = attended ÷ registrationStatus.confirmed   (÷ registrations kalau tidak ada)
+  vs last period   = (nilai − previous) ÷ previous              (kosong kalau previous null / 0)
+  ```
+
+  ## `daily[]` - tren Registrations & Attendees dan bar Revenue
+
+  Satu baris **per hari kalender** di dalam `period`, urut naik, tanpa hari
+  yang dilompati (hari kosong = `registrations: 0`). Konsol menggambar
+  28 titik untuk 28 hari; kalau periode 400 hari, kirim 400 baris.
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `date` | `YYYY-MM-DD` | ya | Sumbu X. |
+  | `registrations` | integer | ya | Garis Registrations. |
+  | `attendees` | integer \| null | tidak | Garis Attendees. **Kohort per hari daftar**: dari yang mendaftar hari itu, berapa yang kemudian check-in - **bukan** jumlah check-in pada hari itu (yang itu melonjak di hari event dan terbaca sebagai noise). Selalu <= `registrations`. |
+  | `revenue` | money | ya | Bar Revenue Overview (bruto hari itu). |
+  | `previousRegistrations` / `previousRevenue` | integer / money \| null | tidak | Hari yang sama satu periode sebelumnya. Diekspor ke CSV; belum digambar. |
+
+  ## `events[]` - Popular Experiences dan tabel Event Performance
+
+  Setiap event workspace yang **tanggalnya** jatuh di dalam `period`
+  (event diambil utuh berdasarkan tanggal event, bukan tanggal penjualannya),
+  atau satu baris kalau `?event=` dipakai. Urutan bebas - konsol mengurutkan
+  sendiri (Popular Experiences: attendees / registrations / revenue; tabel:
+  kolom apa pun).
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `id` | UUID | ya | Tautan ke `/organizer/analytics/events/:id` dan filter `?event=`. Harus = id di `GET /org/experiences`. |
+  | `title` | string | ya | Nama event. |
+  | `date` | `YYYY-MM-DD` | ya | Kolom Date, filter periode, dan Upcoming/Completed (dibanding hari ini). **Baris tanpa `date` tidak ditampilkan.** |
+  | `startTime` / `endTime` | `HH:MM` \| null | tidak | Header halaman per event. |
+  | `venue` | string \| null | tidak | Header halaman per event. |
+  | `format` | `onsite` \| `online` \| `hybrid` \| null | tidak | Pil format di header per event. |
+  | `coverImageUrl` | URL \| null | tidak | Thumbnail di Popular Experiences dan tabel. |
+  | `filled` | integer | ya | Registrations (tiket terjual, semua status). |
+  | `attended` | integer \| null | tidak | Checked-in. Tanpa ini konsol memakai `round(filled × attendanceRate)`. |
+  | `capacity` | integer | ya | Kuota total tiket. |
+  | `paidRate` | 0-1 | ya | Paid = `round(filled × paidRate)`; No-show = paid − attended. |
+  | `attendanceRate` | 0-1 | ya | Kolom Attendance Rate. |
+  | `netRevenue` | money | ya | Kolom Net Revenue; dasar peringkat "Revenue". |
+  | `health` | `needs_promo` \| `healthy` \| `almost_full` | ya | Keputusan backend; konsol hanya mewarnai dan mengekspor. |
+  | `when` | string | ya (boleh `""`) | Hanya ikut ke CSV. Kalimat siap tampil ("28 Jul · 13.00 · Kolaborasi Space") - peninggalan kontrak lama; boleh string kosong. |
+
+  ## `generatedAt`
+
+  Instant kapan angka dihitung. Opsional; ditulis kecil di bawah judul kalau
+  ada, berguna kalau backend meng-cache hasilnya.
+
+  ## Workspace kosong
+
+  Workspace tanpa event menjawab `summary` berisi nol, `daily[]` tetap satu
+  baris per hari (semuanya 0) dan `events: []`. Konsol menggambar kartu nol
+  dan "No events in this period" - jangan kirim angka contoh.
+
+  ## Yang tidak dibaca lagi
+
+  `insights`, `live`, `funnel`, `sources`, `audience` dan `revenue` dari
+  kontrak sebelum 2026-09-17 **sudah dihapus dari contoh** dan tidak dibaca.
+  Kalau terlanjur dikirim, diabaikan - tapi jangan dibangun.
 
   ## Error yang mungkin
 
@@ -252,23 +857,24 @@ docs: |
   | --- | --- | --- |
   | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
   | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `422` | `shared/common/error-validation.response.json` | `from`/`to` bukan `YYYY-MM-DD`, `to` sebelum `from`, atau `event` bukan UUID milik workspace ini. |
   | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
 
   Semua error memakai envelope yang sama ditambah blok `error`:
 
   ```json
   { "success": false, "message": "…", "data": null, "meta": null,
-    "error": { "code": "VALIDATION_ERROR", "errors": { "email": ["…"] } } }
+    "error": { "code": "VALIDATION_ERROR", "errors": { "from": ["…"] } } }
   ```
 
   ## Konvensi yang berlaku
 
   - **Nama field** camelCase.
   - **Uang** di response berbentuk `{ amount: integer, currency: "IDR" }`; di request integer polos.
-  - **Instant** (`createdAt`, `paidAt`, `startsAt`, `expiresAt`) ISO 8601 `+07:00`. Jam sesi berulang tetap `"HH:mm"`.
+  - **Rate** selalu pecahan 0-1 (`0.843`), bukan persen. Konsol yang menulis `84,3%`.
+  - **Tanggal polos** `YYYY-MM-DD` (`period`, `daily[].date`, `events[].date`); **instant** (`generatedAt`) ISO 8601 `+07:00`.
   - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
-  - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
-  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan; field yang ditandai opsional boleh absen sama sekali.
+  - `meta` selalu `null` di sini - tidak ada paginasi.
 
   Selengkapnya di `dto/README.md`.

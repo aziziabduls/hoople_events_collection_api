@@ -5,4 +5,110 @@ info:
 docs: |
   # Analytics
 
-  Ringkasan periode, tren bulanan, experience teratas, dan sumber trafik.
+  Empat tab dan satu halaman per event, tetapi hanya **satu endpoint
+  analitik** - dan hanya satu tab yang membacanya. Catatan ini ditulis
+  2026-09-21 sesudah keempat tab selesai dibangun dari mockup (Overview dan
+  Event Performance 17 Sep, Attendees dan Revenue 20 Sep), jadi **isinya
+  adalah apa yang benar-benar dibaca konsol hari ini**, bukan rencana.
+
+  Konsol: `/organizer/analytics?tab=overview|performance|attendees|revenue`
+  dengan `?from=&to=&event=` di URL, dan
+  `/organizer/analytics/events/:id?tab=overview|attendees|transactions`.
+
+  ## Peta layar → endpoint
+
+  | Layar | Yang ditampilkan | Endpoint |
+  | --- | --- | --- |
+  | **Overview** (tab 1) | 5 kartu (Total Participants, Total Registrations, Attendance Rate, Net Revenue, Profile Views) dengan "vs last period"; tren harian Registrations & Attendees; Popular Experiences; donat Registration Status & Attendance Overview; bar Revenue per hari | `GET /org/analytics` |
+  | **Event Performance** (tab 2) | Tabel per event: date, registrations, paid, checked-in, no-show, attendance rate, net revenue | `events[]` dari `GET /org/analytics` kalau menjawab; kalau 404, **dihitung** dari `GET /org/experiences` + `GET /org/registrations` |
+  | **Attendees** (tab 3) | Orang unik, total kehadiran, peserta yang kembali; tabel per orang dengan tiket-tiketnya | `GET /org/registrations` + `GET /org/experiences` |
+  | **Revenue** (tab 4) | 4 tile, tren harian/mingguan, donat bruto → net / platform fee / gateway fee, tabel per event | `GET /org/registrations` + `GET /org/experiences` |
+  | **Halaman per event** - Performance Overview, Attendees, Transactions | Ringkasan satu event, daftar peserta, daftar transaksi | `GET /org/registrations` disaring ke `experience.id` + baris event dari `GET /org/experiences` |
+  | **Export Report / Export CSV** (setiap tab) | Berkas CSV | Dibuat di browser dari data yang sedang tampil |
+
+  ## Tidak ada yang disimpan dari halaman ini
+
+  Analytics hanya membaca: tidak ada `POST`/`PATCH` dari keempat tab maupun
+  halaman per event, dan tidak perlu endpoint export. Yang perlu **backend
+  simpan** supaya angkanya bisa dihitung - hampir semuanya sudah ada di
+  baris registrasi:
+
+  | Angka di layar | Data yang harus tersimpan | Di mana hari ini |
+  | --- | --- | --- |
+  | Registrations, Paid, Unpaid | `status` per tiket (`confirmed` / `pending` / `cancelled`) | `GET /org/registrations` - sudah |
+  | Checked-in, No-show, Attendance Rate | `participant.checkedInAt` per tiket | sudah, ditulis oleh `POST /org/registrations/check-in` |
+  | Revenue per hari, tren, periode keuangan | `createdAt` tiket = kapan dibeli | sudah |
+  | Harga, bruto | `ticketType.price` per tiket | sudah |
+  | Platform fee, gateway fee | `platformFee` + `paymentGatewayFee` **per booking** | sudah (dikirim `0` saat ini) |
+  | Payment method (filter Transactions) | `paymentMethod` | sudah |
+  | Orang unik / peserta kembali | `participant.email` | sudah - tidak ada id peserta, jadi email yang jadi kunci |
+  | Refunds | refund yang disetujui per periode | **belum ada di baris registrasi**; hanya di `summary.refunds` endpoint analitik |
+  | Profile Views | pengunjung unik halaman profil publik organizer | **belum ada** - butuh penghitung di sisi situs peserta |
+
+  ## Urutan mengerjakannya
+
+  1. **`GET /org/registrations` mengembalikan seluruh tiket workspace.**
+     Konsol meminta **satu halaman `perPage=200`** dan menghitung sendiri.
+     Begitu ini benar, tiga tab (Event Performance, Attendees, Revenue) dan
+     halaman per event **langsung hidup tanpa endpoint analitik**. Kalau
+     satu workspace bisa punya lebih dari 200 tiket, kabari - konsol akan
+     pindah mengambil semua halaman; yang penting `perPage` besar tidak
+     dipotong diam-diam ke 10. Contoh di **Registration List** belum memuat
+     field uang (`platformFee`, `paymentGatewayFee`, `subtotal`,
+     `totalPaid`, `paymentMethod`) yang sudah dikirim server sejak
+     2026-09-17; tolong sekalian disamakan.
+  2. **`GET /org/analytics`** - tab Overview. Sampai hidup, Overview di
+     akun asli menampilkan data demo, satu-satunya layar konsol yang
+     begitu. Kalau `events[]` diisi, tabel Event Performance memakai angka
+     backend alih-alih menghitung sendiri.
+  3. **`profileViews`** - butuh penghitung baru; sampai ada, kirim `null`
+     dan kartunya 0.
+
+  ## Aturan angka yang dipakai konsol
+
+  Dari `GET /org/analytics` (Overview):
+
+  ```
+  Net Revenue     = grossRevenue − platformFee − gatewayFee − refunds
+  Attendance Rate = attended ÷ registrationStatus.confirmed
+  vs last period  = (nilai − previous*) ÷ previous*
+  ```
+
+  Dari `GET /org/registrations` (tiga tab lain dan halaman per event):
+
+  - Satu baris = satu tiket. **Paid** = `status: "confirmed"`; **Checked-in**
+    = `participant.checkedInAt` terisi; **No-show** = paid − checked-in,
+    hanya untuk event yang sudah lewat (event mendatang ditulis "-").
+  - Harga tiket = `ticketType.price`. `amount` / `subtotal` / `totalPaid`
+    adalah angka **booking** yang diulang di tiap baris tiketnya, jadi
+    tidak pernah dijumlahkan per baris.
+  - `platformFee` + `paymentGatewayFee` dihitung **sekali per `bookingId`**,
+    lalu `net = bruto − keduanya`. Kalau server mengirim `0`, layar menulis
+    Rp0 - itu jawaban, bukan yang hilang.
+  - **Attendees**: orang = `participant.email`; "returning" = check-in di
+    dua event atau lebih.
+  - **Periode memotong dua cara, sengaja.** Event Performance dan Attendees
+    mengambil event **utuh berdasarkan tanggal event** (event di dalam
+    periode ikut dengan semua tiketnya). Revenue memotong **berdasarkan
+    tanggal beli (`createdAt`)**, event mana pun - cara baca periode
+    keuangan: "pendapatan Juli" = yang terjual di Juli. Tanpa `from`/`to`,
+    ketiganya menampilkan **sepanjang waktu**.
+  - "vs last event" di halaman per event = dibanding event yang bertanggal
+    tepat sebelumnya di daftar experiences.
+
+  ## Periode
+
+  `from`/`to` (`YYYY-MM-DD`, inklusif) dan `event` **semuanya opsional dan
+  boleh sendiri-sendiri**. Konsol membuka halaman tanpa periode - permintaan
+  pertama ke `GET /org/analytics` tidak membawa `from`/`to`, backend memakai
+  default-nya (disarankan 28 hari terakhir), dan **`period` di respons wajib
+  menuliskan rentang yang benar-benar dipakai**, karena konsol membaca
+  periode dari respons, bukan dari URL, untuk menulis "Compared to …".
+
+  ## Yang tidak dibaca lagi
+
+  `insights`, `live`, `funnel`, `sources`, `audience` dan `revenue` dari
+  kontrak sebelum 2026-09-17 sudah dihapus dari contoh dan **tidak perlu
+  dibangun**. Yang masih dibaca dari `GET /org/analytics`: `period`,
+  `generatedAt`, `summary`, `daily[]`, `events[]` - rinciannya per field ada
+  di request **Analytics**.
