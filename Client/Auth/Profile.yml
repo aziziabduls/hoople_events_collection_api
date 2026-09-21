@@ -6,7 +6,9 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/auth/me"
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
   assertions:

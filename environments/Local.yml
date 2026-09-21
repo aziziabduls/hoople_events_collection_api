@@ -2,7 +2,10 @@ name: Local
 variables:
   - name: baseUrl
     value: http://localhost:3000
+    description: ""
   - name: accessToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODk0NjI4OTcsImV4cCI6MTc4OTQ2NjQ5N30.O9rP98hZqWnLIoSqr5fA1euhEBirzKtZDRV7-vFhmCk
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODk3MjQyNjYsImV4cCI6MTc4OTcyNzg2Nn0.2v588pJ3Wynn-GmIH4L7PxHdgoznI2uFwV0bKIU8MKg
+    description: ""
   - name: refreshToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODk0NjI4OTcsImV4cCI6MTc5MDA2NzY5N30.nqX9vfKgEBE4TGLPPPoDguuA0JPHmqb-yqimNbjVsAY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODk3MDI2NDcsImV4cCI6MTc5MDMwNzQ0N30.FnBe12bfZy3m3xZrdhTmGtB-JskSQO_tdqx5aHcGPrk
+    description: ""

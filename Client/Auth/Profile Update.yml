@@ -13,8 +13,8 @@ http:
     type: json
     data: |-
       {
-        "fullName": "Adriani Ajeng",
-        "phone": "+62 812 3456 7890",
+        "fullName": "Abdul Azizi Gattens",
+        "phone": "+6282299328390",
         "city": "Jakarta Selatan",
         "avatarUrl": null,
         "interests": [
@@ -28,7 +28,9 @@ http:
           "push": false
         }
       }
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
   assertions:
