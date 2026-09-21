@@ -4,7 +4,7 @@ variables:
     value: https://dev-api-event.hoople.co.id
     description: Staging bersama. Satu-satunya yang memakai prefix /v1, dan prefix itu sudah termasuk di nilai ini.
   - name: accessToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODkwMzIyOTgsImV4cCI6MTc4OTAzNTg5OH0.V1wgjngPWWnwM-FYMBDNQBi0irKrXnX0FdcoFhpYNgI
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3N2ViYWQ3YS0yZmY4LTQ3ZDctYjVhNy1jNjM2ODY4NWVlZWUiLCJpYXQiOjE3ODk5NTk3NTYsImV4cCI6MTc4OTk2MzM1Nn0.FRuld_aMZjLqNN5Co2TnLlTobThW1asYkUrE3ihglOs
     description: Bearer token. Diisi otomatis oleh Admin > Auth > Login.
   - name: refreshToken
     value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDQ3NjQ1Yy0zM2YxLTRhYWUtOGE5NS0yNzJmZGVkZjc1OGYiLCJpYXQiOjE3ODkwMzIyOTgsImV4cCI6MTc4OTYzNzA5OH0.KEz6XB7pZ3_jcnbMIH_lDMgaHkCm-muLUgVEA2Ekv_s
