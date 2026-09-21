@@ -97,6 +97,16 @@ docs: |
   | **Sukses** | `200 OK` |
   | **Sumber** | `dto/shared/auth/profile.response.json` |
 
+  ## Yang dibaca konsol dari sini (2026-09-21)
+
+  | Field | Dipakai di mana |
+  | --- | --- |
+  | `email` | Kartu Account Information di `/organizer/settings` - email masuk, hanya dibaca. |
+  | `emailVerifiedAt` | Pill **Verified** di sebelah email. `null` = tidak ada pill. |
+  | `phone` | Kartu yang sama; bisa diedit, ditulis balik lewat `Profile Update`. |
+  | `avatarUrl` | Foto di topbar **dan logo organizer** (server menurunkan `workspace.logoUrl` dari sini). Tanpa foto konsol menggambar inisial, bukan gambar buatan. |
+  | `fullName`, `city`, `interests`, `notificationPreferences` | Tidak ditampilkan layar mana pun lagi, tapi **dibawa utuh** ke `Profile Update` karena endpoint itu memvalidasi seperti `PUT`. |
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |

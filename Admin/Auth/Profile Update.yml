@@ -121,6 +121,22 @@ docs: |
   > Kolom **Wajib** diturunkan dari contoh: field yang bernilai `null`
   > dianggap opsional. Aturan validasi sesungguhnya ditentukan backend.
 
+  ## Siapa yang memanggil ini sekarang (2026-09-21)
+
+  Dua tempat, dua alasan, dan keduanya **mengirim orangnya utuh** - `fullName`,
+  `phone`, `city`, `avatarUrl`, `interests`, `notificationPreferences` -
+  sebagaimana hasil `GET /org/auth/me` terakhir, karena endpoint ini menolak
+  body yang tidak lengkap:
+
+  - **Account Settings** mengubah `phone` (Edit Information → Save Changes).
+  - **Organizer Profile** mengubah `avatarUrl` saat logo diganti atau dihapus
+    (`null`), karena `workspace.logoUrl` diturunkan server dari avatar akun dan
+    `PATCH /org/settings` mengabaikan `logoUrl`.
+
+  Kalau suatu saat logo organisasi dipisah dari avatar orang, kabari - konsol
+  akan mengirim `workspace.logoUrl` lewat Settings Update dan berhenti
+  menyentuh avatar dari halaman itu.
+
   ## Error yang mungkin
 
   | Kode | Contoh | Kapan |

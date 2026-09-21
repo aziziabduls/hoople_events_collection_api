@@ -5,4 +5,26 @@ info:
 docs: |
   # Settings
 
-  Profil workspace, rekening pencairan, penanggung fee, paket, dan notifikasi.
+  Satu endpoint pengaturan, dibaca tiga layar. Catatan ini ditulis 2026-09-21
+  sesudah Account Settings dan Organizer Profile dibangun dari mockup, jadi
+  **isinya adalah apa yang benar-benar dibaca dan ditulis konsol hari ini**.
+
+  ## Peta layar → endpoint
+
+  | Layar | Yang ditampilkan / diedit | Endpoint |
+  | --- | --- | --- |
+  | **Account Settings** (`/organizer/settings`) | Nama komunitas, email masuk (+ Verified), telepon; ganti password; log out | `GET /org/settings` + `GET /org/auth/me`; simpan: `PATCH /org/settings` (nama), `PATCH /org/auth/me` (telepon), `POST /auth/password/reset` (mode masuk) |
+  | **Organizer Profile** (`/organizer/profile`) | Header image, logo, nama, bio, kota, media sosial, website, pratinjau halaman publik | `GET /org/settings`; simpan: `PATCH /org/settings` (semua kecuali logo), `PATCH /org/auth/me` (logo = avatar), `POST /org/media/upload` (gambar) |
+  | **Payout Information** (`/organizer/payments`, tab 3) | Rekening, cabang, NPWP, penanggung fee | `GET`/`PATCH /org/settings` - lihat folder Payments & Payout |
+
+  ## Yang baru diminta
+
+  Di blok `workspace`: `coverImageUrl`, `city`, `socials[]` (disimpan dan
+  dikembalikan), serta `followersCount` / `followingCount` (hanya dibaca).
+  Rinciannya di request **Settings** dan **Settings Update**; permintaan
+  resminya `dto/README.md` §8e.
+
+  ## Yang sudah tidak dibaca
+
+  `notifications` dan `subscription` - saklar notifikasi dan kartu paket
+  dihapus dari layar Settings pada 2026-09-21. Boleh tetap dikirim.

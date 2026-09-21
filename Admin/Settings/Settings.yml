@@ -60,6 +60,24 @@ examples:
                 "logoUrl": null,
                 "brandColor": "#3B82F6",
                 "website": "https://waktuluang.id",
+                "coverImageUrl": "https://cdn.hoople.id/org/waktu-luang/cover.jpg",
+                "city": "Jakarta, Indonesia",
+                "socials": [
+                  {
+                    "platform": "instagram",
+                    "url": "https://instagram.com/waktu.luang"
+                  },
+                  {
+                    "platform": "tiktok",
+                    "url": "https://www.tiktok.com/@waktuluang"
+                  },
+                  {
+                    "platform": "youtube",
+                    "url": "https://www.youtube.com/@WaktuLuang"
+                  }
+                ],
+                "followersCount": 2400,
+                "followingCount": 3,
                 "email": "halo@waktuluang.id",
                 "phone": "+62 812 3456 7890",
                 "address": null,
@@ -220,6 +238,35 @@ docs: |
   `bankAccount` dan lupakan yang jamak. Kirim **nomor rekening yang sudah
   disamarkan** kalau kebijakan keamanan menghendaki; layar tidak pernah
   menampilkannya utuh.
+
+  ## Yang dipakai Organizer Profile dan Account Settings (2026-09-21)
+
+  Dua layar baru membaca blok `workspace` ini. **Organizer Profile**
+  (`/organizer/profile`) adalah halaman publik organizer yang diedit di
+  samping pratinjaunya; **Account Settings** (`/organizer/settings`) adalah
+  nama komunitas, email masuk, telepon, dan password.
+
+  | Field `workspace` | Status | Dipakai di mana |
+  | --- | --- | --- |
+  | `name` | sudah ada | Nama komunitas - di kedua layar, dan judul halaman publik. |
+  | `description` | sudah ada | Bio / Short Description (maks 300 karakter). |
+  | `website` | sudah ada | Kartu Website; tombol tautan di pratinjau. |
+  | `logoUrl` | sudah ada | Logo bulat. **Ini avatar akun** (lihat `Me`), jadi logo yang diganti ditulis lewat `PATCH /org/auth/me`, bukan lewat sini. |
+  | `coverImageUrl` | **baru, diminta** | Gambar header halaman publik, 1440 x 400, maks 5 MB, diunggah lewat `POST /org/media/upload`. `null` kalau belum ada. |
+  | `city` | **baru, diminta** | Kota komunitas berbasis, string utuh mis. `"Jakarta, Indonesia"`. |
+  | `socials` | **baru, diminta** | `[{ platform, url }]`; `platform` salah satu dari `instagram` \| `tiktok` \| `youtube` \| `facebook` \| `x` \| `linkedin` \| `whatsapp`; `url` absolut `https://`. Array kosong = tidak ada. |
+  | `followersCount` / `followingCount` | **baru, diminta, hanya dibaca** | Dua angka di pratinjau ("2.4K Followers", "3 Following"). Tanpa keduanya konsol menulis "-". |
+
+  Tiga field baru itu dikirim konsol di **setiap** `PATCH /org/settings` dari
+  Organizer Profile (lihat **Settings Update**). Sampai `GET` ini
+  mengembalikannya, konsol menyimpan salinannya di browser supaya halaman
+  tidak kosong sesudah reload - begitu jawaban server membawanya, jawaban
+  server yang menang. Kalau validator menolak field yang tidak dikenal,
+  kabari; konsol berhenti mengirimnya sampai disepakati.
+
+  Yang **tidak lagi dibaca layar Settings** sejak 2026-09-21: `notifications`
+  (saklar notifikasi dihapus dari layar) dan `subscription` (kartu paket
+  dihapus). Keduanya boleh tetap dikirim.
 
   ## Error yang mungkin
 
