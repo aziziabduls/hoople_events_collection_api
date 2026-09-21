@@ -6,25 +6,20 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/org/analytics"
-  auth: inherit
   params:
     - name: from
-      value: "2026-01-01"
+      value: 2026-01-01
       type: query
-      description: "Awal periode, `YYYY-MM-DD`."
+      description: Awal periode, `YYYY-MM-DD`.
     - name: to
-      value: "2026-03-14"
+      value: 2026-03-14
       type: query
-      description: "Akhir periode, `YYYY-MM-DD`."
+      description: Akhir periode, `YYYY-MM-DD`.
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -36,15 +31,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK

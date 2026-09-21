@@ -4,8 +4,8 @@ variables:
     value: http://localhost:3000
     description: ""
   - name: accessToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODk3MjQyNjYsImV4cCI6MTc4OTcyNzg2Nn0.2v588pJ3Wynn-GmIH4L7PxHdgoznI2uFwV0bKIU8MKg
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODk5NzQwOTIsImV4cCI6MTc4OTk3NzY5Mn0.2X8knQA5VlwI7NoHzcIvoDkzEOerzZyvN5hg-vddf1s
     description: ""
   - name: refreshToken
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODk3MDI2NDcsImV4cCI6MTc5MDMwNzQ0N30.FnBe12bfZy3m3xZrdhTmGtB-JskSQO_tdqx5aHcGPrk
+    value: ""
     description: ""
