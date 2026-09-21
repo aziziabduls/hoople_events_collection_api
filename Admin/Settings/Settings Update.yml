@@ -24,6 +24,22 @@ http:
           "contactEmail": "halo@waktuluang.id",
           "contactPhone": "+62 812 3456 7890",
           "website": "https://waktuluang.id",
+          "coverImageUrl": "https://cdn.hoople.id/org/waktu-luang/cover.jpg",
+          "city": "Jakarta, Indonesia",
+          "socials": [
+            {
+              "platform": "instagram",
+              "url": "https://instagram.com/waktu.luang"
+            },
+            {
+              "platform": "tiktok",
+              "url": "https://www.tiktok.com/@waktuluang"
+            },
+            {
+              "platform": "youtube",
+              "url": "https://www.youtube.com/@WaktuLuang"
+            }
+          ],
           "address": null
         },
         "bankAccount": {
@@ -155,6 +171,40 @@ docs: |
   `GET /org/settings` berikutnya. Konsol membaca ulang sesudah menyimpan dan
   mengisi formulirnya dari jawaban itu — field yang diterima tapi tidak
   dikembalikan akan terlihat seperti gagal tersimpan.
+
+  ## Yang dikirim Organizer Profile dan Account Settings (2026-09-21)
+
+  **Organizer Profile** mengirim satu `PATCH` berisi blok `workspace` saja:
+
+  ```json
+  {
+    "workspace": {
+      "name": "Waktu Luang",
+      "description": "A community for people who enjoy meaningful experiences…",
+      "website": "https://www.waktuluang.id",
+      "coverImageUrl": "https://cdn.hoople.id/org/waktu-luang/cover.jpg",
+      "city": "Jakarta, Indonesia",
+      "socials": [
+        { "platform": "instagram", "url": "https://instagram.com/waktu.luang" },
+        { "platform": "tiktok", "url": "https://www.tiktok.com/@waktuluang" }
+      ],
+      "slug": "…", "email": "…", "phone": "…",
+      "contactEmail": "…", "contactPhone": "…", "category": "…"
+    }
+  }
+  ```
+
+  | Field | Status | Catatan |
+  | --- | --- | --- |
+  | `workspace.coverImageUrl` | **baru, diminta** | URL hasil `POST /org/media/upload`, atau `null` untuk menghapus. Konsol tidak pernah mengirim data URL. |
+  | `workspace.city` | **baru, diminta** | String utuh, `null` kalau dikosongkan. |
+  | `workspace.socials` | **baru, diminta** | Ganti seluruhnya (bukan tambah): array yang dikirim adalah daftar akhirnya. |
+  | `workspace.logoUrl` | tidak dikirim | Logo = avatar akun; konsol menulisnya lewat `PATCH /org/auth/me` dengan `avatarUrl`. |
+  | enam field terakhir | salinan dari `GET` | Tiga yang wajib bagi validator plus `slug`/`email`/`phone` - layar ini tidak punya kotaknya. |
+
+  **Account Settings** mengirim `workspace.name` saja (plus salinan yang
+  sama) ketika nama diganti, dan `PATCH /org/auth/me` ketika telepon diganti;
+  email masuk tidak bisa diubah dari konsol.
 
   ## Dokumen NPWP
 
