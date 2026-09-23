@@ -15,14 +15,14 @@ http:
       - name: file
         type: file
         value:
-          - /Users/a/Pictures/tulip.jpeg
-        contentType: image/jpeg
+          - /Users/a/Downloads/stampbooth-classic.png
+        contentType: image/png
       - name: purpose
         type: text
         value: cover
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODgzMjMzNDIsImV4cCI6MTc4ODMyNjk0Mn0.7s4cPEmBf3prpcP537TNl9z8TLhlgFuDwBpFTePN5rM
+    token: "{{accessToken}}"
 
 runtime:
   scripts:

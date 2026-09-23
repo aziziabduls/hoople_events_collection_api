@@ -11,116 +11,98 @@ http:
       value: application/json
   body:
     type: json
-    data: |-
+    data: |
       {
         "kind": "event",
+        "format": "onsite",
         "identity": {
-          "title": "Google Dev Flutter Indonesia",
-          "category": "Technology",
-          "summary": "Meetup developer sehari penuh membahas Flutter, Dart, arsitektur aplikasi, state management, hingga best practice membangun aplikasi production-ready.",
+          "title": "Huddle Hoople",
+          "category": "Networking",
+          "summary": "Join us for the biggest gathering of the Hoople community.",
+          "description": "Huddle Hoople is a 2-day immersive networking event designed for creators, developers, and community builders to connect, share ideas, and grow together.",
           "coverImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg",
           "thumbnailImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg"
         },
-         "gallery": [
-          "https://dev-api.hoople.co.id/uploads/1725965000-photo1.jpg",
-          "https://dev-api.hoople.co.id/uploads/1725965001-photo2.jpg",
-          "https://dev-api.hoople.co.id/uploads/1725965002-photo3.jpg"
-        ],
-        "brand": {
-          "hostName": "Google Developer Groups Jakarta",
-          "hostType": "Community",
-          "hostBio": "Komunitas developer yang berbagi ilmu, networking, dan pengalaman seputar teknologi Google dan software development.",
-          "logoUrl": null,
-          "contactEmail": "jakarta@gdg.community",
-          "contactPhone": "+62 812 3456 7890"
-        },
-        "benefits": [
-          "Sertifikat kehadiran",
-          "Networking dengan Flutter developer",
-          "Hands-on coding session",
-          "Materi dan sample project"
-        ],
-        "format": "onsite",
         "venue": {
-          "name": "Google Indonesia",
-          "area": "SCBD",
+          "name": "Hoople HQ",
+          "address": "Jalan Jenderal Sudirman Kav. 52-53",
           "city": "Jakarta Selatan",
-          "address": "Pacific Century Place Tower, Jl. Jend. Sudirman Kav. 52-53, Jakarta Selatan",
-          "latitude": -6.2247,
-          "longitude": 106.8107,
-          "notes": [
-            "Peserta wajib membawa laptop",
-            "Registrasi ulang dimulai 30 menit sebelum acara"
-          ]
+          "area": "SCBD",
+          "latitude": -6.2255,
+          "longitude": 106.8080
         },
-        "onlineUrl": null,
-        "startsAt": "2026-10-17T09:00:00+07:00",
-        "endsAt": "2026-10-17T17:00:00+07:00",
+        "startsAt": "2026-09-24T09:00:00+07:00",
+        "endsAt": "2026-09-25T17:00:00+07:00",
         "timezone": "Asia/Jakarta",
         "rundown": [
           {
-            "time": "09:00",
-            "label": "Registrasi & Networking"
+            "title": "Day 1",
+            "items": [
+              {
+                "time": "09:00 - 10:00",
+                "title": "Registration & Morning Coffee",
+                "description": "Get your badge, grab a coffee, and meet fellow attendees."
+              },
+              {
+                "time": "10:00 - 11:30",
+                "title": "Opening Keynote: The Future of Hoople",
+                "description": "Welcome address by the founders sharing the roadmap for 2027."
+              },
+              {
+                "time": "13:00 - 15:00",
+                "title": "Community Workshops",
+                "description": "Interactive sessions focused on community building."
+              }
+            ]
           },
           {
-            "time": "09:30",
-            "label": "Opening — Flutter & Google Developer Ecosystem"
-          },
-          {
-            "time": "10:00",
-            "label": "Session 1 — Flutter & Dart Modern Development"
-          },
-          {
-            "time": "11:15",
-            "label": "Session 2 — Building Production-Ready Flutter Apps"
-          },
-          {
-            "time": "12:30",
-            "label": "Lunch & Networking"
-          },
-          {
-            "time": "13:30",
-            "label": "Session 3 — State Management & Clean Architecture"
-          },
-          {
-            "time": "15:00",
-            "label": "Hands-on Lab — Build a Flutter App"
-          },
-          {
-            "time": "16:30",
-            "label": "Q&A, Community Sharing & Closing"
+            "title": "Day 2",
+            "items": [
+              {
+                "time": "09:00 - 10:30",
+                "title": "Networking Breakfast",
+                "description": "Start the second day with casual networking over breakfast."
+              },
+              {
+                "time": "11:00 - 12:30",
+                "title": "Panel Discussion: Tech Trends",
+                "description": "Industry experts discuss upcoming trends in tech."
+              },
+              {
+                "time": "15:00 - 16:30",
+                "title": "Closing Ceremony & Awards",
+                "description": "Final remarks, community awards, and lucky draw!"
+              }
+            ]
           }
         ],
         "ticketTypes": [
           {
             "name": "Early Bird",
-            "description": "Harga spesial untuk pendaftar awal",
-            "price": 75000,
+            "description": "Special price for early adopters",
+            "price": 150000,
             "quota": 50,
-            "salesStartAt": "2026-09-15T00:00:00+07:00",
-            "salesEndAt": "2026-09-30T23:59:00+07:00"
+            "salesStartAt": "2026-09-01T09:00:00+07:00",
+            "salesEndAt": "2026-09-15T23:59:00+07:00"
           },
           {
-            "name": "Regular",
-            "description": "Tiket reguler",
-            "price": 125000,
-            "quota": 100,
-            "salesStartAt": "2026-10-01T00:00:00+07:00",
-            "salesEndAt": "2026-10-16T23:59:00+07:00"
+            "name": "General Admission",
+            "description": "Standard 2-day pass",
+            "price": 250000,
+            "quota": 200,
+            "salesStartAt": "2026-09-16T00:00:00+07:00",
+            "salesEndAt": "2026-09-24T09:00:00+07:00"
           }
         ],
-        
         "publishSettings": {
-          "visibility": "public",
-          "showOnDiscovery": true,
-          "allowWaitlist": true,
-          "publishMode": "scheduled",
-          "scheduledAt": "2026-09-10T09:00:00+07:00"
-        }
+          "publishMode": "now",
+          "showOnDiscovery": true
+        },
+        "status": "published"
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODkwMTA5MjEsImV4cCI6MTc4OTAxNDUyMX0.YYcvjqD-ipJRyzNgcSkRpRfm0jzrMUkazktn1gljZmY
+    token: "{{accessToken}}"
 
 runtime:
   scripts:

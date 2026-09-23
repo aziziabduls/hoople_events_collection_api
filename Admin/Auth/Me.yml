@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/auth/me"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwYWZiNDc0NS1lMTNlLTRmZGEtOTA4OS1jNmRiODgxMmM4YjAiLCJpYXQiOjE3ODg0MjU5ODMsImV4cCI6MTc4ODQyOTU4M30.yQ22XvDlO0YlZQ1rPn3GgIOL3tDejfgiUMCtQaaTHBQ
+    token: "{{accessToken}}"
 
 runtime:
   scripts:

@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences/3928cb00-bee8-476d-8b5f-6e751763faba"
+  url: "{{baseUrl}}/org/experiences/2334ffed-39a8-40be-9019-cd25e5d9e64f"
   auth:
     type: bearer
     token: "{{accessToken}}"

@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/fd525d32-94b0-4dec-8c90-dbbdc748e703"
+  url: "{{baseUrl}}/org/experiences/2334ffed-39a8-40be-9019-cd25e5d9e64f"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,22 +13,57 @@ http:
     type: json
     data: |-
       {
-        "identity": {
-          "title": "Kelas Keramik untuk Pemula (Batch 2)",
-          "category": "Classes",
-          "summary": "Belajar teknik pinch dan coil, pulang membawa karya sendiri.",
-          "coverImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1787216245977-619715839.jpeg",
-          "thumbnailImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1787216245977-619715839.jpeg"
-        },
+        "rundown": [
+            {
+              "items": [
+                {
+                  "time": "09:00 - 10:00",
+                  "title": "Registration & Morning Coffeeeeee",
+                  "description": "Get your badge, grab a coffee, and meet fellow attendees."
+                },
+                {
+                  "time": "10:00 - 11:30",
+                  "title": "Opening Keynote: The Future of Hoople",
+                  "description": "Welcome address by the founders sharing the roadmap for 2027."
+                },
+                {
+                  "time": "13:00 - 15:00",
+                  "title": "Community Workshops",
+                  "description": "Interactive sessions focused on community building."
+                }
+              ],
+              "title": "Day 1"
+            },
+            {
+              "items": [
+                {
+                  "time": "09:00 - 10:30",
+                  "title": "Networking Breakfast",
+                  "description": "Start the second day with casual networking over breakfast."
+                },
+                {
+                  "time": "11:00 - 12:30",
+                  "title": "Panel Discussion: Tech Trends",
+                  "description": "Industry experts discuss upcoming trends in tech."
+                },
+                {
+                  "time": "15:00 - 16:30",
+                  "title": "Closing Ceremony & Awards",
+                  "description": "Final remarks, community awards, and lucky draw!"
+                }
+              ],
+              "title": "Day 2"
+            }
+          ],
         "publish": {
-          "mode": "now",
+          "mode": "draft",
           "scheduledAt": null,
           "showOnDiscovery": true
         }
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxZDg4YWM4Yy02MDIwLTQ0YWMtOGZiMC0zY2EwODIyNTgxZmUiLCJpYXQiOjE3ODgzMjUxNDksImV4cCI6MTc4ODMyODc0OX0.AWruPCd_ViWCcRSfsQmI2G4YM2-lbmDEmYlbSWJjknY
+    token: "{{accessToken}}"
 
 runtime:
   scripts:
