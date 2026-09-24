@@ -6,7 +6,6 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/saved/toggle"
-  auth: inherit
   headers:
     - name: Content-Type
       value: application/json
@@ -14,9 +13,11 @@ http:
     type: json
     data: |-
       {
-        "kind": "activity",
-        "experienceId": "a1b2c3d4-1111-4a2b-8c3d-000000000101"
+        "experienceId": "2334ffed-39a8-40be-9019-cd25e5d9e64f"
       }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
   assertions:
@@ -26,6 +27,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -70,7 +78,6 @@ docs: |-
 
   | Field | Tipe | Wajib | Catatan |
   | --- | --- | --- | --- |
-  | `kind` | string | ya | enum `experienceKind`: `event`, `activity` |
   | `experienceId` | string | ya | UUID v4 |
 
 
@@ -120,9 +127,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

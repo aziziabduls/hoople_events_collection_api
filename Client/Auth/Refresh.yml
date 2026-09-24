@@ -13,7 +13,7 @@ http:
     type: json
     data: |-
       {
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-refresh-token"
+        "refreshToken": "{{refreshToken}}"
       }
 
 runtime:

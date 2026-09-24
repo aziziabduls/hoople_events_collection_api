@@ -15,8 +15,8 @@ http:
       - name: file
         type: file
         value:
-          - /Users/a/Downloads/stampbooth-classic.png
-        contentType: image/png
+          - /Users/a/Pictures/Windows-XP-4K-modified.jpg
+        contentType: image/jpeg
       - name: purpose
         type: text
         value: cover
