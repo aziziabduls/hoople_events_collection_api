@@ -5,26 +5,12 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/checkers"
-  auth: inherit
-  params:
-    - name: page
-      value: "1"
-      type: query
-      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
-    - name: perPage
-      value: "200"
-      type: query
-      description: "Baris per halaman. Konsol meminta 200 sekali dan menyaring/menyortir sendiri di browser."
+  url: "{{baseUrl}}/org/staff"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -55,15 +41,23 @@ runtime:
           expect(row, "tidak ada temporaryPassword di sini - itu cuma di response Checker Invite").to.not.have.property("temporaryPassword");
           expect(row.eventId, "eventId harus string tunggal, bukan array").to.be.a("string");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK
@@ -101,7 +95,7 @@ examples:
               "totalPages": 1
             }
           }
-  - name: "Belum ada staff"
+  - name: Belum ada staff
     response:
       status: 200
       statusText: OK

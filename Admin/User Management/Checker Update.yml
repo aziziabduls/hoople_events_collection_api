@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/checkers/{{checkerId}}"
+  url: "{{baseUrl}}/org/staff/c43287f6-349c-429e-91b6-b28525a91d28"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,18 +13,14 @@ http:
     type: json
     data: |-
       {
-        "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101"
+        "fullName": "Azizi Lead Scanner",
+        "eventId": "5324f7b6-e209-431e-809e-fe4a5ab5d839"
       }
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -43,15 +39,23 @@ runtime:
           expect(row, "eventIds (jamak) berarti implementasinya array, bukan field tunggal")
             .to.not.have.property("eventIds");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK

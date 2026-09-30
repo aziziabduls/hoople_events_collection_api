@@ -5,17 +5,12 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/org/checkers/{{checkerId}}"
-  auth: inherit
+  url: "{{baseUrl}}/org/staff/9ed2fb42-b817-4f54-ae32-19478c062fa3"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 runtime:
-  assertions:
-    - expression: res.status
-      operator: lt
-      value: "400"
-    - expression: res.body.success
-      operator: eq
-      value: "true"
   scripts:
     - type: tests
       code: |-
@@ -27,15 +22,23 @@ runtime:
           expect(body).to.have.property("data");
           expect(body).to.have.property("meta");
         });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
-  - name: "Sukses"
+  - name: Sukses
     response:
       status: 200
       statusText: OK

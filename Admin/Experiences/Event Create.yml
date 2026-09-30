@@ -16,7 +16,7 @@ http:
         "kind": "event",
         "format": "onsite",
         "identity": {
-          "title": "Huddle Hoople",
+          "title": "Huddle Hoople 2",
           "category": "Networking",
           "summary": "Join us for the biggest gathering of the Hoople community.",
           "description": "Huddle Hoople is a 2-day immersive networking event designed for creators, developers, and community builders to connect, share ideas, and grow together.",
@@ -31,8 +31,8 @@ http:
           "latitude": -6.2255,
           "longitude": 106.8080
         },
-        "startsAt": "2026-09-24T09:00:00+07:00",
-        "endsAt": "2026-09-25T17:00:00+07:00",
+        "startsAt": "2026-10-24T09:00:00+07:00",
+        "endsAt": "2026-10-25T17:00:00+07:00",
         "timezone": "Asia/Jakarta",
         "rundown": [
           {
@@ -82,16 +82,16 @@ http:
             "description": "Special price for early adopters",
             "price": 150000,
             "quota": 50,
-            "salesStartAt": "2026-09-01T09:00:00+07:00",
-            "salesEndAt": "2026-09-15T23:59:00+07:00"
+            "salesStartAt": "2026-10-01T09:00:00+07:00",
+            "salesEndAt": "2026-10-15T23:59:00+07:00"
           },
           {
             "name": "General Admission",
             "description": "Standard 2-day pass",
             "price": 250000,
             "quota": 200,
-            "salesStartAt": "2026-09-16T00:00:00+07:00",
-            "salesEndAt": "2026-09-24T09:00:00+07:00"
+            "salesStartAt": "2026-10-16T00:00:00+07:00",
+            "salesEndAt": "2026-10-24T09:00:00+07:00"
           }
         ],
         "publishSettings": {
