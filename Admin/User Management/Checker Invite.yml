@@ -1,0 +1,156 @@
+info:
+  name: Checker Invite
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/checkers"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "dewi.checker@example.com",
+        "eventId": "e1f2a3b4-2222-4c5d-9e6f-000000000202"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("baris baru berstatus invited, fullName kosong", function () {
+          const row = res.getBody().data;
+          expect(row.status).to.equal("invited");
+          expect(row.fullName).to.equal(null);
+          expect(row.verifiedAt).to.equal(null);
+          expect(row.eventId).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Invitation sent",
+            "data": {
+              "id": "c7e5a1b2-3333-4a1c-9d2e-000000000301",
+              "email": "dewi.checker@example.com",
+              "fullName": null,
+              "status": "invited",
+              "eventId": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+              "eventTitle": "Sunset Rooftop Jazz",
+              "invitedAt": "2026-09-30T09:00:00+07:00",
+              "verifiedAt": null
+            },
+            "meta": null
+          }
+  - name: "Sudah diundang sebelumnya"
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "This email has already been invited",
+            "data": null,
+            "meta": null,
+            "error": { "code": "CONFLICT", "errors": null }
+          }
+
+docs: |
+  # Checker Invite
+
+  Undang staff baru lewat email, langsung diassign ke satu event.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/org/checkers` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>`, peran `organizer` |
+  | **Sukses** | `201 Created` (atau `200` — pilih backend, konsol tidak membedakan) |
+  | **Sumber** | `dto/organizer/checker-invite.request.json`<br>`dto/organizer/checker-invite.response.json` |
+  | **Status** | **Belum dibangun di server mana pun.** |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | Alamat yang diundang. Konsol memvalidasi bentuknya di klien; backend tetap wajib memvalidasi ulang. |
+  | `eventId` | UUID | ya | Satu event, satu ID — lihat "satu checker, satu event" di `folder.yml`. Harus berupa event milik workspace yang sedang login. |
+
+  ## Yang dikembalikan
+
+  Baris `Checker` yang baru dibuat, bentuknya sama persis dengan satu elemen
+  di **Checker List** — `status: "invited"`, `fullName: null`,
+  `verifiedAt: null`. Konsol menyisipkan baris ini di puncak daftar tanpa
+  memanggil ulang **Checker List**.
+
+  ## Siapa yang mengirim emailnya?
+
+  **Belum jelas, dan ini salah satu dari tiga pertanyaan di `folder.yml`.**
+  Konsol berasumsi memanggil endpoint ini otomatis mengirim email undangan
+  berisi tautan verifikasi (pola yang sama dengan OTP saat pendaftaran host)
+  — tidak ada field terpisah di sini untuk memicu pengiriman itu. Tautannya
+  sendiri mengarah ke halaman konsol `/auth?mode=checker&token=<token>` —
+  token itu **milik backend sepenuhnya**; tidak ada aturan bentuk dari sisi
+  konsol selain "bisa dibaca balik oleh **Checker Invite Lookup**".
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | `eventId` tidak ada atau bukan milik workspace ini. |
+  | `409` | (lihat contoh kedua) | Alamat ini sudah diundang sebelumnya (belum tentu diverifikasi). |
+  | `422` | `shared/common/error-validation.response.json` | `email` bukan email yang valid, atau `eventId` kosong. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - Envelope error: `{ success: false, message, data: null, meta: null, error: { code, errors } }`.
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

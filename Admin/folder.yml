@@ -60,6 +60,7 @@ docs: |
   | `Finance` | 2 | Pencairan dan buku transaksi |
   | `Settings` | 2 | Workspace, rekening, fee, paket |
   | `Media` | 1 | Unggah gambar |
+  | `User Management` | 7 | Staff check-in (`checker`) — undang, kelola, verifikasi undangan. **Belum ada satu pun endpoint-nya di server**; folder lain di sini sudah punya deployment nyata untuk sebagian besarnya, ini murni rancangan. |
 
   ## Peran dan pendaftaran
 
@@ -85,6 +86,7 @@ docs: |
   | `refreshToken` | otomatis, oleh Login / Refresh | Body Auth → Refresh |
   | `experienceId` | manual | Path param experience |
   | `sessionId` | manual | Path param / query sesi |
+  | `checkerId` | manual | Path param staff, isi dari `id` salah satu baris **User Management → Checker List** |
 
   Hanya **Staging** yang memakai prefix `/v1`, dan prefix itu sudah termasuk di
   nilai `baseUrl`-nya. Kalau server lokal ternyata juga menyajikannya, tambahkan

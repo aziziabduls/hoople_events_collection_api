@@ -1,0 +1,189 @@
+info:
+  name: Checker List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/org/checkers"
+  auth: inherit
+  params:
+    - name: page
+      value: "1"
+      type: query
+      description: "Nomor halaman, mulai 1. Diturunkan dari `meta`."
+    - name: perPage
+      value: "200"
+      type: query
+      description: "Baris per halaman. Konsol meminta 200 sekali dan menyaring/menyortir sendiri di browser."
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("meta paginasi konsisten", function () {
+          const meta = res.getBody().meta;
+          expect(meta).to.have.property("page");
+          expect(meta).to.have.property("perPage");
+          expect(meta).to.have.property("total");
+          expect(meta.totalPages).to.equal(Math.ceil(meta.total / meta.perPage));
+        });
+
+        test("tiap baris punya field yang dibaca layar, dan eventId tunggal", function () {
+          const rows = res.getBody().data;
+          if (!rows.length) return;
+          const row = rows[0];
+          ["id", "email", "fullName", "status", "eventId", "eventTitle", "invitedAt", "verifiedAt"].forEach(function (key) {
+            expect(row, key).to.have.property(key);
+          });
+          expect(["invited", "active"]).to.include(row.status);
+          expect(row.eventId, "eventId harus string tunggal, bukan array").to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Checkers retrieved successfully",
+            "data": [
+              {
+                "id": "c7e5a1b2-3333-4a1c-9d2e-000000000301",
+                "email": "dewi.checker@example.com",
+                "fullName": null,
+                "status": "invited",
+                "eventId": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+                "eventTitle": "Sunset Rooftop Jazz",
+                "invitedAt": "2026-09-30T09:00:00+07:00",
+                "verifiedAt": null
+              },
+              {
+                "id": "c7e5a1b2-3333-4a1c-9d2e-000000000302",
+                "email": "raka.checker@example.com",
+                "fullName": "Raka Pratama",
+                "status": "active",
+                "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+                "eventTitle": "Morning Yoga Flow",
+                "invitedAt": "2026-09-25T09:00:00+07:00",
+                "verifiedAt": "2026-09-25T11:20:00+07:00"
+              }
+            ],
+            "meta": {
+              "page": 1,
+              "perPage": 10,
+              "total": 2,
+              "totalPages": 1
+            }
+          }
+  - name: "Belum ada staff"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Checkers retrieved successfully",
+            "data": [],
+            "meta": { "page": 1, "perPage": 10, "total": 0, "totalPages": 0 }
+          }
+
+docs: |
+  # Checker List
+
+  Daftar staff check-in host ini, dengan satu event yang sedang diassign ke
+  masing-masing. Layar **User Management** dibangun seluruhnya dari sini.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/org/checkers` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>`, peran `organizer` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checker-list.response.json` |
+  | **Status** | **Belum dibangun di server mana pun** — ini permintaan, bukan laporan endpoint yang hidup. |
+
+  ## Query parameter
+
+  | Parameter | Contoh | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `page` | `1` | tidak | Mulai 1. |
+  | `perPage` | `200` | tidak | Konsol meminta 200 sekali lalu menyaring/menyortir sendiri. Kalau satu host bisa punya ratusan staff, kabari — konsol akan pindah ke paginasi server. |
+
+  ## Field per baris
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `id` | UUID | ya | Kunci baris; dipakai `PATCH`/`DELETE /org/checkers/{id}`. |
+  | `email` | string | ya | Kolom Email; alamat yang diundang. |
+  | `fullName` | string \| null | ya | `null` selama status `invited` — kolom Name menampilkan "—" saat itu. Diisi begitu `invite/complete` dipanggil. |
+  | `status` | `invited \| active` | ya | Pil status di tabel. |
+  | `eventId` | UUID | ya | **Satu ID, bukan array** — lihat catatan "satu checker, satu event" di `folder.yml`. |
+  | `eventTitle` | string | ya | Kolom Assigned Event — dibaca apa adanya, tidak dicari ulang dari daftar experience. |
+  | `invitedAt` | instant | ya | ISO 8601 `+07:00`. |
+  | `verifiedAt` | instant \| null | ya | `null` selama `invited`; diisi begitu diverifikasi. |
+
+  ## Baris kosong
+
+  Host yang belum mengundang siapa pun menjawab `data: []` dengan
+  `meta.total: 0` — lihat contoh kedua. Layar menampilkan "No staff yet",
+  bukan data contoh.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Semua error memakai envelope yang sama ditambah blok `error`:
+
+  ```json
+  { "success": false, "message": "…", "data": null, "meta": null,
+    "error": { "code": "FORBIDDEN", "errors": null } }
+  ```
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - **Instant** (`invitedAt`, `verifiedAt`) ISO 8601 `+07:00`.
+  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
+  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

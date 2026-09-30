@@ -1,0 +1,120 @@
+info:
+  name: Checker Me
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/org/checkers/me"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Punya event yang diassign"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Assigned event retrieved successfully",
+            "data": {
+              "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+              "eventTitle": "Morning Yoga Flow"
+            },
+            "meta": null
+          }
+  - name: "Belum diassign ke event apa pun"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "No event assigned",
+            "data": null,
+            "meta": null
+          }
+
+docs: |
+  # Checker Me
+
+  Event yang sedang diassign ke staff yang sedang login. Dipanggil oleh akun
+  **`checker`**, bukan `organizer` — jalankan **Auth → Login** dengan akun
+  checker (hasil **Checker Invite Complete**) sebelum mencoba ini, atau
+  `accessToken` di environment masih milik host.
+
+  | | |
+  | --- | --- |
+  | **Method** | `GET` |
+  | **Path** | `/org/checkers/me` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>` milik akun `checker` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checker-me.response.json` |
+  | **Status** | **Belum dibangun di server mana pun** — dan mungkin tidak perlu dibangun sama sekali, baca di bawah. |
+
+  ## Kemungkinan ini tidak perlu ada
+
+  Ini **pertanyaan #2** di `folder.yml`: kalau `GET /org/experiences` /
+  `GET /org/sessions` yang dipanggil dengan token seorang `checker` sudah
+  otomatis dibatasi ke event yang diassign ke dia saja, endpoint ini
+  redundan — konsol Check-in bisa langsung memakai daftar experience yang
+  sudah tersaring itu. `GET /org/checkers/me` dibuat sebagai **jalan aman
+  sementara**: kalau jawabannya "belum dibatasi", inilah yang dipakai
+  Check-in untuk tahu satu-satunya pintu yang boleh dibuka akun ini.
+
+  ## Yang dikembalikan
+
+  - Ada assignment → `{ eventId, eventTitle }`, lihat contoh pertama.
+  - Belum ada assignment sama sekali → `data: null`, lihat contoh kedua
+    (mis. staff baru diundang tapi belum sempat diassign — meski hari ini
+    **Checker Invite** selalu mengirim `eventId` sekaligus, jadi kasus ini
+    seharusnya tidak pernah terjadi di alur normal; dikirim untuk berjaga-jaga).
+
+  Konsol tidak pernah mengirim query parameter ke endpoint ini — jawabannya
+  selalu tentang akun yang sedang login lewat tokennya sendiri.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Token bukan milik akun berperan `checker`. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

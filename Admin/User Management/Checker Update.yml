@@ -1,0 +1,129 @@
+info:
+  name: Checker Update
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/org/checkers/{{checkerId}}"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("eventId yang dikirim benar-benar menimpa, bukan menambah", function () {
+          const row = res.getBody().data;
+          expect(row.eventId).to.be.a("string");
+          expect(row, "eventIds (jamak) berarti implementasinya array, bukan field tunggal")
+            .to.not.have.property("eventIds");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Checker updated successfully",
+            "data": {
+              "id": "c7e5a1b2-3333-4a1c-9d2e-000000000302",
+              "email": "raka.checker@example.com",
+              "fullName": "Raka Pratama",
+              "status": "active",
+              "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
+              "eventTitle": "Morning Yoga Flow",
+              "invitedAt": "2026-09-25T09:00:00+07:00",
+              "verifiedAt": "2026-09-25T11:20:00+07:00"
+            },
+            "meta": null
+          }
+
+docs: |
+  # Checker Update
+
+  Pindahkan staff ke event lain — dipanggil dari dialog Edit di layar
+  **User Management**.
+
+  | | |
+  | --- | --- |
+  | **Method** | `PATCH` |
+  | **Path** | `/org/checkers/{id}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>`, peran `organizer` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checker-update.request.json`<br>`dto/organizer/checker-update.response.json` |
+  | **Status** | **Belum dibangun di server mana pun.** |
+  | **Variabel** | `{{checkerId}}` — isi manual dari `id` salah satu baris **Checker List**. |
+
+  ## Request body
+
+  `application/json` — **satu field**, sengaja:
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `eventId` | UUID | ya | Event baru. **Menimpa** assignment lama sepenuhnya — konsol tidak pernah mengirim `null` untuk "lepas dari semua event", dan tidak pernah memanggil `DELETE` lebih dulu. |
+
+  Ini **bukan** endpoint untuk mengubah email, nama, atau status — tidak ada
+  field lain yang dikirim. Kalau backend perlu endpoint terpisah untuk itu
+  (mis. host mengedit nama seorang staff), sebutkan; belum ada layar yang
+  memintanya hari ini.
+
+  ## Yang dikembalikan
+
+  Baris `Checker` lengkap dengan `eventId`/`eventTitle` yang baru, bentuknya
+  sama dengan **Checker List**.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`, atau checker ini bukan milik workspace-nya. |
+  | `404` | `shared/common/error-not-found.response.json` | `{id}` tidak ada, atau `eventId` yang dikirim tidak ada/bukan milik workspace ini. |
+  | `422` | `shared/common/error-validation.response.json` | `eventId` kosong. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - Envelope error: `{ success: false, message, data: null, meta: null, error: { code, errors } }`.
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

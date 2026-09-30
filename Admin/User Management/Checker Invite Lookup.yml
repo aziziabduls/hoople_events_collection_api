@@ -1,0 +1,134 @@
+info:
+  name: Checker Invite Lookup
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/checkers/invite/lookup"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "token": "chk_9f3a2b1c8d0e4f6a7b5c"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Token valid"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Invitation found",
+            "data": {
+              "email": "dewi.checker@example.com",
+              "workspaceName": "Waktu Luang",
+              "eventTitle": "Sunset Rooftop Jazz",
+              "expiresAt": "2026-10-07T09:00:00+07:00"
+            },
+            "meta": null
+          }
+  - name: "Token kedaluwarsa atau sudah dipakai"
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "This invitation link is no longer valid",
+            "data": null,
+            "meta": null,
+            "error": { "code": "NOT_FOUND", "errors": null }
+          }
+
+docs: |
+  # Checker Invite Lookup
+
+  Langkah pertama layar verifikasi undangan (`/auth?mode=checker&token=...`)
+  — membaca token dari tautan email **tanpa mengubah apa pun**, untuk
+  mengisi email dan nama workspace di layar sebelum orangnya mengetik apa
+  pun.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/org/checkers/invite/lookup` |
+  | **Auth** | **Tidak ada** — publik. Orangnya belum punya akun sama sekali di titik ini. |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | `dto/organizer/checker-invite-lookup.request.json`<br>`dto/organizer/checker-invite-lookup.response.json` |
+  | **Status** | **Belum dibangun di server mana pun.** |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `token` | string | ya | Persis nilai `token` di query string tautan email. Bentuknya bebas backend — konsol memperlakukannya sebagai string buram. |
+
+  ## Yang dikembalikan
+
+  | Field | Tipe | Wajib | Dipakai di mana |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | Ditampilkan **read-only** di form — orangnya tidak bisa mengganti alamat yang diundang. |
+  | `workspaceName` | string | ya | Judul halaman: "Join `{workspaceName}`". |
+  | `eventTitle` | string | ya | Kalimat lede: "You'll check people in for `{eventTitle}`". |
+  | `expiresAt` | instant | tidak | Belum dibaca konsol hari ini — dikirim untuk masa depan (mis. menampilkan hitung mundur). |
+
+  ## Token mati bukan validasi biasa
+
+  Token yang tidak ditemukan, kedaluwarsa, atau **sudah pernah dipakai**
+  (undangan yang sama tidak boleh diselesaikan dua kali) dijawab `404` —
+  lihat contoh kedua. Konsol menampilkan "This link no longer works" dan
+  berhenti di situ; tidak ada percobaan ulang otomatis.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `404` | (lihat contoh kedua) | Token tidak ada, kedaluwarsa, atau sudah dipakai. |
+  | `422` | `shared/common/error-validation.response.json` | `token` kosong. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

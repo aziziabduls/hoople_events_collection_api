@@ -1,0 +1,86 @@
+info:
+  name: Checker Delete
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/org/checkers/{{checkerId}}"
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: "Sukses"
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Checker removed successfully",
+            "data": null,
+            "meta": null
+          }
+
+docs: |
+  # Checker Delete
+
+  Hapus staff — dipanggil dari menu titik-tiga di layar **User Management**,
+  di belakang dialog konfirmasi "Remove staff?".
+
+  | | |
+  | --- | --- |
+  | **Method** | `DELETE` |
+  | **Path** | `/org/checkers/{id}` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>`, peran `organizer` |
+  | **Sukses** | `200 OK` |
+  | **Sumber** | — (tidak ada `dto/` khusus; envelope standar dengan `data: null`) |
+  | **Status** | **Belum dibangun di server mana pun.** |
+  | **Variabel** | `{{checkerId}}` — isi manual dari `id` salah satu baris **Checker List**. |
+
+  Tidak ada body. Efeknya seketika dari sisi konsol — begitu `200` diterima,
+  baris dihapus dari daftar di layar tanpa menunggu `GET /org/checkers`
+  ulang. Kalau akun yang dihapus sedang login di perangkat lain, konsol
+  tidak mengasumsikan apa pun soal sesi itu — itu urusan backend (mencabut
+  token, atau membiarkannya kedaluwarsa wajar).
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`, atau checker ini bukan milik workspace-nya. |
+  | `404` | `shared/common/error-not-found.response.json` | `{id}` tidak ada. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".
