@@ -60,7 +60,7 @@ docs: |
   | `Finance` | 2 | Pencairan dan buku transaksi |
   | `Settings` | 2 | Workspace, rekening, fee, paket |
   | `Media` | 1 | Unggah gambar |
-  | `User Management` | 7 | Staff check-in (`checker`) — undang, kelola, verifikasi undangan. **Belum ada satu pun endpoint-nya di server**; folder lain di sini sudah punya deployment nyata untuk sebagian besarnya, ini murni rancangan. |
+  | `User Management` | 5 | Staff check-in (`checker`) — buat akun (aktif seketika, dengan password sementara), kelola, hapus. Staff login lewat `Auth → Login` yang sama, tidak ada endpoint verifikasi terpisah. **Belum ada satu pun endpoint-nya di server**; folder lain di sini sudah punya deployment nyata untuk sebagian besarnya, ini murni rancangan. |
 
   ## Peran dan pendaftaran
 

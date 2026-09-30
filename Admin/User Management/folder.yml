@@ -5,32 +5,43 @@ info:
 docs: |
   # User Management
 
-  Staff check-in: host mengundang seseorang lewat email untuk menjaga pintu
-  satu event, tanpa memberi akses penuh sebagai `organizer`. Ditulis
-  2026-09-30 dari sisi konsol, yang sudah dibangun dan berjalan di mode
-  prototipe (tanpa backend) - **tujuh endpoint di folder ini belum ada di
-  server mana pun**. Ini rancangan/permintaan, bukan laporan endpoint yang
-  sudah hidup seperti folder lain.
+  Staff check-in: host membuat akun untuk seseorang untuk menjaga pintu satu
+  event, tanpa memberi akses penuh sebagai `organizer`. Ditulis 2026-09-30 dari
+  sisi konsol, yang sudah dibangun dan berjalan di mode prototipe (tanpa
+  backend) - **lima endpoint di folder ini belum ada di server mana pun**.
+  Ini rancangan/permintaan, bukan laporan endpoint yang sudah hidup seperti
+  folder lain.
+
+  **Disederhanakan dari rancangan pertama** (juga 2026-09-30, sore harinya):
+  awalnya staff diundang lewat tautan email dan mengisi nama + password
+  sendiri di halaman verifikasi terpisah - itu dua endpoint tambahan
+  (`invite/lookup`, `invite/complete`) yang **tidak jadi dibuat**. Sekarang
+  Host langsung mengisi nama + email + event sekali jalan, backend membuat
+  password sementara, dan staff login lewat halaman sign-in biasa yang sudah
+  ada. Kalau backend sempat mulai mengerjakan dua endpoint lama itu, boleh
+  dihentikan.
 
   Konsol: menu **User Management** di sidebar Host (`/organizer/users`,
-  persis di bawah Check-in), mode `checker` di halaman `/auth` (verifikasi
-  undangan), dan `/organizer/check-in` untuk akun `checker` yang sudah masuk.
+  persis di bawah Check-in), `/organizer/account` (satu-satunya halaman lain
+  yang boleh dibuka akun `checker`, untuk ganti password), dan
+  `/organizer/check-in` untuk akun `checker` yang sudah masuk.
 
   ## Peta layar → endpoint
 
   | Layar | Yang ditampilkan | Endpoint |
   | --- | --- | --- |
-  | **User Management** (Host) | Daftar staff: nama, email, event yang diassign, status | `GET /org/checkers` |
-  | **Add Staff** (dialog) | Undang lewat email, pilih satu event | `POST /org/checkers` |
+  | **User Management** (Host) | Daftar staff: nama, email, event yang diassign | `GET /org/checkers` |
+  | **Add Staff** (dialog) | Isi nama + email, pilih satu event → akun langsung aktif | `POST /org/checkers` |
   | **Edit** (dialog) | Pindahkan staff ke event lain | `PATCH /org/checkers/{id}` |
   | **Delete** (menu titik-tiga) | Hapus staff | `DELETE /org/checkers/{id}` |
-  | **`/auth?mode=checker&token=...`** (halaman verifikasi undangan) | Baca undangan dari token, tampilkan nama workspace + event | `POST /org/checkers/invite/lookup` |
-  | **`/auth?mode=checker&token=...`** (submit form) | Set nama + password, aktifkan akun, langsung masuk | `POST /org/checkers/invite/complete` |
   | **Check-in**, akun `checker` | Event yang sedang diassign ke akun yang sedang login | `GET /org/checkers/me` |
+  | **`/organizer/account`**, akun `checker` | Ganti password | `POST /auth/password/reset` (mode sudah-login, sama dengan yang dipakai Host - lihat folder **Auth**) |
 
-  Yang **tidak** butuh endpoint sendiri: pengiriman email undangan diasumsikan
-  jadi efek samping dari `POST /org/checkers` (lihat pertanyaan #3 di bawah) -
-  konsol tidak memanggil endpoint terpisah untuk mengirim email.
+  Yang **tidak** butuh endpoint sendiri: staff sign in lewat
+  `POST /org/auth/login` yang sama dengan Host, tidak ada endpoint
+  sign-in/verifikasi terpisah untuk peran ini. Backend juga **tidak perlu
+  mengirim email sama sekali** untuk peran ini - Host menyampaikan email +
+  password sementara ke staff sendiri, di luar sistem.
 
   ## Aturan inti: satu checker, satu event, sekaligus
 
@@ -50,38 +61,37 @@ docs: |
   jadi situs peserta dan Teams perlu diberi tahu kalau mereka pernah
   membaca daftar `role` yang lama. Akun `checker`:
 
-  - **Dibuat lewat `POST /org/checkers/invite/complete`**, bukan
-    `POST /org/auth/register` - jalur pendaftarannya berbeda karena
-    orangnya diundang, bukan mendaftar sendiri.
-  - **Login lewat `POST /org/auth/login` yang sama** dengan host - konsol
-    membaca `roles` dari balasannya dan mengunci navigasinya ke Check-in
-    saja begitu `roles` cuma berisi `"checker"` (tidak ada `"organizer"`
-    atau `"teams_admin"` di dalamnya).
-  - **Hanya boleh memanggil**: `GET /org/checkers/me`, dan endpoint
-    check-in (`POST /org/registrations/check-in`, lihat folder
-    **Check-in**). Kalau backend punya cara memvalidasi ini di sisi server
-    (menolak `organizer`-only endpoints untuk token berperan `checker`
-    semata), itu jaring pengaman tambahan yang konsol sendiri tidak bisa
-    berikan - guard-nya sekarang murni di UI (`RequireAuth` mengunci rute,
-    tapi itu bisa dilewati dengan memanggil API langsung).
+  - **Dibuat lewat `POST /org/checkers`**, aktif seketika - bukan
+    `POST /org/auth/register` (itu jalur pendaftaran-sendiri host/peserta)
+    dan bukan lewat tautan verifikasi terpisah.
+  - **Login lewat `POST /org/auth/login` yang sama** dengan host, memakai
+    email + `temporaryPassword` yang diberikan Host - konsol membaca `roles`
+    dari balasannya dan mengunci navigasinya ke Check-in (plus
+    `/organizer/account` untuk ganti password) begitu `roles` cuma berisi
+    `"checker"` (tidak ada `"organizer"` atau `"teams_admin"` di dalamnya).
+  - **Hanya boleh memanggil**: `GET /org/checkers/me`, endpoint check-in
+    (`POST /org/registrations/check-in`, lihat folder **Check-in**), dan
+    `POST /auth/password/reset` mode sudah-login. Kalau backend punya cara
+    memvalidasi ini di sisi server (menolak `organizer`-only endpoints untuk
+    token berperan `checker` semata), itu jaring pengaman tambahan yang
+    konsol sendiri tidak bisa berikan - guard-nya sekarang murni di UI
+    (`RequireAuth` mengunci rute, tapi itu bisa dilewati dengan memanggil API
+    langsung).
 
   ## Urutan mengerjakannya
 
   1. **`POST /org/checkers`** dan **`GET /org/checkers`** - begitu ini
-     hidup, layar User Management langsung terisi dan host bisa mengundang
-     staff sungguhan. Ini yang paling berdampak.
-  2. **`POST /org/checkers/invite/lookup`** dan
-     **`POST /org/checkers/invite/complete`** - tanpa dua ini, undangan yang
-     terkirim tidak bisa diselesaikan penerimanya. Perhatikan: keduanya
-     **tanpa token** (lihat `auth` di masing-masing request) - orangnya
-     belum punya akun saat memanggil ini.
-  3. **`PATCH /org/checkers/{id}`** dan **`DELETE /org/checkers/{id}`** -
+     hidup, layar User Management langsung terisi dan host bisa menambahkan
+     staff sungguhan. Ini yang paling berdampak, dan satu-satunya yang perlu
+     hidup untuk seluruh alur berjalan (login staff memakai
+     `POST /org/auth/login` yang sudah ada).
+  2. **`PATCH /org/checkers/{id}`** dan **`DELETE /org/checkers/{id}`** -
      mengelola staff yang sudah ada.
-  4. **`GET /org/checkers/me`** - baru dibutuhkan setelah checker pertama
-     benar-benar bisa masuk (langkah 2 selesai). Lihat pertanyaan #2 -
+  3. **`GET /org/checkers/me`** - baru dibutuhkan setelah checker pertama
+     benar-benar bisa masuk (langkah 1 selesai). Lihat pertanyaan #2 -
      mungkin ini tidak perlu dibangun sama sekali.
 
-  ## Tiga pertanyaan untuk tim backend
+  ## Pertanyaan untuk tim backend
 
   1. **Apakah "satu checker, satu event" ditegakkan di server?** Kalau ya,
      `PATCH /org/checkers/{id}` dengan `eventId` baru harus selalu berhasil
@@ -93,15 +103,10 @@ docs: |
      ini mungkin tidak perlu dibangun** - konsol memakainya sebagai jalan
      aman sementara sampai ini dikonfirmasi, dan akan berhenti
      memanggilnya begitu jawabannya "ya".
-  3. **Siapa yang mengirim email undangan?** Diasumsikan backend, sebagai
-     efek samping `POST /org/checkers` (pola yang sama dengan OTP di
-     pendaftaran) - tapi tidak ada field di request/response folder ini
-     yang eksplisit soal itu. Kalau backend justru mengharapkan konsol
-     memicu pengiriman lewat jalur lain, sebutkan.
-
-  > **Bukan urusan backend:** di mode prototipe (tanpa server), konsol
-  > menampilkan link undangan yang bisa disalin langsung setelah Add Staff,
-  > sebagai pengganti email sungguhan untuk keperluan uji coba lokal. Itu
-  > mekanisme sisi konsol semata dan tidak perlu ada padanannya di API.
+  3. **Aturan kekuatan `temporaryPassword`** yang dibuat backend saat
+     `POST /org/checkers` - disarankan mengikuti aturan yang sama dengan
+     `register-host` (minimal 8 karakter, campuran huruf + angka), supaya
+     tidak ada risiko password sementara itu sendiri ditolak saat staff
+     memakai `POST /auth/password/reset` untuk menggantinya.
 
   Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

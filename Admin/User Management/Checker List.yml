@@ -49,10 +49,10 @@ runtime:
           const rows = res.getBody().data;
           if (!rows.length) return;
           const row = rows[0];
-          ["id", "email", "fullName", "status", "eventId", "eventTitle", "invitedAt", "verifiedAt"].forEach(function (key) {
+          ["id", "email", "fullName", "eventId", "eventTitle", "createdAt"].forEach(function (key) {
             expect(row, key).to.have.property(key);
           });
-          expect(["invited", "active"]).to.include(row.status);
+          expect(row, "tidak ada temporaryPassword di sini - itu cuma di response Checker Invite").to.not.have.property("temporaryPassword");
           expect(row.eventId, "eventId harus string tunggal, bukan array").to.be.a("string");
         });
 
@@ -80,22 +80,18 @@ examples:
               {
                 "id": "c7e5a1b2-3333-4a1c-9d2e-000000000301",
                 "email": "dewi.checker@example.com",
-                "fullName": null,
-                "status": "invited",
+                "fullName": "Dewi Anjani",
                 "eventId": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
                 "eventTitle": "Sunset Rooftop Jazz",
-                "invitedAt": "2026-09-30T09:00:00+07:00",
-                "verifiedAt": null
+                "createdAt": "2026-09-30T09:00:00+07:00"
               },
               {
                 "id": "c7e5a1b2-3333-4a1c-9d2e-000000000302",
                 "email": "raka.checker@example.com",
                 "fullName": "Raka Pratama",
-                "status": "active",
                 "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
                 "eventTitle": "Morning Yoga Flow",
-                "invitedAt": "2026-09-25T09:00:00+07:00",
-                "verifiedAt": "2026-09-25T11:20:00+07:00"
+                "createdAt": "2026-09-25T09:00:00+07:00"
               }
             ],
             "meta": {
@@ -127,6 +123,8 @@ docs: |
 
   Daftar staff check-in host ini, dengan satu event yang sedang diassign ke
   masing-masing. Layar **User Management** dibangun seluruhnya dari sini.
+  Setiap baris adalah akun yang sudah aktif — tidak ada lagi status
+  "belum diverifikasi" untuk ditampilkan.
 
   | | |
   | --- | --- |
@@ -149,13 +147,14 @@ docs: |
   | Field | Tipe | Wajib | Dipakai di mana |
   | --- | --- | --- | --- |
   | `id` | UUID | ya | Kunci baris; dipakai `PATCH`/`DELETE /org/checkers/{id}`. |
-  | `email` | string | ya | Kolom Email; alamat yang diundang. |
-  | `fullName` | string \| null | ya | `null` selama status `invited` — kolom Name menampilkan "—" saat itu. Diisi begitu `invite/complete` dipanggil. |
-  | `status` | `invited \| active` | ya | Pil status di tabel. |
+  | `email` | string | ya | Kolom Email; juga alamat sign-in akun ini. |
+  | `fullName` | string | ya | Diketik oleh Host saat **Checker Invite** — selalu terisi, tidak pernah `null`. |
   | `eventId` | UUID | ya | **Satu ID, bukan array** — lihat catatan "satu checker, satu event" di `folder.yml`. |
   | `eventTitle` | string | ya | Kolom Assigned Event — dibaca apa adanya, tidak dicari ulang dari daftar experience. |
-  | `invitedAt` | instant | ya | ISO 8601 `+07:00`. |
-  | `verifiedAt` | instant \| null | ya | `null` selama `invited`; diisi begitu diverifikasi. |
+  | `createdAt` | instant | ya | ISO 8601 `+07:00`. |
+
+  **Tidak ada `temporaryPassword` di sini** — itu hanya pernah muncul sekali,
+  di response **Checker Invite** sendiri, tidak pernah lagi setelahnya.
 
   ## Baris kosong
 
@@ -181,9 +180,7 @@ docs: |
   ## Konvensi yang berlaku
 
   - **Nama field** camelCase.
-  - **Instant** (`invitedAt`, `verifiedAt`) ISO 8601 `+07:00`.
-  - **Enum** lowercase. Label berhuruf besar adalah urusan frontend.
-  - **Field nullable** tetap dikirim sebagai `null`, jangan dihilangkan.
+  - **Instant** (`createdAt`) ISO 8601 `+07:00`.
   - **Paginasi** `page` / `perPage`, dan `meta` berisi `{ page, perPage, total, totalPages }`.
 
   Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

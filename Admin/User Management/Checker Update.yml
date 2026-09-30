@@ -68,11 +68,9 @@ examples:
               "id": "c7e5a1b2-3333-4a1c-9d2e-000000000302",
               "email": "raka.checker@example.com",
               "fullName": "Raka Pratama",
-              "status": "active",
               "eventId": "a1b2c3d4-1111-4a2b-8c3d-000000000101",
               "eventTitle": "Morning Yoga Flow",
-              "invitedAt": "2026-09-25T09:00:00+07:00",
-              "verifiedAt": "2026-09-25T11:20:00+07:00"
+              "createdAt": "2026-09-25T09:00:00+07:00"
             },
             "meta": null
           }
