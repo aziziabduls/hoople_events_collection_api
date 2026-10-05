@@ -13,6 +13,45 @@ docs: |
   Konsol: `/organizer/payments` (tiga tab) dan `/organizer/payments/summary`
   (halaman sendiri).
 
+  ## Status per 2026-10-05: belum ada di server mana pun
+
+  Dicek tanpa token (`404` = rute belum ada, `401` = rute ada dan minta token):
+
+  | Rute | dev-api-event.hoople.co.id | tunnel ngrok |
+  | --- | --- | --- |
+  | `GET /org/payouts` | **404** | **404** |
+  | `GET /org/payouts/summary` | **404** | **404** |
+  | `GET /org/transactions` | **404** | **404** |
+  | `GET /org/settings` (pembanding) | 401 | 401 |
+  | `GET /org/registrations` (pembanding) | 401 | 401 |
+
+  Nama lain juga sudah dicoba dan semuanya 404, jadi **tidak ada rute payout
+  dengan nama berbeda yang terlewat**: `/org/payout`, `/org/finance`,
+  `/org/finance/payouts`, `/org/withdrawals`, `/org/disbursements`,
+  `/org/settlements`, `/org/balance`, `/org/wallet`, `/org/earnings`.
+  Konsol hanya memanggil `/org/payouts` persis — kalau backend memakai nama
+  lain, beri tahu dulu, jangan diasumsikan konsol akan menemukannya.
+
+  **Akibatnya di konsol sekarang:** Overview, Payout History dan Payout Summary
+  menampilkan Rp0 dan daftar kosong, dengan catatan "Payout data is not
+  available yet" di atasnya supaya organizer tidak mengira akunnya belum pernah
+  dibayar. Kartu **rekening tujuan** dan tab **Payout Information** tetap
+  berjalan, karena keduanya membaca `GET /org/settings` yang sudah hidup.
+
+  ### Cara tahu integrasinya sudah benar
+
+  1. Jalankan **Payout List** di folder ini dengan environment **Local**. Tab
+     Tests harus hijau: envelope `{ success, message, data, meta }`, `data`
+     berupa array, `net` tiap baris = `gross − gatewayFee − refunds +
+     adjustment`, dan baris `paid` punya `paidAt`.
+  2. Buka konsol `/organizer/payments` dengan akun yang sama. Catatan "Payout
+     data is not available yet" **hilang sendiri** begitu rute menjawab `200` —
+     tidak perlu perubahan di frontend.
+  3. Satu jebakan: rute yang belum ada menjawab halaman HTML "Cannot GET", dan
+     konsol membacanya sebagai server tidak tersedia, bukan sebagai daftar
+     kosong. Workspace yang memang belum punya pencairan harus menjawab `200`
+     dengan `data: []`, **bukan** `404`.
+
   ## Peta layar → endpoint
 
   | Layar | Yang ditampilkan | Endpoint |
