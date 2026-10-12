@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/bookings/f2663846-80b8-4752-8f39-e6af0c088a85"
+  url: "{{baseUrl}}/bookings/9d299156-8a58-47fd-bdfe-4384a8fa9459"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZTEyY2JlNi1mZGRkLTQyMzYtOWFjZC0wZmZkZGZjNzI2NWMiLCJpYXQiOjE3ODgzMzI5MTksImV4cCI6MTc4ODMzNjUxOX0.NBfGHPYigwBvkZaVkcngitn2SLErUFjDRmd-qJrZSaQ
+    token: "{{accessToken}}"
 
 runtime:
   assertions:

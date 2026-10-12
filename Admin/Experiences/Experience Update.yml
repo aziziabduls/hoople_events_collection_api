@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/2334ffed-39a8-40be-9019-cd25e5d9e64f"
+  url: "{{baseUrl}}/org/experiences/b8ac3f13-7cf8-4926-b953-cfd87385baeb"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,53 +13,74 @@ http:
     type: json
     data: |-
       {
+        "ticketTypes": [
+          {
+            "name": "Early Bird",
+            "description": "Special price for early adopters",
+            "price": 150000,
+            "quota": 50,
+            "salesStartAt": "2026-09-30T09:00:00+07:00",
+            "salesEndAt": "2026-10-15T23:59:00+07:00",
+            "includes": ["Honda CRV"]
+          },
+          {
+            "name": "General Admission",
+            "description": "Standard 2-day pass",
+            "price": 250000,
+            "quota": 200,
+            "salesStartAt": "2026-10-01T00:00:00+07:00",
+            "salesEndAt": "2026-10-24T09:00:00+07:00",
+            "includes": ["Honda BRV"]
+          }
+        ],
         "rundown": [
-            {
-              "items": [
-                {
-                  "time": "09:00 - 10:00",
-                  "title": "Registration & Morning Coffeeeeee",
-                  "description": "Get your badge, grab a coffee, and meet fellow attendees."
-                },
-                {
-                  "time": "10:00 - 11:30",
-                  "title": "Opening Keynote: The Future of Hoople",
-                  "description": "Welcome address by the founders sharing the roadmap for 2027."
-                },
-                {
-                  "time": "13:00 - 15:00",
-                  "title": "Community Workshops",
-                  "description": "Interactive sessions focused on community building."
-                }
-              ],
-              "title": "Day 1"
-            },
-            {
-              "items": [
-                {
-                  "time": "09:00 - 10:30",
-                  "title": "Networking Breakfast",
-                  "description": "Start the second day with casual networking over breakfast."
-                },
-                {
-                  "time": "11:00 - 12:30",
-                  "title": "Panel Discussion: Tech Trends",
-                  "description": "Industry experts discuss upcoming trends in tech."
-                },
-                {
-                  "time": "15:00 - 16:30",
-                  "title": "Closing Ceremony & Awards",
-                  "description": "Final remarks, community awards, and lucky draw!"
-                }
-              ],
-              "title": "Day 2"
-            }
-          ],
-        "publish": {
-          "mode": "draft",
-          "scheduledAt": null,
-          "showOnDiscovery": true
-        }
+          {
+            "title": "Day 1",
+            "items": [
+              {
+                "time": "09:00 - 10:00",
+                "title": "Registration & Morning Coffee",
+                "description": "Get your badge, grab a coffee, and meet fellow attendees.",
+                "speaker": "Aduduwaw"
+              },
+              {
+                "time": "10:00 - 11:30",
+                "title": "Opening Keynote: The Future of Hoople",
+                "description": "Welcome address by the founders sharing the roadmap for 2027.",
+                "speaker": "Adudu"
+              },
+              {
+                "time": "13:00 - 15:00",
+                "title": "Community Workshops",
+                "description": "Interactive sessions focused on community building.",
+                "speaker": "Adudi"
+              }
+            ]
+          },
+          {
+            "title": "Day 2",
+            "items": [
+              {
+                "time": "09:00 - 10:30",
+                "title": "Networking Breakfast",
+                "description": "Start the second day with casual networking over breakfast.",
+                "speaker": "Adudu"
+              },
+              {
+                "time": "11:00 - 12:30",
+                "title": "Panel Discussion: Tech Trends",
+                "description": "Industry experts discuss upcoming trends in tech.",
+                "speaker": "Adudi"
+              },
+              {
+                "time": "15:00 - 16:30",
+                "title": "Closing Ceremony & Awards",
+                "description": "Final remarks, community awards, and lucky draw!",
+                "speaker": "Aduduwaw"
+              }
+            ]
+          }
+        ]
       }
   auth:
     type: bearer
