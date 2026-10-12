@@ -1,0 +1,170 @@
+info:
+  name: Checker Invite
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/org/staff"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "aziziabdul@icloud.com",
+        "fullName": "Azizi Checker 2",
+        "eventId": "2334ffed-39a8-40be-9019-cd25e5d9e64f"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("envelope lengkap", function () {
+          const body = res.getBody();
+          expect(res.getStatus()).to.be.below(400);
+          expect(body).to.have.property("success", true);
+          expect(body).to.have.property("message");
+          expect(body).to.have.property("data");
+          expect(body).to.have.property("meta");
+        });
+
+        test("akun langsung aktif, dengan password sementara satu kali", function () {
+          const row = res.getBody().data;
+          expect(row.fullName).to.equal("Dewi Anjani");
+          expect(row.eventId).to.be.a("string");
+          expect(row.temporaryPassword, "temporaryPassword wajib ada - inilah satu-satunya kesempatan mengirimkannya").to.be.a("string").and.not.empty;
+        });
+  assertions:
+    - expression: res.status
+      operator: lt
+      value: "400"
+    - expression: res.body.success
+      operator: eq
+      value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: Sukses
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "Staff account created",
+            "data": {
+              "id": "c7e5a1b2-3333-4a1c-9d2e-000000000301",
+              "email": "dewi.checker@example.com",
+              "fullName": "Dewi Anjani",
+              "eventId": "e1f2a3b4-2222-4c5d-9e6f-000000000202",
+              "eventTitle": "Sunset Rooftop Jazz",
+              "temporaryPassword": "Sr7kLp2q",
+              "createdAt": "2026-09-30T09:00:00+07:00"
+            },
+            "meta": null
+          }
+  - name: Sudah ada staff dengan email ini
+    response:
+      status: 409
+      statusText: Conflict
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "success": false,
+            "message": "This email is already registered",
+            "data": null,
+            "meta": null,
+            "error": { "code": "CONFLICT", "errors": null }
+          }
+
+docs: |
+  # Checker Invite
+
+  Buat akun staff baru - nama, email, satu event - **aktif seketika**, dengan
+  password sementara yang dikembalikan sekali di response ini.
+
+  | | |
+  | --- | --- |
+  | **Method** | `POST` |
+  | **Path** | `/org/checkers` |
+  | **Auth** | Wajib — `Authorization: Bearer <accessToken>`, peran `organizer` |
+  | **Sukses** | `201 Created` (atau `200` — pilih backend, konsol tidak membedakan) |
+  | **Sumber** | `dto/organizer/checker-invite.request.json`<br>`dto/organizer/checker-invite.response.json` |
+  | **Status** | **Belum dibangun di server mana pun.** |
+
+  ## Request body
+
+  `application/json`
+
+  | Field | Tipe | Wajib | Catatan |
+  | --- | --- | --- | --- |
+  | `email` | string | ya | Jadi alamat sign-in akun ini. Konsol memvalidasi bentuknya di klien; backend tetap wajib memvalidasi ulang. |
+  | `fullName` | string | ya | Diketik langsung oleh Host - staff tidak pernah mengisi profilnya sendiri, karena tidak ada langkah "lengkapi profil" lagi (lihat di bawah). |
+  | `eventId` | UUID | ya | Satu event, satu ID — lihat "satu checker, satu event" di `folder.yml`. Harus berupa event milik workspace yang sedang login. |
+
+  ## Yang dikembalikan, dan kenapa ini berubah dari rancangan pertama
+
+  Rancangan awal endpoint ini membuat baris berstatus `"invited"` lalu
+  menunggu staff membuka tautan email dan mengisi nama + password sendiri
+  (`invite/lookup` + `invite/complete`, dua endpoint terpisah). **Itu
+  disederhanakan atas permintaan** — sekarang panggilan ini sendirian
+  membuat akun yang **langsung bisa dipakai login**, sama seperti akun
+  `organizer` mana pun:
+
+  - `temporaryPassword` dibuat oleh backend dan dikembalikan **hanya di
+    response ini, satu kali** — tidak muncul lagi di `GET /org/checkers`
+    maupun panggilan lain setelahnya. Konsol menampilkannya sekali ke Host
+    supaya bisa disalin dan disampaikan sendiri ke staff (WhatsApp, catatan,
+    dsb).
+  - Staff login lewat halaman sign-in biasa (`POST /org/auth/login`) memakai
+    email + `temporaryPassword` ini — **endpoint yang sama** yang dipakai
+    akun `organizer`, bukan endpoint terpisah.
+  - Kalau staff mau ganti password, itu memakai mode sign-in **yang sudah
+    ada**: `POST /auth/password/reset` versi sudah-login. Tidak ada endpoint
+    baru untuk ini — lihat `dto/README.md`.
+
+  **`POST /org/checkers/invite/lookup` dan `/invite/complete` tidak jadi
+  dibuat.** Kalau backend sempat mulai mengerjakan keduanya, itu boleh
+  dihentikan — layar konsol yang memanggilnya sudah dihapus.
+
+  Backend **tidak perlu mengirim email sama sekali** untuk peran ini, yang
+  menjawab pertanyaan lama soal siapa yang mengirim undangan.
+
+  ## Error yang mungkin
+
+  | Kode | Contoh | Kapan |
+  | --- | --- | --- |
+  | `401` | `shared/common/error-unauthorized.response.json` | Token tidak ada atau kedaluwarsa. |
+  | `403` | `shared/common/error-forbidden.response.json` | Akun tidak punya peran `organizer`. |
+  | `404` | `shared/common/error-not-found.response.json` | `eventId` tidak ada atau bukan milik workspace ini. |
+  | `409` | (lihat contoh kedua) | Sudah ada akun dengan email ini. |
+  | `422` | `shared/common/error-validation.response.json` | `email` bukan email yang valid, `fullName` kosong, atau `eventId` kosong. |
+  | `500` | `shared/common/error-server.response.json` | Kesalahan tak terduga. |
+
+  ## Konvensi yang berlaku
+
+  - **Nama field** camelCase.
+  - Envelope error: `{ success: false, message, data: null, meta: null, error: { code, errors } }`.
+
+  Selengkapnya di `dto/README.md` §"Staff check-in (checker)".
