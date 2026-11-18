@@ -1,0 +1,133 @@
+info:
+  name: Delete User Bulk
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/users"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "example.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  <span>Berikut contoh payload untuk endpoint </span>`DELETE /users`<span>:</span>
+
+  ### <span>**1. Hapus satu email spesifik (satu per satu)**</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "email": "nurul@gmail.com"
+
+  }
+
+  > <span>Menjalankan </span>`ILIKE 'nurul@gmail.com'`<span> — hanya menghapus </span>`nurul@gmail.com`<span> (case-insensitive), tidak akan menghapus </span>`siti.nurul@gmail.com`<span>.</span>
+
+  ---
+
+  ### <span>**2. Hapus bulk berdasarkan potongan teks / domain**</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "email": "Iexample.com"
+
+  }
+
+  <span>atau</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "email": "@example.com"
+
+  }
+
+  > <span>Menjalankan </span>`ILIKE '%Iexample.com%'`<span> / </span>`ILIKE '%@example.com%'`<span> — menghapus semua user yang emailnya mengandung teks tersebut.</span>
+
+  ---
+
+  ### <span>**3. Hapus bulk pakai wildcard SQL sendiri (**</span>`%` <span>**atau**</span> `_`<span>**)**</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "email": "test%@gmail.com"
+
+  }
+
+  > <span>Menjalankan </span>`ILIKE 'test%@gmail.com'`<span> — menghapus semua email yang diawali </span>`test`<span> dan berakhiran </span>`@gmail.com`<span>.</span>
+
+  ---
+
+  ### <span>**4. Paksa mode exact / bulk dengan flag**</span> `exact` <span>**(opsional)**</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "email": "nurul@gmail.com",
+
+  "exact": false
+
+  }
+
+  > <span>Memaksa pencarian menjadi </span>`ILIKE '%nurul@gmail.com%'`<span> walaupun formatnya email lengkap.</span>
+
+  ---
+
+  ### <span>**Contoh Response Sukses (**</span>`200`<span>**)**</span>
+
+  ```
+  json
+  ```
+
+  {
+
+  "success": true,
+
+  "message": "User(s) deleted successfully",
+
+  "data": {
+
+  "deletedCount": 2,
+
+  "deletedEmails": \[
+
+  "a@Iexample.com",
+
+  "b@Iexample.com"
+
+  \]
+
+  },
+
+  "meta": null
+
+  }

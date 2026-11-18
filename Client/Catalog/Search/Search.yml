@@ -5,50 +5,23 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/search?q=testing event 08&category=&city=&format=&kind=event&minPrice=&maxPrice=&startDate=&endDate=&language=&organizer=&timeOfDay=&accessibility=&sortBy="
+  url: "{{baseUrl}}/search?q=hud"
   params:
     - name: q
-      value: testing event 08
+      value: hud
       type: query
-    - name: category
-      value: ""
+    - name: " perPage"
+      value: "1"
       type: query
-    - name: city
-      value: ""
+      disabled: true
+    - name: page
+      value: "1"
       type: query
-    - name: format
-      value: ""
+      disabled: true
+    - name: limit
+      value: "12"
       type: query
-    - name: kind
-      value: event
-      type: query
-    - name: minPrice
-      value: ""
-      type: query
-    - name: maxPrice
-      value: ""
-      type: query
-    - name: startDate
-      value: ""
-      type: query
-    - name: endDate
-      value: ""
-      type: query
-    - name: language
-      value: ""
-      type: query
-    - name: organizer
-      value: ""
-      type: query
-    - name: timeOfDay
-      value: ""
-      type: query
-    - name: accessibility
-      value: ""
-      type: query
-    - name: sortBy
-      value: ""
-      type: query
+      disabled: true
 
 runtime:
   assertions:
