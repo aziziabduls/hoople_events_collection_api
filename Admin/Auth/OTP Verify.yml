@@ -15,8 +15,8 @@ http:
       {
         "purpose": "password_reset",
         "channel": "email",
-        "destination": "aziziabdul95@gmail.com",
-        "code": "540920"
+        "destination": "abdulazizi90@yahoo.co.id",
+        "code": "215998"
       }
 
 runtime:

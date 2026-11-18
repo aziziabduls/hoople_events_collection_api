@@ -5,8 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/newsletter/subscribe"
-  auth: none
+  url: "{{baseUrl}}/subscribe"
   headers:
     - name: Content-Type
       value: application/json
@@ -14,8 +13,7 @@ http:
     type: json
     data: |-
       {
-        "email": "adriani.ajeng@gmail.com",
-        "source": "footer"
+        "email": "aziziabdul95@gmail.com"
       }
 
 runtime:
@@ -26,6 +24,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 examples:
   - name: Sukses
@@ -115,9 +120,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

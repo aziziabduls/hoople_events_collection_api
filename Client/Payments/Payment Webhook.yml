@@ -5,28 +5,28 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/webhooks/payment"
-  auth: inherit
+  url: "{{baseUrl}}/payments/webhook"
   headers:
     - name: Content-Type
       value: application/json
   body:
     type: json
-    data: |-
+    data: |
       {
-        "eventType": "payment.succeeded",
-        "deliveryId": "evt-0a1b2c3d-1111-4222-8333-000000000801",
-        "occurredAt": "2026-03-14T09:41:00+07:00",
-        "data": {
-          "paymentId": "pay-9f8e7d6c-1111-4222-8333-000000000701",
-          "bookingId": "b0071e5c-1111-4d2e-8a3f-000000000301",
-          "status": "paid",
-          "amount": 251520,
-          "currency": "IDR",
-          "reference": "TRX-BCA-260314-77120"
-        },
-        "signature": "sha256=6b8f0c2a1d4e5f7890abcdef1234567890abcdef1234567890abcdef12345678"
+        "orderId": "HQU12610140001",
+        "status": "SUCCESS",
+        "paymentMethod": "QRIS",
+        "platform": "HEV",
+        "gateway": {
+          "transaction_id": "41e239ae-dcbf-4acf-b614-9744c551cede",
+          "transaction_status": "SUCCESS",
+          "orderId": "HQU12610140001",
+          "payment_status": "PAID",
+          "payment_time": "20261014134511000",
+          "issuer": "Monei"
+        }
       }
+  auth: inherit
 
 runtime:
   assertions:
@@ -36,6 +36,13 @@ runtime:
     - expression: res.body.success
       operator: eq
       value: "true"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
 
 docs: |-
   # Payment Webhook
@@ -97,9 +104,3 @@ docs: |-
   - **`roles`** adalah array — satu akun bisa `["participant", "organizer"]`.
 
   Selengkapnya di `dto/README.md`.
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5

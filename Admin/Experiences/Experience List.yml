@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/org/experiences?scope=all&page=1&perPage=10"
+  url: "{{baseUrl}}/org/experiences?scope=all&page=1&perPage=200"
   params:
     - name: scope
       value: all
@@ -14,7 +14,7 @@ http:
       value: "1"
       type: query
     - name: perPage
-      value: "10"
+      value: "200"
       type: query
   auth:
     type: bearer

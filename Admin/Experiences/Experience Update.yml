@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/org/experiences/b8ac3f13-7cf8-4926-b953-cfd87385baeb"
+  url: "{{baseUrl}}/org/experiences/b0479a4e-50d4-4a3d-a8db-946f50691869"
   headers:
     - name: Content-Type
       value: application/json
@@ -13,74 +13,102 @@ http:
     type: json
     data: |-
       {
-        "ticketTypes": [
-          {
-            "name": "Early Bird",
-            "description": "Special price for early adopters",
-            "price": 150000,
-            "quota": 50,
-            "salesStartAt": "2026-09-30T09:00:00+07:00",
-            "salesEndAt": "2026-10-15T23:59:00+07:00",
-            "includes": ["Honda CRV"]
-          },
-          {
-            "name": "General Admission",
-            "description": "Standard 2-day pass",
-            "price": 250000,
-            "quota": 200,
-            "salesStartAt": "2026-10-01T00:00:00+07:00",
-            "salesEndAt": "2026-10-24T09:00:00+07:00",
-            "includes": ["Honda BRV"]
-          }
-        ],
+        "kind": "event",
+        "format": "onsite",
+        "identity": {
+          "title": "Huddle Hoople: Community Meetup",
+          "category": "Networking",
+          "summary": "Connect, collaborate, and grow with the Hoople community.",
+          "description": "Huddle Hoople is an exclusive community networking meetup bringing together creators, developers, and community builders for an afternoon of meaningful conversations, knowledge sharing, and new opportunities.",
+          "coverImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg",
+          "thumbnailImageUrl": "https://driver-gush-blip.ngrok-free.dev/uploads/file-1788324104060-609192569.jpeg"
+        },
+        "venue": {
+          "name": "Hoople HQ",
+          "address": "Jalan Jenderal Sudirman Kav. 52-53",
+          "city": "Jakarta Selatan",
+          "area": "SCBD",
+          "latitude": -6.2255,
+          "longitude": 106.808
+        },
+        "startsAt": "2026-11-12T16:00:00+07:00",
+        "endsAt": "2026-11-12T21:00:00+07:00",
+        "timezone": "Asia/Jakarta",
         "rundown": [
           {
             "title": "Day 1",
             "items": [
               {
-                "time": "09:00 - 10:00",
-                "title": "Registration & Morning Coffee",
-                "description": "Get your badge, grab a coffee, and meet fellow attendees.",
-                "speaker": "Aduduwaw"
+                "time": "16:00 - 16:30",
+                "title": "Registration & Welcome Drinks",
+                "description": "Check in, collect your event badge, and enjoy welcome refreshments while meeting other attendees.",
+                "speaker": "Hoople Team"
               },
               {
-                "time": "10:00 - 11:30",
-                "title": "Opening Keynote: The Future of Hoople",
-                "description": "Welcome address by the founders sharing the roadmap for 2027.",
+                "time": "16:30 - 17:00",
+                "title": "Opening Session: Welcome to Huddle Hoople",
+                "description": "An introduction to the Hoople community, event highlights, and what to expect throughout the meetup.",
                 "speaker": "Adudu"
               },
               {
-                "time": "13:00 - 15:00",
-                "title": "Community Workshops",
-                "description": "Interactive sessions focused on community building.",
-                "speaker": "Adudi"
-              }
-            ]
-          },
-          {
-            "title": "Day 2",
-            "items": [
-              {
-                "time": "09:00 - 10:30",
-                "title": "Networking Breakfast",
-                "description": "Start the second day with casual networking over breakfast.",
-                "speaker": "Adudu"
-              },
-              {
-                "time": "11:00 - 12:30",
-                "title": "Panel Discussion: Tech Trends",
-                "description": "Industry experts discuss upcoming trends in tech.",
+                "time": "17:00 - 18:00",
+                "title": "Community Sharing: Ideas That Connect",
+                "description": "An interactive sharing session where creators and developers exchange experiences, ideas, and insights.",
                 "speaker": "Adudi"
               },
               {
-                "time": "15:00 - 16:30",
-                "title": "Closing Ceremony & Awards",
-                "description": "Final remarks, community awards, and lucky draw!",
+                "time": "18:00 - 18:30",
+                "title": "Coffee Break & Networking",
+                "description": "Take a break, grab some refreshments, and connect with fellow community members.",
+                "speaker": "Hoople Team"
+              },
+              {
+                "time": "18:30 - 19:30",
+                "title": "Panel Discussion: Building Stronger Communities",
+                "description": "A discussion about collaboration, technology, and building impactful communities in the digital era.",
                 "speaker": "Aduduwaw"
+              },
+              {
+                "time": "19:30 - 20:30",
+                "title": "Open Networking & Collaboration",
+                "description": "Meet potential collaborators, exchange contacts, and explore exciting opportunities together.",
+                "speaker": "Hoople Team"
+              },
+              {
+                "time": "20:30 - 21:00",
+                "title": "Closing Session & Group Photo",
+                "description": "Wrap up the meetup with closing remarks, community appreciation, and a group photo.",
+                "speaker": "Adudu"
               }
             ]
           }
-        ]
+        ],
+        "benefits": [
+          "Exclusive Hoople Community Access",
+          "Networking Opportunities",
+          "Refreshments & Coffee",
+          "Event Merchandise"
+        ],
+        "ticketTypes": [
+          {
+            "name": "General Admission",
+            "description": "Standard admission ticket for Huddle Hoople.",
+            "price": 100000,
+            "quota": 200,
+            "salesStartAt": "2026-11-12T15:00:00+07:00",
+            "salesEndAt": "2026-11-12T20:00:00+07:00",
+            "includes": [
+              "Networking Session",
+              "Refreshments",
+              "Community Access"
+            ]
+          }
+        ],
+        "publishSettings": {
+          "publishMode": "now",
+          "showOnDiscovery": true
+        },
+        "status": "published"
       }
   auth:
     type: bearer

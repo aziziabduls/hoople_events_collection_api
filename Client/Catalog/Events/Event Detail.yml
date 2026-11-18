@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/events/a1bbbc91-89e1-4071-be25-09d8a3733d6c"
+  url: "{{baseUrl}}/events/6f943884-68d5-4b2a-991a-6ad111efa897"
 
 runtime:
   assertions:

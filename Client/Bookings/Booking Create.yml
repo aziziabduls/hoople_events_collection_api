@@ -13,30 +13,35 @@ http:
     type: json
     data: |-
       {
-        "experienceId": "f6a347ca-5876-43ae-b6ae-b7a3c7e05446",
+        "experienceId": "9e4b016c-bde7-472f-8806-f572b8b6bc45",
         "kind": "event",
         "sessionId": "",
-        "ticketTypeId": "29c83d8a-ce2f-43c9-bd3d-026d00b5ec07",
-        "quantity": 2,
-        "totalAmount": 200000,
+        "ticketTypeId": "245b079e-2886-477d-97ba-44f9c2dc7ea6",
+        "quantity": 3,
+        "totalAmount": 450000,
         "buyer": {
           "fullName": "Azizi",
-          "email": "aziziabdul95@gmail.com",
+          "email": "akunsosmed3@gmail.com",
           "phone": "+6282299328390"
         },
         "participants": [
           {
             "fullName": "Azizi",
-            "email": "aziziabdul95@gmail.com",
+            "email": "akunsosmed3@gmail.com",
             "phone": "+6282299328390"
           },
           {
             "fullName": "Kevin",
             "email": "kevincool1306@gmail.com",
             "phone": "+6282299328336"
+          },
+          {
+            "fullName": "Tepi",
+            "email": "stevenfranjaya8@gmail.com",
+            "phone": "+6282299328839"
           }
         ],
-        "paymentMethodId": "bca_va",
+        "paymentMethodId": "QRIS",
         "promoCode": null,
         "consent": {
           "media": true,
