@@ -35,7 +35,7 @@ docs: |
   | **Edit** (dialog) | Pindahkan staff ke event lain | `PATCH /org/checkers/{id}` |
   | **Delete** (menu titik-tiga) | Hapus staff | `DELETE /org/checkers/{id}` |
   | **Check-in**, akun `checker` | Event yang sedang diassign ke akun yang sedang login | `GET /org/checkers/me` |
-  | **`/organizer/account`**, akun `checker` | Ganti password | `POST /auth/password/reset` (mode sudah-login, sama dengan yang dipakai Host - lihat folder **Auth**) |
+  | **`/organizer/account`**, akun `checker` | Ganti password | `POST /org/auth/password/reset` (mode sudah-login, sama dengan yang dipakai Host - lihat folder **Auth**) |
 
   Yang **tidak** butuh endpoint sendiri: staff sign in lewat
   `POST /org/auth/login` yang sama dengan Host, tidak ada endpoint
@@ -71,7 +71,7 @@ docs: |
     `"checker"` (tidak ada `"organizer"` atau `"teams_admin"` di dalamnya).
   - **Hanya boleh memanggil**: `GET /org/checkers/me`, endpoint check-in
     (`POST /org/registrations/check-in`, lihat folder **Check-in**), dan
-    `POST /auth/password/reset` mode sudah-login. Kalau backend punya cara
+    `POST /org/auth/password/reset` mode sudah-login. Kalau backend punya cara
     memvalidasi ini di sisi server (menolak `organizer`-only endpoints untuk
     token berperan `checker` semata), itu jaring pengaman tambahan yang
     konsol sendiri tidak bisa berikan - guard-nya sekarang murni di UI
@@ -107,6 +107,6 @@ docs: |
      `POST /org/checkers` - disarankan mengikuti aturan yang sama dengan
      `register-host` (minimal 8 karakter, campuran huruf + angka), supaya
      tidak ada risiko password sementara itu sendiri ditolak saat staff
-     memakai `POST /auth/password/reset` untuk menggantinya.
+     memakai `POST /org/auth/password/reset` untuk menggantinya.
 
   Selengkapnya di `dto/README.md` §"Staff check-in (checker)".

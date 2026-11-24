@@ -141,7 +141,7 @@ docs: |
     email + `temporaryPassword` ini — **endpoint yang sama** yang dipakai
     akun `organizer`, bukan endpoint terpisah.
   - Kalau staff mau ganti password, itu memakai mode sign-in **yang sudah
-    ada**: `POST /auth/password/reset` versi sudah-login. Tidak ada endpoint
+    ada**: `POST /org/auth/password/reset` versi sudah-login. Tidak ada endpoint
     baru untuk ini — lihat `dto/README.md`.
 
   **`POST /org/checkers/invite/lookup` dan `/invite/complete` tidak jadi

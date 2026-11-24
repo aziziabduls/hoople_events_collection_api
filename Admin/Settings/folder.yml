@@ -13,7 +13,7 @@ docs: |
 
   | Layar | Yang ditampilkan / diedit | Endpoint |
   | --- | --- | --- |
-  | **Account Settings** (`/organizer/settings`) | Nama komunitas, email masuk (+ Verified), telepon; ganti password; log out | `GET /org/settings` + `GET /org/auth/me`; simpan: `PATCH /org/settings` (nama), `PATCH /org/auth/me` (telepon), `POST /auth/password/reset` (mode masuk) |
+  | **Account Settings** (`/organizer/settings`) | Nama komunitas, email masuk (+ Verified), telepon; ganti password; log out | `GET /org/settings` + `GET /org/auth/me`; simpan: `PATCH /org/settings` (nama + telepon dalam satu request), `POST /org/auth/password/reset` (mode masuk - setelah berhasil semua sesi berakhir, termasuk sesi yang mengganti) |
   | **Organizer Profile** (`/organizer/profile`) | Header image, logo, nama, bio, kota, media sosial, website, pratinjau halaman publik | `GET /org/settings`; simpan: `PATCH /org/settings` (semua kecuali logo), `PATCH /org/auth/me` (logo = avatar), `POST /org/media/upload` (gambar) |
   | **Payout Information** (`/organizer/payments`, tab 3) | Rekening, cabang, NPWP, penanggung fee | `GET`/`PATCH /org/settings` - lihat folder Payments & Payout |
 
